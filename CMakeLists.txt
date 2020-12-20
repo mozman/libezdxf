@@ -6,5 +6,5 @@ set(CMAKE_CXX_STANDARD 17)
 include_directories(src)
 
 add_executable(ezdxf_cpp
-        src/tagloader.cpp
-        src/tagloader.hpp)
+        src/tag_loader.cpp
+        src/tag_loader.hpp)
