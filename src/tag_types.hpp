@@ -27,6 +27,9 @@ namespace ezdxf {
         int code;
         T value;
         DXFTag(int code, T value): code(code), value(value) {};
+        bool equals(int code_, T value_) {
+            return code == code_ && value == value_;
+        };
     };
 
     typedef DXFTag<std::string> StringTag;
