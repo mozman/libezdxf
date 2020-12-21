@@ -8,7 +8,14 @@
 #include <tuple>
 
 
+
 namespace ezdxf {
+    typedef enum {
+        STRUCTURE = 0,
+        COMMENT = 999,
+    } GroupCode;
+
+
     typedef enum {
         STRING, INTEGER, DOUBLE, VERTEX
     } TagType;

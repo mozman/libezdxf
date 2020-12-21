@@ -19,11 +19,18 @@ ezdxf::StringTag ezdxf::TagLoader::take() {
 
 ezdxf::StringTag ezdxf::TagLoader::load_next() {
     // How to read int and string from a stream?
-    // How to check if the end of the stream is reached?
-    int code = 0;  // stream.readline();
-    std::string value = "Content";  // stream.readline();
+
+    int code = ezdxf::GroupCode::COMMENT;
+    std::string value = "Content";
+
+    while (code == ezdxf::GroupCode::COMMENT) {
+        code = 0;  // stream.readline();
+        // How to check if the end of the stream is reached?
+        // if (end of stream) { code = -1; value = "EOF"; }
+        value = "Content";  // stream.readline();
+    }
     return ezdxf::StringTag(code, value);
-    // if stream is is_empty return StringTag(-1, "")
+    // if stream is empty return StringTag(-1, "")
 }
 
 ezdxf::TagType ezdxf::TagCompiler::current_type() const {
