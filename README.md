@@ -1,4 +1,4 @@
-# ezdxf.cpp
+# libezdxf
 
 This is my C++ learning project - not for production usage!
 
