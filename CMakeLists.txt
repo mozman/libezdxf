@@ -6,5 +6,6 @@ set(CMAKE_CXX_STANDARD 17)
 include_directories(src)
 
 add_library(libezdxf SHARED
-        src/tag_loader.cpp
-        src/tag_loader.hpp)
+        src/libezdxf.cpp src/libezdxf.hpp
+        src/tag_loader.cpp src/tag_loader.hpp
+        src/tag_types.cpp src/tag_types.hpp)
