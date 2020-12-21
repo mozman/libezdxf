@@ -6,8 +6,8 @@
 
 #include <string>
 #include <tuple>
-
-
+#include <variant>
+#include <vector>
 
 namespace ezdxf {
     typedef enum {
@@ -15,9 +15,9 @@ namespace ezdxf {
         COMMENT = 999,
     } GroupCode;
 
-
+    // enum value is also the position in variant AnyTag
     typedef enum {
-        STRING, INTEGER, DOUBLE, VERTEX
+        STRING=0, INTEGER=1, DOUBLE=2, VERTEX=3
     } TagType;
 
     typedef std::tuple<double, double, double> Vertex;
@@ -33,8 +33,12 @@ namespace ezdxf {
     typedef DXFTag<long> IntegerTag;
     typedef DXFTag<double> DoubleTag;
     typedef DXFTag<Vertex> VertexTag;
-
+    typedef std::variant<StringTag, IntegerTag, DoubleTag, VertexTag> AnyTag;
     TagType group_code_type(int code);
+
+    class Tags {
+        std::vector<AnyTag> tags;
+    };
 }
 
 #endif //LIBEZDXF_TAG_TYPES_HPP

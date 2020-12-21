@@ -37,13 +37,16 @@ ezdxf::TagType ezdxf::TagCompiler::current_type() const {
     return group_code_type(current.code);
 }
 
-ezdxf::StringTag ezdxf::TagCompiler::get_string() {
+ezdxf::StringTag ezdxf::TagCompiler::expect_string() {
+    // Returns next tag as StringTag.
     StringTag tag = current;
     load_next_tag();
     return tag;
 }
 
-ezdxf::IntegerTag ezdxf::TagCompiler::get_integer() {
+ezdxf::IntegerTag ezdxf::TagCompiler::expect_integer() {
+    // Returns next tag as IntegerTag or a tag with group code < 0
+    // in case of an error.
     if (current_type() == ezdxf::TagType::INTEGER) {
         // Error handling: ProE stores integers as doubles!
         ezdxf::IntegerTag ret{current.code, std::stol(current.value)};
@@ -53,7 +56,9 @@ ezdxf::IntegerTag ezdxf::TagCompiler::get_integer() {
     return ezdxf::IntegerTag(-1, 0);
 }
 
-ezdxf::DoubleTag ezdxf::TagCompiler::get_double() {
+ezdxf::DoubleTag ezdxf::TagCompiler::expect_double() {
+    // Returns next tag as DoubleTag or a tag with group code < 0
+    // in case of an error.
     if (current_type() == ezdxf::TagType::DOUBLE) {
         ezdxf::DoubleTag ret{current.code, stod(current.value)};
         load_next_tag();
@@ -62,7 +67,9 @@ ezdxf::DoubleTag ezdxf::TagCompiler::get_double() {
     return ezdxf::DoubleTag(-1, 0.0);
 }
 
-ezdxf::VertexTag ezdxf::TagCompiler::get_vertex() {
+ezdxf::VertexTag ezdxf::TagCompiler::expect_vertex() {
+    // Returns next tag as VertexTag or a tag with group code < 0
+    // in case of an error.
     double x = 0.0, y = 0.0, z = 0.0;
     if (current_type() == ezdxf::TagType::VERTEX) {
         int code = current.code;
@@ -79,4 +86,18 @@ ezdxf::VertexTag ezdxf::TagCompiler::get_vertex() {
         }
     }
     return ezdxf::VertexTag(-1, {x, y, z});
+}
+
+ezdxf::AnyTag ezdxf::TagCompiler::next() {
+    // Detects type of next tag and returns the next tag as variant type.
+    switch (current_type()) {
+        case ezdxf::TagType::INTEGER :
+            return AnyTag(expect_integer());
+        case ezdxf::TagType::DOUBLE:
+            return AnyTag(expect_double());
+        case ezdxf::TagType::VERTEX:
+            return AnyTag(expect_vertex());
+        default:
+            return AnyTag(expect_string());
+    }
 }

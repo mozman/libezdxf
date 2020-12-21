@@ -27,7 +27,7 @@ namespace ezdxf {
     // Usage:
     // while (not loader.is_empty()) {
     //     tag = loader.peek()  // or
-    //     tag = loader.take()
+    //     tag = loader.next()
     // }
 
     class TagCompiler {
@@ -47,10 +47,11 @@ namespace ezdxf {
         [[nodiscard]] bool is_empty() const {
             return current.code < 0;
         };
-        StringTag get_string();
-        IntegerTag get_integer();
-        DoubleTag get_double();
-        VertexTag get_vertex();
+        AnyTag next();
+        StringTag expect_string();
+        IntegerTag expect_integer();
+        DoubleTag expect_double();
+        VertexTag expect_vertex();
     };
 }
 
