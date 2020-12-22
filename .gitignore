@@ -31,3 +31,5 @@
 *.out
 *.app
 /cmake-build-debug/
+/cmake-build-debug-mingw/
+/cmake-build-debug-visual-studio/
