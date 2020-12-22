@@ -12,5 +12,7 @@ add_library(ezdxf SHARED
         src/tag_loader.cpp src/tag_loader.hpp
         src/tag_types.cpp src/tag_types.hpp)
 
-add_executable(TestTagTypes tests/TestTagTypes.cpp)
-target_link_libraries(TestTagTypes PRIVATE ezdxf)
+add_executable(TestMain
+        tests/TestMain.cpp
+        tests/TestTagTypes.cpp)
+target_link_libraries(TestMain PRIVATE ezdxf)
