@@ -6,6 +6,7 @@
 
 #include <string>
 #include <tuple>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -15,32 +16,79 @@ namespace ezdxf {
         COMMENT = 999,
     } GroupCode;
 
-    // enum value is also the position in variant AnyTag
     typedef enum {
-        STRING=0, INTEGER=1, DOUBLE=2, VERTEX=3
+        STRING, INTEGER, DOUBLE, VERTEX, ERROR
     } TagType;
 
-    typedef std::tuple<double, double, double> Vertex;
-
-    template <typename T>
-    struct DXFTag {
+    class DXFTag {
+    public:
         int code;
-        T value;
-        DXFTag(int code, T value): code(code), value(value) {};
-        bool equals(int code_, T value_) {
-            return code == code_ && value == value_;
+
+        explicit DXFTag(const int code) : code(code) {};
+
+        virtual TagType type() { return TagType::ERROR; };
+
+        bool is_error() { return type() == TagType::ERROR; };
+
+    };
+
+    class StringTag : public DXFTag {
+    public:
+        std::string s;
+
+        StringTag(const int code, std::string value) : DXFTag(code),
+                                                       s(std::move(value)) {};
+
+        StringTag(const StringTag &t) : DXFTag(t.code), s(t.s) {};
+
+        TagType type() override {
+            return code < 0 ? TagType::ERROR : TagType::STRING;
         };
     };
 
-    typedef DXFTag<std::string> StringTag;
-    typedef DXFTag<long> IntegerTag;
-    typedef DXFTag<double> DoubleTag;
-    typedef DXFTag<Vertex> VertexTag;
-    typedef std::variant<StringTag, IntegerTag, DoubleTag, VertexTag> AnyTag;
+    class IntegerTag : public DXFTag {
+    public:
+        long i;
+
+        IntegerTag(const int code, const long value) : DXFTag(code),
+                                                       i(value) {};
+
+        TagType type() override {
+            return code < 0 ? TagType::ERROR : TagType::INTEGER;
+        };
+    };
+
+    class DoubleTag : public DXFTag {
+    public:
+        const double d;
+
+        DoubleTag(const int code, const double value) : DXFTag(code),
+                                                        d(value) {};
+
+        TagType type() override {
+            return code < 0 ? TagType::ERROR : TagType::DOUBLE;
+        };
+    };
+
+    class VertexTag : public DXFTag {
+    public:
+        double x, y, z;
+
+        VertexTag(const int code,
+                  const double x,
+                  const double y,
+                  const double z) :
+                DXFTag(code), x(x), y(y), z(z) {};
+
+        TagType type() override {
+            return code < 0 ? TagType::ERROR : TagType::VERTEX;
+        };
+    };
+
     TagType group_code_type(int code);
 
     class Tags {
-        std::vector<AnyTag> tags;
+        std::vector<DXFTag> tags;
     };
 }
 

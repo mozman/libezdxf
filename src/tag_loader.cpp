@@ -49,7 +49,7 @@ ezdxf::IntegerTag ezdxf::TagCompiler::expect_integer() {
     // in case of an error.
     if (current_type() == ezdxf::TagType::INTEGER) {
         // Error handling: ProE stores integers as doubles!
-        ezdxf::IntegerTag ret{current.code, std::stol(current.value)};
+        ezdxf::IntegerTag ret{current.code, std::stol(current.s)};
         load_next_tag();
         return ret;
     }
@@ -60,7 +60,7 @@ ezdxf::DoubleTag ezdxf::TagCompiler::expect_double() {
     // Returns next tag as DoubleTag or a tag with group code < 0
     // in case of an error.
     if (current_type() == ezdxf::TagType::DOUBLE) {
-        ezdxf::DoubleTag ret{current.code, stod(current.value)};
+        ezdxf::DoubleTag ret{current.code, stod(current.s)};
         load_next_tag();
         return ret;
     }
@@ -73,31 +73,17 @@ ezdxf::VertexTag ezdxf::TagCompiler::expect_vertex() {
     double x = 0.0, y = 0.0, z = 0.0;
     if (current_type() == ezdxf::TagType::VERTEX) {
         int code = current.code;
-        x = std::stod(current.value);
+        x = std::stod(current.s);
         load_next_tag();
         if (current.code == code + 10) {
-            y = std::stod(current.value);
+            y = std::stod(current.s);
             load_next_tag();
             if (current.code == code + 20) {
-                z = std::stod(current.value);
+                z = std::stod(current.s);
                 load_next_tag();
             }
-            return ezdxf::VertexTag(code, {x, y, z});
+            return ezdxf::VertexTag(code, x, y, z);
         }
     }
-    return ezdxf::VertexTag(-1, {x, y, z});
-}
-
-ezdxf::AnyTag ezdxf::TagCompiler::next() {
-    // Detects type of next tag and returns the next tag as variant type.
-    switch (current_type()) {
-        case ezdxf::TagType::INTEGER :
-            return AnyTag(expect_integer());
-        case ezdxf::TagType::DOUBLE:
-            return AnyTag(expect_double());
-        case ezdxf::TagType::VERTEX:
-            return AnyTag(expect_vertex());
-        default:
-            return AnyTag(expect_string());
-    }
+    return ezdxf::VertexTag(-1, x, y, z);
 }

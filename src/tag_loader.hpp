@@ -47,7 +47,6 @@ namespace ezdxf {
         [[nodiscard]] bool is_empty() const {
             return current.code < 0;
         };
-        AnyTag next();
         StringTag expect_string();
         IntegerTag expect_integer();
         DoubleTag expect_double();
