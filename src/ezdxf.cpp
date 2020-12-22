@@ -2,7 +2,7 @@
 // License: MIT License
 //
 
-#include "libezdxf.hpp"
+#include "ezdxf.hpp"
 
 
 ezdxf::Document readfile(const std::string &filename) {

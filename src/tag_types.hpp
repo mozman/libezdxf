@@ -124,7 +124,7 @@ namespace ezdxf {
         [[nodiscard]] static bool export_z_axis() { return false; }
     };
 
-    bool is_error_tag(const DXFTag &tag) {
+    inline bool is_error_tag(const DXFTag &tag) {
         return tag.group_code() < 0;
     }
 

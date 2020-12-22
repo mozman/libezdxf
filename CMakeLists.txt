@@ -4,8 +4,13 @@ project(libezdxf LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 include_directories(src)
+include_directories(extern/catch)
+include_directories(tests)
 
-add_library(libezdxf SHARED
-        src/libezdxf.cpp src/libezdxf.hpp
+add_library(ezdxf SHARED
+        src/ezdxf.cpp src/ezdxf.hpp
         src/tag_loader.cpp src/tag_loader.hpp
         src/tag_types.cpp src/tag_types.hpp)
+
+add_executable(TestTagTypes tests/TestTagTypes.cpp)
+target_link_libraries(TestTagTypes PRIVATE ezdxf)
