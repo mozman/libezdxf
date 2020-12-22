@@ -34,7 +34,7 @@ ezdxf::StringTag ezdxf::TagLoader::load_next() {
 }
 
 ezdxf::TagType ezdxf::TagCompiler::current_type() const {
-    return group_code_type(current.code);
+    return group_code_type(current.group_code());
 }
 
 ezdxf::StringTag ezdxf::TagCompiler::expect_string() {
@@ -45,45 +45,42 @@ ezdxf::StringTag ezdxf::TagCompiler::expect_string() {
 }
 
 ezdxf::IntegerTag ezdxf::TagCompiler::expect_integer() {
-    // Returns next tag as IntegerTag or a tag with group code < 0
-    // in case of an error.
+    // Returns next tag as IntegerTag or aa error tag with group code < 0.
     if (current_type() == ezdxf::TagType::INTEGER) {
         // Error handling: ProE stores integers as doubles!
-        ezdxf::IntegerTag ret{current.code, std::stol(current.s)};
+        ezdxf::IntegerTag ret{current.group_code(), std::stol(current.str())};
         load_next_tag();
         return ret;
     }
-    return ezdxf::IntegerTag(-1, 0);
+    return ezdxf::IntegerTag(-1, 0);  // error tag
 }
 
-ezdxf::DoubleTag ezdxf::TagCompiler::expect_double() {
-    // Returns next tag as DoubleTag or a tag with group code < 0
-    // in case of an error.
-    if (current_type() == ezdxf::TagType::DOUBLE) {
-        ezdxf::DoubleTag ret{current.code, stod(current.s)};
+ezdxf::DecimalTag ezdxf::TagCompiler::expect_double() {
+    // Returns next tag as DecimalTag or an error tag with group code < 0.
+    if (current_type() == ezdxf::TagType::DECIMAL) {
+        ezdxf::DecimalTag ret{current.group_code(), stod(current.str())};
         load_next_tag();
         return ret;
     }
-    return ezdxf::DoubleTag(-1, 0.0);
+    return ezdxf::DecimalTag(-1, 0.0);  // error tag
 }
 
 ezdxf::VertexTag ezdxf::TagCompiler::expect_vertex() {
-    // Returns next tag as VertexTag or a tag with group code < 0
-    // in case of an error.
+    // Returns next tag as VertexTag or an error tag with group code < 0.
     double x = 0.0, y = 0.0, z = 0.0;
     if (current_type() == ezdxf::TagType::VERTEX) {
-        int code = current.code;
-        x = std::stod(current.s);
+        int code = current.group_code();
+        x = std::stod(current.str());
         load_next_tag();
-        if (current.code == code + 10) {
-            y = std::stod(current.s);
+        if (current.group_code() == code + 10) {
+            y = std::stod(current.str());
             load_next_tag();
-            if (current.code == code + 20) {
-                z = std::stod(current.s);
+            if (current.group_code() == code + 20) {
+                z = std::stod(current.str());
                 load_next_tag();
             }
             return ezdxf::VertexTag(code, x, y, z);
         }
     }
-    return ezdxf::VertexTag(-1, x, y, z);
+    return ezdxf::VertexTag(-1, x, y, z);  // error tag
 }

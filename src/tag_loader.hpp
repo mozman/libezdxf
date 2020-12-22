@@ -21,7 +21,7 @@ namespace ezdxf {
         };
         StringTag take();
         [[nodiscard]] bool is_empty() const {
-            return current.code < 0;
+            return current.group_code() < 0;
         }
     };
     // Usage:
@@ -45,11 +45,11 @@ namespace ezdxf {
         };
         [[nodiscard]] TagType current_type() const;
         [[nodiscard]] bool is_empty() const {
-            return current.code < 0;
+            return ezdxf::is_error_tag(current);
         };
         StringTag expect_string();
         IntegerTag expect_integer();
-        DoubleTag expect_double();
+        DecimalTag expect_double();
         VertexTag expect_vertex();
     };
 }

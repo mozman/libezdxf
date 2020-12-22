@@ -17,77 +17,104 @@ namespace ezdxf {
     } GroupCode;
 
     typedef enum {
-        STRING, INTEGER, DOUBLE, VERTEX, ERROR
+        STRING, INTEGER, DECIMAL, VERTEX, UNDEFINED
     } TagType;
 
+    // Place holder for ezdxf::math::Vec3
+    typedef std::tuple<double, double, double> Vec3;
+
     class DXFTag {
+    private:
+        int code = -1;  // error tag
+
     public:
-        int code;
+        explicit DXFTag(const int code) : code(code) {}
 
-        explicit DXFTag(const int code) : code(code) {};
+        [[nodiscard]] int group_code() const { return code; }
 
-        virtual TagType type() { return TagType::ERROR; };
-
-        bool is_error() { return type() == TagType::ERROR; };
+        [[nodiscard]] virtual TagType type() const {
+            return TagType::UNDEFINED;
+        }
 
     };
 
     class StringTag : public DXFTag {
-    public:
+    private:
         std::string s;
 
+    public:
         StringTag(const int code, std::string value) : DXFTag(code),
-                                                       s(std::move(value)) {};
+                                                       s(std::move(value)) {}
 
-        StringTag(const StringTag &t) : DXFTag(t.code), s(t.s) {};
+        [[nodiscard]] std::string str() const {
+            return s;
+        }
 
-        TagType type() override {
-            return code < 0 ? TagType::ERROR : TagType::STRING;
-        };
+        [[nodiscard]] TagType type() const override {
+            return TagType::STRING;
+        }
     };
 
     class IntegerTag : public DXFTag {
-    public:
+    private:
         long i;
-
+    public:
         IntegerTag(const int code, const long value) : DXFTag(code),
-                                                       i(value) {};
+                                                       i(value) {}
 
-        TagType type() override {
-            return code < 0 ? TagType::ERROR : TagType::INTEGER;
-        };
+        [[nodiscard]] int integer() const {
+            return i;
+        }
+
+        [[nodiscard]] TagType type() const override {
+            return TagType::INTEGER;
+        }
     };
 
-    class DoubleTag : public DXFTag {
-    public:
+    class DecimalTag : public DXFTag {
+    private:
         const double d;
 
-        DoubleTag(const int code, const double value) : DXFTag(code),
-                                                        d(value) {};
+    public:
+        DecimalTag(const int code, const double value) : DXFTag(code),
+                                                         d(value) {};
+        [[nodiscard]] double decimal() const {
+            return d;
+        }
 
-        TagType type() override {
-            return code < 0 ? TagType::ERROR : TagType::DOUBLE;
+        [[nodiscard]] TagType type() const override {
+            return TagType::DECIMAL;
         };
     };
 
     class VertexTag : public DXFTag {
-    public:
+    private:
         double x, y, z;
 
+    public:
         VertexTag(const int code,
                   const double x,
                   const double y,
                   const double z) :
                 DXFTag(code), x(x), y(y), z(z) {};
 
-        TagType type() override {
-            return code < 0 ? TagType::ERROR : TagType::VERTEX;
+        [[nodiscard]] Vec3 vec3() const {
+            return Vec3(x, y, z);
+        }
+
+        [[nodiscard]] TagType type() const override {
+            return TagType::VERTEX;
         };
     };
 
-    TagType group_code_type(int code);
+    bool is_error_tag(const DXFTag &tag) {
+        return tag.group_code() < 0;
+    }
+
+    TagType group_code_type(int);
 
     class Tags {
+    private:
         std::vector<DXFTag> tags;
     };
 }
