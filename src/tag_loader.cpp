@@ -78,8 +78,13 @@ ezdxf::VertexTag ezdxf::TagCompiler::expect_vertex() {
             if (current.group_code() == code + 20) {
                 z = std::stod(current.str());
                 load_next_tag();
+                return ezdxf::VertexTag(code, x, y, z);
+            } else {
+                // Does this return a Vertex2Tag or is there an implicit cast
+                // to VertexTag?
+                return ezdxf::Vertex2Tag(code, x, y);
             }
-            return ezdxf::VertexTag(code, x, y, z);
+
         }
     }
     return ezdxf::VertexTag(-1, x, y, z);  // error tag

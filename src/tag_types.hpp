@@ -78,6 +78,7 @@ namespace ezdxf {
     public:
         DecimalTag(const int code, const double value) : DXFTag(code),
                                                          d(value) {};
+
         [[nodiscard]] double decimal() const {
             return d;
         }
@@ -105,6 +106,22 @@ namespace ezdxf {
         [[nodiscard]] TagType type() const override {
             return TagType::VERTEX;
         };
+
+        [[nodiscard]] static bool export_z_axis() { return true; }
+    };
+
+    // Special class for 2D only vertices is required for a generic DXF tag
+    // storage to preserve the vertices as stored in the original DXF document.
+    // Some tags have to be written as 2D tags with out a z-axis.
+    // But otherwise it is completely the same as VertexTag.
+    class Vertex2Tag : public VertexTag {
+    public:
+        Vertex2Tag(const int code,
+                   const double x,
+                   const double y) :
+                VertexTag(code, x, y, 0.0) {};
+
+        [[nodiscard]] static bool export_z_axis() { return false; }
     };
 
     bool is_error_tag(const DXFTag &tag) {
