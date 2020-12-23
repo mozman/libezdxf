@@ -1,15 +1,39 @@
 // Copyright (c) 2020, Manfred Moitzi
 // License: MIT License
 //
-#include <iostream>
-#include <unordered_map>
 #include "tag_types.hpp"
 
+#define GROUP_CODE_COUNT 1072 // defined by the DXF reference
+
 namespace ezdxf {
+    class TagTypeCache {
+        TagType cache[GROUP_CODE_COUNT]{};
+    public:
+        TagTypeCache() {
+            for (auto &code : cache) {
+                code = TagType::UNDEFINED;
+            }
+        }
+
+        TagType get(int code) {
+            if (code >= 0 && code < GROUP_CODE_COUNT) {
+                return cache[code];
+            } else {
+                return TagType::UNDEFINED;
+            }
+        }
+
+        void set(int code, TagType t) {
+            if (code >= 0 && code < GROUP_CODE_COUNT) {
+                cache[code] = t;
+            }
+        }
+    };
+
     TagType group_code_type(int code) {
-        static auto cache = std::unordered_map<int, TagType>();
-        if (auto it = cache.find(code); it != cache.end()) {
-            return it->second;
+        static auto cache = TagTypeCache();
+        if (auto tag_type = cache.get(code); tag_type != TagType::UNDEFINED) {
+            return tag_type;
         }
         TagType tag_type = TagType::TEXT; // default value
         if ((code >= 10 && code < 19) ||
@@ -34,7 +58,7 @@ namespace ezdxf {
                    (code >= 1060 && code < 1072)) {
             tag_type = TagType::INTEGER;
         }
-        cache.insert({code, tag_type});
+        cache.set(code, tag_type);
         return tag_type;
     }
 }
