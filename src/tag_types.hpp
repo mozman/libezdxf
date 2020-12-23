@@ -4,11 +4,8 @@
 #ifndef LIBEZDXF_TAG_TYPES_HPP
 #define LIBEZDXF_TAG_TYPES_HPP
 
-#include <string>
-#include <tuple>
-#include <utility>
-#include <variant>
 #include <vector>
+#include "types.hpp"
 
 namespace ezdxf {
     typedef enum {
@@ -19,9 +16,6 @@ namespace ezdxf {
     typedef enum {
         TEXT, INTEGER, DECIMAL, VERTEX, UNDEFINED
     } TagType;
-
-    // Place holder for ezdxf::math::Vec3
-    typedef std::tuple<double, double, double> Vec3;
 
     class DXFTag {
     private:
@@ -39,19 +33,19 @@ namespace ezdxf {
     };
 
     class TextTag : public DXFTag {
-        // Text is stored as raw data (unencoded cp1252, utf8, ...) std::string
+        // Text is stored as raw data (unencoded cp1252, utf8, ...) String
         // without line endings. White spaces in front and at the end of the
         // string are not striped, because sometimes they are important
         // (e.g. DIMENSION text_tag), except for structure tags with group code 0,
         // for these tags white spaces are obstructive.
     private:
-        std::string s;
+        String s;
 
     public:
-        TextTag(const int code, std::string value) : DXFTag(code),
-                                                     s(std::move(value)) {}
+        TextTag(const int code, String value) : DXFTag(code),
+                                                s(std::move(value)) {}
 
-        [[nodiscard]] std::string str() const {
+        [[nodiscard]] String str() const {
             return s;
         }
 
@@ -63,13 +57,13 @@ namespace ezdxf {
     class IntegerTag : public DXFTag {
         // Integer value is stored as signed 64-bit value.
     private:
-        long long i;
+        Int64 i;
 
     public:
-        IntegerTag(const int code, const long long value) : DXFTag(code),
-                                                            i(value) {}
+        IntegerTag(const int code, const Int64 value) : DXFTag(code),
+                                                        i(value) {}
 
-        [[nodiscard]] long long int64() const {
+        [[nodiscard]] Int64 int64() const {
             return i;
         }
 
@@ -81,13 +75,13 @@ namespace ezdxf {
     class DecimalTag : public DXFTag {
         // Decimal value is stored as 64-bit double value.
     private:
-        const double d;
+        const Decimal d;
 
     public:
-        DecimalTag(const int code, const double value) : DXFTag(code),
-                                                         d(value) {};
+        DecimalTag(const int code, const Decimal value) : DXFTag(code),
+                                                          d(value) {};
 
-        [[nodiscard]] double decimal() const {
+        [[nodiscard]] Decimal decimal() const {
             return d;
         }
 
@@ -99,13 +93,13 @@ namespace ezdxf {
     class VertexTag : public DXFTag {
         // Vertex axis are stored as 64-bit double values.
     private:
-        double x, y, z;
+        Decimal x, y, z;
 
     public:
         VertexTag(const int code,
-                  const double x,
-                  const double y,
-                  const double z) :
+                  const Decimal x,
+                  const Decimal y,
+                  const Decimal z) :
                 DXFTag(code), x(x), y(y), z(z) {};
 
         [[nodiscard]] Vec3 vec3() const {
@@ -126,8 +120,8 @@ namespace ezdxf {
     class Vertex2Tag : public VertexTag {
     public:
         Vertex2Tag(const int code,
-                   const double x,
-                   const double y) :
+                   const Decimal x,
+                   const Decimal y) :
                 VertexTag(code, x, y, 0.0) {};
 
         [[nodiscard]] static bool export_z_axis() { return false; }

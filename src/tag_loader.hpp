@@ -4,7 +4,6 @@
 #ifndef EZDXF_CPP_TAG_LOADER_HPP
 #define EZDXF_CPP_TAG_LOADER_HPP
 
-#include <string>
 #include "tag_types.hpp"
 
 namespace ezdxf {
@@ -15,7 +14,7 @@ namespace ezdxf {
         TextTag load_next();
 
     public:
-        explicit TagLoader(const std::string&);
+        explicit TagLoader(const String&);
         [[nodiscard]] const TextTag& peek() const {
             return current;
         };

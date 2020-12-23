@@ -4694,7 +4694,7 @@ GeneratorWrapper<T> range(T const& start, T const& end, T const& step) {
 
 template <typename T>
 GeneratorWrapper<T> range(T const& start, T const& end) {
-    static_assert(std::is_integral<T>::value && !std::is_same<T, bool>::value, "Type must be an integer");
+    static_assert(std::is_integral<T>::value && !std::is_same<T, bool>::value, "Type must be an int64");
     return GeneratorWrapper<T>(pf::make_unique<RangeGenerator<T>>(start, end));
 }
 
