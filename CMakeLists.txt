@@ -9,7 +9,7 @@ include_directories(tests)
 add_library(ezdxf STATIC
         src/ezdxf.cpp src/ezdxf.hpp
         src/tag_loader.cpp src/tag_loader.hpp
-        src/tag_types.cpp src/tag_types.hpp src/types.hpp)
+        src/tag_types.cpp src/tag_types.hpp src/types.hpp src/tag_allocator.cpp src/tag_allocator.hpp)
 
 add_executable(TestMain
         tests/TestMain.cpp
