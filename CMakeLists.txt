@@ -4,13 +4,11 @@ project(ezdxf LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 include_directories(src)
-include_directories(tests)
 
 add_library(ezdxf STATIC
-        src/ezdxf.cpp src/ezdxf.hpp
+        src/ezdxf.cpp src/ezdxf.hpp src/types.hpp
         src/tag_loader.cpp src/tag_loader.hpp
         src/tag_types.cpp src/tag_types.hpp
-        src/types.hpp
         src/tag_allocator.cpp src/tag_allocator.hpp)
 
 add_executable(run_tests
