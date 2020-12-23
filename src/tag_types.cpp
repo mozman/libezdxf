@@ -11,11 +11,11 @@ namespace ezdxf {
             (code >= 1010 && code < 1014))
             return TagType::VERTEX;
 
-        if ((code >= 10 && code < 60) ||
-            (code >= 110 && code < 150) ||
-            (code >= 210 && code < 240) ||
+        if ((code >= 19 && code < 60) ||
+            (code >= 113 && code < 150) ||
+            (code >= 214 && code < 240) ||
             (code >= 460 && code < 470) ||
-            (code >= 1010 && code < 1060)) {
+            (code >= 1014 && code < 1060)) {
             return TagType::DECIMAL;
         }
         if ((code >= 60 && code < 80) ||
