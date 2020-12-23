@@ -27,7 +27,7 @@ ezdxf::TagType ezdxf::group_code_type(int code) {
         (code >= 440 && code < 460) ||
         (code >= 1060 && code < 1072))
         return ezdxf::TagType::INTEGER;
-    return ezdxf::TagType::STRING;
+    return ezdxf::TagType::TEXT;
 }
 
 //ezdxf::TagType gcc_only(int code) {
@@ -54,6 +54,6 @@ ezdxf::TagType ezdxf::group_code_type(int code) {
 //        case 1060 ... 1071:
 //            return ezdxf::TagType::INTEGER;
 //        default:
-//            return ezdxf::TagType::STRING;
+//            return ezdxf::TagType::TEXT;
 //    }
 //}

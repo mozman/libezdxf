@@ -17,7 +17,7 @@ namespace ezdxf {
     } GroupCode;
 
     typedef enum {
-        STRING, INTEGER, DECIMAL, VERTEX, UNDEFINED
+        TEXT, INTEGER, DECIMAL, VERTEX, UNDEFINED
     } TagType;
 
     // Place holder for ezdxf::math::Vec3
@@ -38,31 +38,38 @@ namespace ezdxf {
 
     };
 
-    class StringTag : public DXFTag {
+    class TextTag : public DXFTag {
+        // Text is stored as raw data (unencoded cp1252, utf8, ...) std::string
+        // without line endings. White spaces in front and at the end of the
+        // string are not striped, because sometimes they are important
+        // (e.g. DIMENSION text_tag), except for structure tags with group code 0,
+        // for these tags white spaces are obstructive.
     private:
         std::string s;
 
     public:
-        StringTag(const int code, std::string value) : DXFTag(code),
-                                                       s(std::move(value)) {}
+        TextTag(const int code, std::string value) : DXFTag(code),
+                                                     s(std::move(value)) {}
 
         [[nodiscard]] std::string str() const {
             return s;
         }
 
         [[nodiscard]] TagType type() const override {
-            return TagType::STRING;
+            return TagType::TEXT;
         }
     };
 
     class IntegerTag : public DXFTag {
+        // Integer value is stored as signed 64-bit value.
     private:
-        long i;
-    public:
-        IntegerTag(const int code, const long value) : DXFTag(code),
-                                                       i(value) {}
+        long long i;
 
-        [[nodiscard]] int integer() const {
+    public:
+        IntegerTag(const int code, const long long value) : DXFTag(code),
+                                                            i(value) {}
+
+        [[nodiscard]] long long int64() const {
             return i;
         }
 
@@ -72,6 +79,7 @@ namespace ezdxf {
     };
 
     class DecimalTag : public DXFTag {
+        // Decimal value is stored as 64-bit double value.
     private:
         const double d;
 
@@ -89,6 +97,7 @@ namespace ezdxf {
     };
 
     class VertexTag : public DXFTag {
+        // Vertex axis are stored as 64-bit double values.
     private:
         double x, y, z;
 

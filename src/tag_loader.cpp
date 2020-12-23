@@ -6,18 +6,18 @@
 #include "tag_loader.hpp"
 
 ezdxf::TagLoader::TagLoader(const std::string &filename) {
-    // How to open a text stream?
+    // How to open a text_tag stream?
     current = load_next();
 }
 
-ezdxf::StringTag ezdxf::TagLoader::take() {
+ezdxf::TextTag ezdxf::TagLoader::take() {
     // Returns the current tag and loads the next tag from stream.
     auto value = current;
     current = load_next();
     return value;
 }
 
-ezdxf::StringTag ezdxf::TagLoader::load_next() {
+ezdxf::TextTag ezdxf::TagLoader::load_next() {
     // How to read int and string from a stream?
 
     int code = ezdxf::GroupCode::COMMENT;
@@ -29,33 +29,34 @@ ezdxf::StringTag ezdxf::TagLoader::load_next() {
         // if (end of stream) { code = -1; value = "EOF"; }
         value = "Content";  // stream.readline();
     }
-    return ezdxf::StringTag(code, value);
-    // if stream is empty return StringTag(-1, "")
+    return ezdxf::TextTag(code, value);
+    // if stream is empty return TextTag(-1, "")
 }
 
 ezdxf::TagType ezdxf::TagCompiler::current_type() const {
     return group_code_type(current.group_code());
 }
 
-ezdxf::StringTag ezdxf::TagCompiler::expect_string() {
-    // Returns next tag as StringTag.
-    StringTag tag = current;
+ezdxf::TextTag ezdxf::TagCompiler::text_tag() {
+    // Returns next tag as TextTag.
+    TextTag tag = current;
     load_next_tag();
     return tag;
 }
 
-ezdxf::IntegerTag ezdxf::TagCompiler::expect_integer() {
-    // Returns next tag as IntegerTag or aa error tag with group code < 0.
+ezdxf::IntegerTag ezdxf::TagCompiler::integer_tag() {
+    // Returns next tag as IntegerTag or an error tag with group code < 0.
     if (current_type() == ezdxf::TagType::INTEGER) {
         // Error handling: ProE stores integers as doubles!
-        ezdxf::IntegerTag ret{current.group_code(), std::stol(current.str())};
+        ezdxf::IntegerTag ret{current.group_code(),
+                              std::stoll(current.str())};
         load_next_tag();
         return ret;
     }
     return ezdxf::IntegerTag(-1, 0);  // error tag
 }
 
-ezdxf::DecimalTag ezdxf::TagCompiler::expect_double() {
+ezdxf::DecimalTag ezdxf::TagCompiler::decimal_tag() {
     // Returns next tag as DecimalTag or an error tag with group code < 0.
     if (current_type() == ezdxf::TagType::DECIMAL) {
         ezdxf::DecimalTag ret{current.group_code(), stod(current.str())};
@@ -65,7 +66,7 @@ ezdxf::DecimalTag ezdxf::TagCompiler::expect_double() {
     return ezdxf::DecimalTag(-1, 0.0);  // error tag
 }
 
-ezdxf::VertexTag ezdxf::TagCompiler::expect_vertex() {
+ezdxf::VertexTag ezdxf::TagCompiler::vertex_tag() {
     // Returns next tag as VertexTag or an error tag with group code < 0.
     double x = 0.0, y = 0.0, z = 0.0;
     if (current_type() == ezdxf::TagType::VERTEX) {

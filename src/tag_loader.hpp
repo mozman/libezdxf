@@ -11,15 +11,15 @@ namespace ezdxf {
 
     class TagLoader {
     private:
-        StringTag current {0, ""};
-        StringTag load_next();
+        TextTag current {0, ""};
+        TextTag load_next();
 
     public:
         explicit TagLoader(const std::string&);
-        [[nodiscard]] const StringTag& peek() const {
+        [[nodiscard]] const TextTag& peek() const {
             return current;
         };
-        StringTag take();
+        TextTag take();
         [[nodiscard]] bool is_empty() const {
             return current.group_code() < 0;
         }
@@ -33,7 +33,7 @@ namespace ezdxf {
     class TagCompiler {
     private:
         TagLoader& loader;
-        StringTag current {0, ""};
+        TextTag current {0, ""};
 
         void load_next_tag() {
             current = loader.take();
@@ -47,10 +47,10 @@ namespace ezdxf {
         [[nodiscard]] bool is_empty() const {
             return ezdxf::is_error_tag(current);
         };
-        StringTag expect_string();
-        IntegerTag expect_integer();
-        DecimalTag expect_double();
-        VertexTag expect_vertex();
+        TextTag text_tag();
+        IntegerTag integer_tag();
+        DecimalTag decimal_tag();
+        VertexTag vertex_tag();
     };
 }
 

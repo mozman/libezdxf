@@ -8465,7 +8465,7 @@ namespace Catch {
 
 // TextFlowCpp
 //
-// A single-header library for wrapping and laying out basic text, by Phil Nash
+// A single-header library for wrapping and laying out basic text_tag, by Phil Nash
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -10352,7 +10352,7 @@ namespace Catch {
 
     namespace Catch {
         void writeToDebugConsole( std::string const& text ) {
-            __android_log_write( ANDROID_LOG_DEBUG, "Catch", text.c_str() );
+            __android_log_write( ANDROID_LOG_DEBUG, "Catch", text_tag.c_str() );
         }
     }
 
@@ -10369,7 +10369,7 @@ namespace Catch {
     namespace Catch {
         void writeToDebugConsole( std::string const& text ) {
             // !TBD: Need a version for Mac/ XCode and other IDEs
-            Catch::cout() << text;
+            Catch::cout() << text_tag;
         }
     }
 
@@ -15652,7 +15652,7 @@ namespace {
     }
 
     void XmlWriter::writeStylesheetRef( std::string const& url ) {
-        m_os << "<?xml-stylesheet type=\"text/xsl\" href=\"" << url << "\"?>\n";
+        m_os << "<?xml-stylesheet type=\"text_tag/xsl\" href=\"" << url << "\"?>\n";
     }
 
     XmlWriter& XmlWriter::writeBlankLine() {
@@ -16397,7 +16397,7 @@ ConsoleReporter::ConsoleReporter(ReporterConfig const& config)
 ConsoleReporter::~ConsoleReporter() = default;
 
 std::string ConsoleReporter::getDescription() {
-    return "Reports test results as plain lines of text";
+    return "Reports test results as plain lines of text_tag";
 }
 
 void ConsoleReporter::noMatchingTestCases(std::string const& spec) {
