@@ -1,15 +1,14 @@
 // Copyright (c) 2020, Manfred Moitzi
 // License: MIT License
 //
+#include <iostream>
 #include <unordered_map>
 #include "tag_types.hpp"
 
 namespace ezdxf {
-    static auto group_code_cache = std::unordered_map<int, TagType>(); // NOLINT(cert-err58-cpp)
-
     TagType group_code_type(int code) {
-        auto it = group_code_cache.find(code);
-        if (it != group_code_cache.end()) {
+        static auto cache = std::unordered_map<int, TagType>();
+        if (auto it = cache.find(code); it != cache.end()) {
             return it->second;
         }
         TagType tag_type = TagType::TEXT; // default value
@@ -35,7 +34,7 @@ namespace ezdxf {
                    (code >= 1060 && code < 1072)) {
             tag_type = TagType::INTEGER;
         }
-        group_code_cache.insert({code, tag_type});
+        cache.insert({code, tag_type});
         return tag_type;
     }
 }
