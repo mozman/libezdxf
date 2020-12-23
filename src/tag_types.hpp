@@ -1,8 +1,8 @@
 // Copyright (c) 2020, Manfred Moitzi
 // License: MIT License
 //
-#ifndef LIBEZDXF_TAG_TYPES_HPP
-#define LIBEZDXF_TAG_TYPES_HPP
+#ifndef EZDXF_TAG_TYPES_HPP
+#define EZDXF_TAG_TYPES_HPP
 
 #include <vector>
 #include "types.hpp"
@@ -139,4 +139,4 @@ namespace ezdxf {
     };
 }
 
-#endif //LIBEZDXF_TAG_TYPES_HPP
+#endif //EZDXF_TAG_TYPES_HPP

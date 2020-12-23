@@ -10,8 +10,8 @@ namespace ezdxf {
         TagType cache[GROUP_CODE_COUNT]{};
     public:
         TagTypeCache() {
-            for (auto &code : cache) {
-                code = TagType::UNDEFINED;
+            for (auto &tag_type : cache) {
+                tag_type = TagType::UNDEFINED;
             }
         }
 
