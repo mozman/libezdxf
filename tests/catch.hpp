@@ -4215,10 +4215,10 @@ namespace Generators {
         bool next() override {
             // There are 2 basic cases:
             // 1) We are still reading the generator
-            // 2) We are reading our own cache
+            // 2) We are reading our own group_code_cache
 
             // In the first case, we need to poke the underlying generator.
-            // If it happily moves, we are left in that state, otherwise it is time to start reading from our cache
+            // If it happily moves, we are left in that state, otherwise it is time to start reading from our group_code_cache
             if (m_current_repeat == 0) {
                 const auto success = m_generator.next();
                 if (!success) {

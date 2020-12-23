@@ -2,10 +2,15 @@
 // License: MIT License
 //
 #include "catch.hpp"
-#include "ezdxf.hpp"
+#include "tag_types.hpp"
 
 TEST_CASE("Check group codes of type TEXT.", "[tag_types]") {
     int code = GENERATE(0, 8, 100, 1000);
+    REQUIRE(ezdxf::group_code_type(code) == ezdxf::TagType::TEXT);
+}
+
+TEST_CASE("Check cached group codes", "[tag_types]") {
+    int code = GENERATE(0, 0, 0, 8, 8, 8);
     REQUIRE(ezdxf::group_code_type(code) == ezdxf::TagType::TEXT);
 }
 
