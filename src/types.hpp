@@ -8,8 +8,6 @@
 #include <tuple>
 
 namespace ezdxf {
-    typedef long long Int64;
-    typedef unsigned long long UInt64;
     typedef double Decimal;
     typedef std::string String;
     // Place holder for ezdxf::math::Vec3

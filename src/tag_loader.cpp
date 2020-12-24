@@ -10,7 +10,7 @@ namespace ezdxf {
         return stod(s);
     }
 
-    Int64 safe_str_to_int64(const String &s) {
+    int64_t safe_str_to_int64(const String &s) {
         // TODO: Should return an int64 for every possible input string!
         // e.g. ProE stores some int64 as floating point values!
         return stoll(s);

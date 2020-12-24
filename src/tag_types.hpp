@@ -57,13 +57,13 @@ namespace ezdxf {
     class IntegerTag : public DXFTag {
         // Integer value is stored as signed 64-bit value.
     private:
-        Int64 i;
+        int64_t i;
 
     public:
-        IntegerTag(const short code, const Int64 value) : DXFTag(code),
-                                                          i(value) {}
+        IntegerTag(const short code, const int64_t value) : DXFTag(code),
+                                                            i(value) {}
 
-        [[nodiscard]] Int64 int64() const {
+        [[nodiscard]] int64_t int64() const {
             return i;
         }
 
