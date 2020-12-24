@@ -9,6 +9,7 @@
 
 namespace ezdxf {
     typedef enum {
+        ERROR = -1,
         STRUCTURE = 0,
         COMMENT = 999,
     } GroupCode;
@@ -19,7 +20,7 @@ namespace ezdxf {
 
     class DXFTag {
     private:
-        short code = -1;  // error tag
+        short code = GroupCode::ERROR;
 
     public:
         explicit DXFTag(const short code) : code(code) {}

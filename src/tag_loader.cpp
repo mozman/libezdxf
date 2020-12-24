@@ -64,7 +64,7 @@ namespace ezdxf {
             load_next_tag();
             return ret;
         }
-        return IntegerTag(-1, 0);  // error tag
+        return IntegerTag(GroupCode::ERROR, 0);  // error tag
     }
 
     DecimalTag TagCompiler::decimal_tag() {
@@ -75,7 +75,7 @@ namespace ezdxf {
             load_next_tag();
             return ret;
         }
-        return DecimalTag(-1, 0.0);  // error tag
+        return DecimalTag(GroupCode::ERROR, 0.0);  // error tag
     }
 
     VertexTag TagCompiler::vertex_tag() {
@@ -100,6 +100,6 @@ namespace ezdxf {
 
             }
         }
-        return VertexTag(-1, x, y, z);  // error tag
+        return VertexTag(GroupCode::ERROR, x, y, z);  // error tag
     }
 }
