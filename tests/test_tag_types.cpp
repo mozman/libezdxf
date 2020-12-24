@@ -2,15 +2,10 @@
 // License: MIT License
 //
 #include "catch.hpp"
-#include "tag_types.hpp"
+#include "tag_types.cpp" // test local defined objects
 
 TEST_CASE("Check group codes of type TEXT.", "[tag_types]") {
     int code = GENERATE(0, 8, 100, 1000);
-    REQUIRE(ezdxf::group_code_type(code) == ezdxf::TagType::TEXT);
-}
-
-TEST_CASE("Check cached group codes", "[tag_types]") {
-    int code = GENERATE(0, 0, 0, 8, 8, 8);
     REQUIRE(ezdxf::group_code_type(code) == ezdxf::TagType::TEXT);
 }
 
@@ -40,5 +35,35 @@ TEST_CASE("Check vertex group codes.", "[tag_types]") {
         // restructure files with unordered vertex axis.
         int code = GENERATE(20, 30, 220, 230, 1020, 1030);
         REQUIRE(ezdxf::group_code_type(code) == ezdxf::TagType::DECIMAL);
+    }
+}
+
+TEST_CASE("Test TagTypeCache", "[tag_types]") {
+    auto cache = ezdxf::TagTypeCache();
+
+    SECTION("Test if new cache is empty.") {
+        for (int code = 0; code < GROUP_CODE_COUNT; code++) {
+            REQUIRE(cache.get(code) == ezdxf::TagType::UNDEFINED);
+        }
+    }
+    // Fill cache with some data:
+    cache.set(0, ezdxf::TagType::TEXT);
+    cache.set(8, ezdxf::TagType::TEXT);
+    cache.set(10, ezdxf::TagType::VERTEX);
+
+    SECTION("Test cache hit.") {
+        REQUIRE(cache.get(0) == ezdxf::TagType::TEXT);
+        REQUIRE(cache.get(8) == ezdxf::TagType::TEXT);
+        REQUIRE(cache.get(10) == ezdxf::TagType::VERTEX);
+    }
+
+    SECTION("Test cache miss.") {
+        int code = GENERATE(1, 11, 1000);
+        REQUIRE(cache.get(code) == ezdxf::TagType::UNDEFINED);
+    }
+
+    SECTION("Test group codes out of valid range."){
+        int code = GENERATE(-1, 1072);
+        REQUIRE(cache.get(code) == ezdxf::TagType::UNDEFINED);
     }
 }
