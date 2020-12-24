@@ -9,18 +9,18 @@
 
 namespace ezdxf {
     typedef enum {
-        ERROR = -1,
-        STRUCTURE = 0,
-        COMMENT = 999,
+        kError = -1,
+        kStructure = 0,
+        kComment = 999,
     } GroupCode;
 
     typedef enum {
-        UNDEFINED = 0, TEXT, INTEGER, DECIMAL, VERTEX
+        kUndefined = 0, kText, kInteger, kDecimal, kVertex
     } TagType;
 
     class DXFTag {
     private:
-        short code = GroupCode::ERROR;
+        short code = GroupCode::kError;
 
     public:
         explicit DXFTag(const short code) : code(code) {}
@@ -28,7 +28,7 @@ namespace ezdxf {
         [[nodiscard]] short group_code() const { return code; }
 
         [[nodiscard]] virtual TagType type() const {
-            return TagType::UNDEFINED;
+            return TagType::kUndefined;
         }
 
     };
@@ -51,7 +51,7 @@ namespace ezdxf {
         }
 
         [[nodiscard]] TagType type() const override {
-            return TagType::TEXT;
+            return TagType::kText;
         }
     };
 
@@ -69,7 +69,7 @@ namespace ezdxf {
         }
 
         [[nodiscard]] TagType type() const override {
-            return TagType::INTEGER;
+            return TagType::kInteger;
         }
     };
 
@@ -87,7 +87,7 @@ namespace ezdxf {
         }
 
         [[nodiscard]] TagType type() const override {
-            return TagType::DECIMAL;
+            return TagType::kDecimal;
         };
     };
 
@@ -108,7 +108,7 @@ namespace ezdxf {
         }
 
         [[nodiscard]] TagType type() const override {
-            return TagType::VERTEX;
+            return TagType::kVertex;
         };
 
         [[nodiscard]] static bool export_z() { return true; }

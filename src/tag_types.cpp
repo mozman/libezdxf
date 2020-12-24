@@ -3,21 +3,21 @@
 //
 #include "tag_types.hpp"
 
-#define GROUP_CODE_COUNT 1072 // defined by the DXF reference
-
 namespace ezdxf {
+    const short kGroupCodeCount = 1072; // defined by the DXF reference
+
     inline bool is_group_code_in_range(const short code) {
-        return (code >= 0 && code < GROUP_CODE_COUNT);
+        return (code >= 0 && code < kGroupCodeCount);
     }
 
     class TagTypeCache {
-        TagType cache[GROUP_CODE_COUNT]{};  // init with 0 == TagType::UNDEFINED
+        TagType cache[kGroupCodeCount]{};  // init with 0 == TagType::kUndefined
     public:
         TagTypeCache() = default;
 
         TagType get(const short code) {
             return is_group_code_in_range(code) ? cache[code]
-                                                : TagType::UNDEFINED;
+                                                : TagType::kUndefined;
         }
 
         void set(const short code, const TagType tag_type) {
@@ -30,23 +30,23 @@ namespace ezdxf {
     TagType group_code_type(const short code) {
         static auto cache = TagTypeCache();
         if (!is_group_code_in_range(code)) {
-            return TagType::UNDEFINED;
+            return TagType::kUndefined;
         }
-        if (auto tag_type = cache.get(code); tag_type != TagType::UNDEFINED) {
+        if (auto tag_type = cache.get(code); tag_type != TagType::kUndefined) {
             return tag_type;
         }
-        TagType tag_type = TagType::TEXT; // default value
+        TagType tag_type = TagType::kText; // default value
         if ((code >= 10 && code < 19) ||
             (code >= 110 && code < 113) ||
             (code >= 210 && code < 214) ||
             (code >= 1010 && code < 1014)) {
-            tag_type = TagType::VERTEX;
+            tag_type = TagType::kVertex;
         } else if ((code >= 19 && code < 60) ||
                    (code >= 113 && code < 150) ||
                    (code >= 214 && code < 240) ||
                    (code >= 460 && code < 470) ||
                    (code >= 1014 && code < 1060)) {
-            tag_type = TagType::DECIMAL;
+            tag_type = TagType::kDecimal;
         } else if ((code >= 60 && code < 80) ||
                    (code >= 90 && code < 100) ||
                    (code >= 160 && code < 180) ||
@@ -56,7 +56,7 @@ namespace ezdxf {
                    (code >= 420 && code < 430) ||
                    (code >= 440 && code < 460) ||
                    (code >= 1060 && code < 1072)) {
-            tag_type = TagType::INTEGER;
+            tag_type = TagType::kInteger;
         }
         cache.set(code, tag_type);
         return tag_type;

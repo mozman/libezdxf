@@ -31,10 +31,10 @@ namespace ezdxf {
     TextTag TagLoader::load_next() {
         // How to read int and string from a stream?
 
-        short code = GroupCode::COMMENT;
+        short code = GroupCode::kComment;
         String value = "Content";
 
-        while (code == GroupCode::COMMENT) {
+        while (code == GroupCode::kComment) {
             code = 0;  // stream.readline();
             // How to check if the end of the stream is reached?
             // if (end of stream) { code = -1; value = "EOF"; }
@@ -57,31 +57,31 @@ namespace ezdxf {
 
     IntegerTag TagCompiler::integer_tag() {
         // Returns next tag as IntegerTag or an error tag with group code < 0.
-        if (current_type() == TagType::INTEGER) {
+        if (current_type() == TagType::kInteger) {
 
             IntegerTag ret{current.group_code(),
                            safe_str_to_int64(current.str())};
             load_next_tag();
             return ret;
         }
-        return IntegerTag(GroupCode::ERROR, 0);  // error tag
+        return IntegerTag(GroupCode::kError, 0);  // error tag
     }
 
     DecimalTag TagCompiler::decimal_tag() {
         // Returns next tag as DecimalTag or an error tag with group code < 0.
-        if (current_type() == TagType::DECIMAL) {
+        if (current_type() == TagType::kDecimal) {
             DecimalTag ret{current.group_code(),
                            safe_str_to_decimal(current.str())};
             load_next_tag();
             return ret;
         }
-        return DecimalTag(GroupCode::ERROR, 0.0);  // error tag
+        return DecimalTag(GroupCode::kError, 0.0);  // error tag
     }
 
     VertexTag TagCompiler::vertex_tag() {
         // Returns next tag as VertexTag or an error tag with group code < 0.
         double x = 0.0, y = 0.0, z = 0.0;
-        if (current_type() == TagType::VERTEX) {
+        if (current_type() == TagType::kVertex) {
             short code = current.group_code();
             x = safe_str_to_decimal(current.str());
             load_next_tag();
@@ -100,6 +100,6 @@ namespace ezdxf {
 
             }
         }
-        return VertexTag(GroupCode::ERROR, x, y, z);  // error tag
+        return VertexTag(GroupCode::kError, x, y, z);  // error tag
     }
 }
