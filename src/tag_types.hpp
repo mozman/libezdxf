@@ -14,7 +14,7 @@ namespace ezdxf {
     } GroupCode;
 
     typedef enum {
-        TEXT, INTEGER, DECIMAL, VERTEX, UNDEFINED
+        UNDEFINED=0, TEXT, INTEGER, DECIMAL, VERTEX
     } TagType;
 
     class DXFTag {
@@ -110,7 +110,7 @@ namespace ezdxf {
             return TagType::VERTEX;
         };
 
-        [[nodiscard]] static bool export_z_axis() { return true; }
+        [[nodiscard]] static bool export_z() { return true; }
     };
 
     // Special class for 2D only vertices is required for a generic DXF tag
@@ -124,7 +124,7 @@ namespace ezdxf {
                    const Decimal y) :
                 VertexTag(code, x, y, 0.0) {};
 
-        [[nodiscard]] static bool export_z_axis() { return false; }
+        [[nodiscard]] static bool export_z() { return false; }
     };
 
     inline bool is_error_tag(const DXFTag &tag) {

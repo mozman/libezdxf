@@ -7,15 +7,11 @@
 
 namespace ezdxf {
     class TagTypeCache {
-        TagType cache[GROUP_CODE_COUNT]{};
+        TagType cache[GROUP_CODE_COUNT]{};  // init with 0 == TagType::UNDEFINED
     public:
-        TagTypeCache() {
-            for (auto &tag_type : cache) {
-                tag_type = TagType::UNDEFINED;
-            }
-        }
+        TagTypeCache() = default;
 
-        TagType get(int code) {
+        TagType get(const int code) {
             if (code >= 0 && code < GROUP_CODE_COUNT) {
                 return cache[code];
             } else {
@@ -23,14 +19,14 @@ namespace ezdxf {
             }
         }
 
-        void set(int code, TagType t) {
+        void set(const int code, const TagType tag_type) {
             if (code >= 0 && code < GROUP_CODE_COUNT) {
-                cache[code] = t;
+                cache[code] = tag_type;
             }
         }
     };
 
-    TagType group_code_type(int code) {
+    TagType group_code_type(const int code) {
         static auto cache = TagTypeCache();
         if (auto tag_type = cache.get(code); tag_type != TagType::UNDEFINED) {
             return tag_type;

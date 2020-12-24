@@ -38,6 +38,10 @@ TEST_CASE("Check vertex group codes.", "[tag_types]") {
     }
 }
 
+TEST_CASE("Test if TagType::UNDEFINED is 0", "[tag_types]") {
+    REQUIRE(ezdxf::TagType::UNDEFINED == 0);
+}
+
 TEST_CASE("Test TagTypeCache", "[tag_types]") {
     auto cache = ezdxf::TagTypeCache();
 
@@ -62,7 +66,7 @@ TEST_CASE("Test TagTypeCache", "[tag_types]") {
         REQUIRE(cache.get(code) == ezdxf::TagType::UNDEFINED);
     }
 
-    SECTION("Test group codes out of valid range."){
+    SECTION("Test if group codes out of defined range are UNDEFINED.") {
         int code = GENERATE(-1, 1072);
         REQUIRE(cache.get(code) == ezdxf::TagType::UNDEFINED);
     }
