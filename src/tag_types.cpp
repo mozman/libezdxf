@@ -6,21 +6,22 @@
 #define GROUP_CODE_COUNT 1072 // defined by the DXF reference
 
 namespace ezdxf {
+    inline bool is_group_code_in_range(const int code) {
+        return (code >= 0 && code < GROUP_CODE_COUNT);
+    }
+
     class TagTypeCache {
         TagType cache[GROUP_CODE_COUNT]{};  // init with 0 == TagType::UNDEFINED
     public:
         TagTypeCache() = default;
 
         TagType get(const int code) {
-            if (code >= 0 && code < GROUP_CODE_COUNT) {
-                return cache[code];
-            } else {
-                return TagType::UNDEFINED;
-            }
+            return is_group_code_in_range(code) ? cache[code]
+                                                : TagType::UNDEFINED;
         }
 
         void set(const int code, const TagType tag_type) {
-            if (code >= 0 && code < GROUP_CODE_COUNT) {
+            if (is_group_code_in_range(code)) {
                 cache[code] = tag_type;
             }
         }
