@@ -14,17 +14,17 @@ namespace ezdxf {
     } GroupCode;
 
     typedef enum {
-        UNDEFINED=0, TEXT, INTEGER, DECIMAL, VERTEX
+        UNDEFINED = 0, TEXT, INTEGER, DECIMAL, VERTEX
     } TagType;
 
     class DXFTag {
     private:
-        int code = -1;  // error tag
+        short code = -1;  // error tag
 
     public:
-        explicit DXFTag(const int code) : code(code) {}
+        explicit DXFTag(const short code) : code(code) {}
 
-        [[nodiscard]] int group_code() const { return code; }
+        [[nodiscard]] short group_code() const { return code; }
 
         [[nodiscard]] virtual TagType type() const {
             return TagType::UNDEFINED;
@@ -42,8 +42,8 @@ namespace ezdxf {
         String s;
 
     public:
-        TextTag(const int code, String value) : DXFTag(code),
-                                                s(std::move(value)) {}
+        TextTag(const short code, String value) : DXFTag(code),
+                                                  s(std::move(value)) {}
 
         [[nodiscard]] String str() const {
             return s;
@@ -60,8 +60,8 @@ namespace ezdxf {
         Int64 i;
 
     public:
-        IntegerTag(const int code, const Int64 value) : DXFTag(code),
-                                                        i(value) {}
+        IntegerTag(const short code, const Int64 value) : DXFTag(code),
+                                                          i(value) {}
 
         [[nodiscard]] Int64 int64() const {
             return i;
@@ -78,8 +78,8 @@ namespace ezdxf {
         const Decimal d;
 
     public:
-        DecimalTag(const int code, const Decimal value) : DXFTag(code),
-                                                          d(value) {};
+        DecimalTag(const short code, const Decimal value) : DXFTag(code),
+                                                            d(value) {};
 
         [[nodiscard]] Decimal decimal() const {
             return d;
@@ -96,7 +96,7 @@ namespace ezdxf {
         Decimal x, y, z;
 
     public:
-        VertexTag(const int code,
+        VertexTag(const short code,
                   const Decimal x,
                   const Decimal y,
                   const Decimal z) :
@@ -119,7 +119,7 @@ namespace ezdxf {
     // But otherwise it is completely the same as VertexTag.
     class Vertex2Tag : public VertexTag {
     public:
-        Vertex2Tag(const int code,
+        Vertex2Tag(const short code,
                    const Decimal x,
                    const Decimal y) :
                 VertexTag(code, x, y, 0.0) {};
@@ -131,7 +131,7 @@ namespace ezdxf {
         return tag.group_code() < 0;
     }
 
-    TagType group_code_type(int);
+    TagType group_code_type(short);
 
     class Tags {
     private:

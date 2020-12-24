@@ -31,7 +31,7 @@ namespace ezdxf {
     TextTag TagLoader::load_next() {
         // How to read int and string from a stream?
 
-        int code = GroupCode::COMMENT;
+        short code = GroupCode::COMMENT;
         String value = "Content";
 
         while (code == GroupCode::COMMENT) {
@@ -82,7 +82,7 @@ namespace ezdxf {
         // Returns next tag as VertexTag or an error tag with group code < 0.
         double x = 0.0, y = 0.0, z = 0.0;
         if (current_type() == TagType::VERTEX) {
-            int code = current.group_code();
+            short code = current.group_code();
             x = safe_str_to_decimal(current.str());
             load_next_tag();
             if (current.group_code() == code + 10) {

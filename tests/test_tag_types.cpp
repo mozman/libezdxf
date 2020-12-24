@@ -4,25 +4,25 @@
 #include "catch.hpp"
 #include "tag_types.cpp" // test local defined objects
 
-TEST_CASE("Check group codes of type TEXT.", "[tag_types]") {
-    int code = GENERATE(0, 8, 100, 1000);
+TEST_CASE("Test group codes of type TEXT.", "[tag_types]") {
+    short code = GENERATE(0, 8, 100, 1000);
     REQUIRE(ezdxf::group_code_type(code) == ezdxf::TagType::TEXT);
 }
 
-TEST_CASE("Check group codes of type INTEGER.", "[tag_types]") {
-    int code = GENERATE(60, 70, 79, 1060, 1071);
+TEST_CASE("Test group codes of type INTEGER.", "[tag_types]") {
+    short code = GENERATE(60, 70, 79, 1060, 1071);
     REQUIRE(ezdxf::group_code_type(code) == ezdxf::TagType::INTEGER);
 }
 
-TEST_CASE("Check group codes of type DECIMAL.", "[tag_types]") {
-    int code = GENERATE(40, 48, 50, 51, 1014, 1059);
+TEST_CASE("Test group codes of type DECIMAL.", "[tag_types]") {
+    short code = GENERATE(40, 48, 50, 51, 1014, 1059);
     REQUIRE(ezdxf::group_code_type(code) == ezdxf::TagType::DECIMAL);
 }
 
-TEST_CASE("Check vertex group codes.", "[tag_types]") {
+TEST_CASE("Test vertex group codes.", "[tag_types]") {
     SECTION("Vertex x-axis group code is VERTEX") {
         // A x-axis vertex tag starts the collecting process of 2 or 3 vertex axis.
-        int code = GENERATE(10, 18, 210, 1010, 1013);
+        short code = GENERATE(10, 18, 210, 1010, 1013);
         REQUIRE(ezdxf::group_code_type(code) == ezdxf::TagType::VERTEX);
     }
 
@@ -33,9 +33,16 @@ TEST_CASE("Check vertex group codes.", "[tag_types]") {
         // DXF related tools write vertices in xyz order!
         // The Python version of ezdxf has a recover mode which can read and
         // restructure files with unordered vertex axis.
-        int code = GENERATE(20, 30, 220, 230, 1020, 1030);
+        short code = GENERATE(20, 30, 220, 230, 1020, 1030);
         REQUIRE(ezdxf::group_code_type(code) == ezdxf::TagType::DECIMAL);
     }
+}
+
+TEST_CASE("Test group codes out of defined range are UNDEFINED.",
+          "[tag_types]") {
+    short code = GENERATE(-1, 1072);
+    REQUIRE(ezdxf::group_code_type(code) == ezdxf::TagType::UNDEFINED);
+
 }
 
 TEST_CASE("Test if TagType::UNDEFINED is 0", "[tag_types]") {
@@ -46,7 +53,7 @@ TEST_CASE("Test TagTypeCache", "[tag_types]") {
     auto cache = ezdxf::TagTypeCache();
 
     SECTION("Test if new cache is empty.") {
-        for (int code = 0; code < GROUP_CODE_COUNT; code++) {
+        for (short code = 0; code < GROUP_CODE_COUNT; code++) {
             REQUIRE(cache.get(code) == ezdxf::TagType::UNDEFINED);
         }
     }
@@ -62,12 +69,12 @@ TEST_CASE("Test TagTypeCache", "[tag_types]") {
     }
 
     SECTION("Test cache miss.") {
-        int code = GENERATE(1, 11, 1000);
+        short code = GENERATE(1, 11, 1000);
         REQUIRE(cache.get(code) == ezdxf::TagType::UNDEFINED);
     }
 
     SECTION("Test if group codes out of defined range are UNDEFINED.") {
-        int code = GENERATE(-1, 1072);
+        short code = GENERATE(-1, 1072);
         REQUIRE(cache.get(code) == ezdxf::TagType::UNDEFINED);
     }
 }
