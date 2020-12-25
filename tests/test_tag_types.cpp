@@ -78,3 +78,83 @@ TEST_CASE("Test TagTypeCache", "[tag_types]") {
         REQUIRE(cache.get(code) == ezdxf::TagType::kUndefined);
     }
 }
+
+TEST_CASE("Test StringTag", "[tag_types]") {
+    auto tag = ezdxf::TextTag{0, "LINE"};
+    SECTION("Test get dedicated value type.") {
+        REQUIRE(tag.type() == ezdxf::TagType::kText);
+        REQUIRE(tag.group_code() == 0);
+        REQUIRE(tag.string() == "LINE");
+    }
+
+    SECTION("Test other type values are default values.") {
+        REQUIRE(tag.decimal() == 0.0);
+        REQUIRE(tag.int64() == 0);
+        REQUIRE(tag.uint64() == 0);
+        REQUIRE(tag.vec3() == ezdxf::Vec3(0.0, 0.0, 0.0));
+    }
+}
+
+TEST_CASE("Test IntegerTag", "[tag_types]") {
+    auto tag = ezdxf::IntegerTag{70, 16};
+    SECTION("Test get dedicated value type.") {
+        REQUIRE(tag.type() == ezdxf::TagType::kInteger);
+        REQUIRE(tag.group_code() == 70);
+        REQUIRE(tag.int64() == 16);
+        REQUIRE(tag.uint64() == 16);
+    }
+
+    SECTION("Test other type values are default values.") {
+        REQUIRE(tag.decimal() == 0.0);  // does not convert int to double
+        REQUIRE(tag.string().empty());
+        REQUIRE(tag.vec3() == ezdxf::Vec3(0.0, 0.0, 0.0));
+    }
+}
+
+TEST_CASE("Test DecimalTag", "[tag_types]") {
+    auto tag = ezdxf::DecimalTag{40, 1.0};
+    SECTION("Test get dedicated value type.") {
+        REQUIRE(tag.type() == ezdxf::TagType::kDecimal);
+        REQUIRE(tag.group_code() == 40);
+        REQUIRE(tag.decimal() == 1.0);
+    }
+
+    SECTION("Test other type values are default values.") {
+        REQUIRE(tag.int64() == 0);  // does not convert double to int!
+        REQUIRE(tag.uint64() == 0);  // does not convert double to int!
+        REQUIRE(tag.string().empty());
+        REQUIRE(tag.vec3() == ezdxf::Vec3(0.0, 0.0, 0.0));
+    }
+}
+
+TEST_CASE("Test VertexTag", "[tag_types]") {
+    auto tag = ezdxf::VertexTag{10, 1.0, 2.0, 3.0};
+    SECTION("Test get dedicated value type.") {
+        REQUIRE(tag.type() == ezdxf::TagType::kVertex);
+        REQUIRE(tag.group_code() == 10);
+        REQUIRE(tag.vec3() == ezdxf::Vec3(1.0, 2.0, 3.0));
+        REQUIRE(tag.export_z());
+    }
+
+    SECTION("Test other type values are default values.") {
+        REQUIRE(tag.int64() == 0);
+        REQUIRE(tag.uint64() == 0);
+        REQUIRE(tag.string().empty());
+        REQUIRE(tag.decimal() == 0.0);
+    }
+}
+
+TEST_CASE("Store different tag types in a container.", "[tag_types]") {
+    auto container = std::vector<ezdxf::DXFTag*>{};
+    container.push_back(new ezdxf::TextTag(1, "NAME"));
+    container.push_back(new ezdxf::IntegerTag(70, 7));
+    container.push_back(new ezdxf::DecimalTag(40, 13.0));
+
+    REQUIRE(container.size() == 3);
+    REQUIRE(container[0]->type() == ezdxf::TagType::kText);
+    REQUIRE(container[0]->string() == "NAME");
+    REQUIRE(container[1]->type() == ezdxf::TagType::kInteger);
+    REQUIRE(container[1]->int64() == 7);
+    REQUIRE(container[2]->type() == ezdxf::TagType::kDecimal);
+    REQUIRE(container[2]->decimal() == 13.0);
+}

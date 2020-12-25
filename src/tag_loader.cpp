@@ -60,7 +60,7 @@ namespace ezdxf {
         if (current_type() == TagType::kInteger) {
 
             IntegerTag ret{current.group_code(),
-                           safe_str_to_int64(current.str())};
+                           safe_str_to_int64(current.string())};
             load_next_tag();
             return ret;
         }
@@ -71,7 +71,7 @@ namespace ezdxf {
         // Returns next tag as DecimalTag or an error tag with group code < 0.
         if (current_type() == TagType::kDecimal) {
             DecimalTag ret{current.group_code(),
-                           safe_str_to_decimal(current.str())};
+                           safe_str_to_decimal(current.string())};
             load_next_tag();
             return ret;
         }
@@ -83,13 +83,13 @@ namespace ezdxf {
         double x = 0.0, y = 0.0, z = 0.0;
         if (current_type() == TagType::kVertex) {
             short code = current.group_code();
-            x = safe_str_to_decimal(current.str());
+            x = safe_str_to_decimal(current.string());
             load_next_tag();
             if (current.group_code() == code + 10) {
-                y = safe_str_to_decimal(current.str());
+                y = safe_str_to_decimal(current.string());
                 load_next_tag();
                 if (current.group_code() == code + 20) {
-                    z = safe_str_to_decimal(current.str());
+                    z = safe_str_to_decimal(current.string());
                     load_next_tag();
                     return VertexTag(code, x, y, z);
                 } else {

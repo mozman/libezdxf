@@ -31,6 +31,25 @@ namespace ezdxf {
             return TagType::kUndefined;
         }
 
+        [[nodiscard]] virtual String string() const {
+            return "";
+        }
+
+        [[nodiscard]] virtual int64_t int64() const {
+            return 0;
+        }
+
+        [[nodiscard]] virtual uint64_t uint64() const {
+            return 0;
+        }
+
+        [[nodiscard]] virtual Decimal decimal() const {
+            return 0.0;
+        }
+
+        [[nodiscard]] virtual Vec3 vec3() const {
+            return Vec3(0.0, 0.0, 0.0);
+        }
     };
 
     class TextTag : public DXFTag {
@@ -46,7 +65,7 @@ namespace ezdxf {
         TextTag(const short code, String value) : DXFTag(code),
                                                   s(std::move(value)) {}
 
-        [[nodiscard]] String str() const {
+        [[nodiscard]] String string() const override {
             return s;
         }
 
@@ -64,7 +83,11 @@ namespace ezdxf {
         IntegerTag(const short code, const int64_t value) : DXFTag(code),
                                                             i(value) {}
 
-        [[nodiscard]] int64_t int64() const {
+        [[nodiscard]] int64_t int64() const override {
+            return i;
+        }
+
+        [[nodiscard]] uint64_t uint64() const override {
             return i;
         }
 
@@ -82,7 +105,7 @@ namespace ezdxf {
         DecimalTag(const short code, const Decimal value) : DXFTag(code),
                                                             d(value) {};
 
-        [[nodiscard]] Decimal decimal() const {
+        [[nodiscard]] Decimal decimal() const override{
             return d;
         }
 
@@ -103,7 +126,7 @@ namespace ezdxf {
                   const Decimal z) :
                 DXFTag(code), x(x), y(y), z(z) {};
 
-        [[nodiscard]] Vec3 vec3() const {
+        [[nodiscard]] Vec3 vec3() const override{
             return Vec3(x, y, z);
         }
 
