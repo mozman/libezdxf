@@ -26,7 +26,7 @@
 #ifndef EZDXF_TAG_ALLOCATOR_HPP
 #define EZDXF_TAG_ALLOCATOR_HPP
 
-#include "tag_allocator.hpp"
+#include <ezdxf/tag_allocator.hpp>
 
 namespace ezdxf {
 

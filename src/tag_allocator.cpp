@@ -2,7 +2,7 @@
 // License: MIT License
 //
 
-#include "tag_allocator.hpp"
+#include <ezdxf/tag_allocator.hpp>
 
 namespace ezdxf {
     DXFTagAllocator dxf_tag_allocator() {

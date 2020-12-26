@@ -1,8 +1,8 @@
 // Copyright (c) 2020, Manfred Moitzi
 // License: MIT License
 //
-#include "tag_types.hpp"
-#include "tag_loader.hpp"
+#include <ezdxf/tag_types.hpp>
+#include <ezdxf/tag_loader.hpp>
 
 namespace ezdxf {
     Decimal safe_str_to_decimal(const String &s) {

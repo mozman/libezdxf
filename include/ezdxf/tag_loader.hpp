@@ -4,7 +4,7 @@
 #ifndef EZDXF_CPP_TAG_LOADER_HPP
 #define EZDXF_CPP_TAG_LOADER_HPP
 
-#include "tag_types.hpp"
+#include <ezdxf/tag_types.hpp>
 
 namespace ezdxf {
 
@@ -44,7 +44,7 @@ namespace ezdxf {
         };
         [[nodiscard]] TagType current_type() const;
         [[nodiscard]] bool is_empty() const {
-            return ezdxf::is_error_tag(current);
+            return current.is_error_tag();
         };
         TextTag text_tag();
         IntegerTag integer_tag();

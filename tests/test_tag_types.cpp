@@ -2,7 +2,7 @@
 // License: MIT License
 //
 #include "catch.hpp"
-#include "tag_types.cpp" // test local defined objects
+#include "../src/tag_types.cpp" // test local defined objects
 
 TEST_CASE("Test group codes of type kText.", "[tag_types]") {
     short code = GENERATE(0, 8, 100, 1000);
@@ -141,7 +141,7 @@ TEST_CASE("Test VertexTag", "[tag_types]") {
 }
 
 TEST_CASE("Store different tag types in a container.", "[tag_types]") {
-    auto container = std::vector<ezdxf::DXFTag*>{};
+    auto container = std::vector<ezdxf::DXFTag *>{};
     container.push_back(new ezdxf::TextTag(1, "NAME"));
     container.push_back(new ezdxf::IntegerTag(70, 7));
     container.push_back(new ezdxf::DecimalTag(40, 13.0));

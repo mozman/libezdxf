@@ -5,7 +5,7 @@
 #define EZDXF_TAG_TYPES_HPP
 
 #include <vector>
-#include "types.hpp"
+#include <ezdxf/types.hpp>
 
 namespace ezdxf {
     typedef enum {

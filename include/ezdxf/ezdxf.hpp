@@ -6,7 +6,7 @@
 
 #include <string>
 #include <utility>
-#include "tag_loader.hpp"
+#include <ezdxf/tag_loader.hpp>
 
 namespace ezdxf {
     class Document {
