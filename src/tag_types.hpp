@@ -31,15 +31,15 @@ namespace ezdxf {
             return TagType::kUndefined;
         }
 
+        [[nodiscard]] inline bool is_error_tag() const {
+            return code == GroupCode::kError;
+        }
+
         [[nodiscard]] virtual String string() const {
             return "";
         }
 
         [[nodiscard]] virtual int64_t int64() const {
-            return 0;
-        }
-
-        [[nodiscard]] virtual uint64_t uint64() const {
             return 0;
         }
 
@@ -84,10 +84,6 @@ namespace ezdxf {
                                                             i(value) {}
 
         [[nodiscard]] int64_t int64() const override {
-            return i;
-        }
-
-        [[nodiscard]] uint64_t uint64() const override {
             return i;
         }
 
@@ -150,10 +146,6 @@ namespace ezdxf {
 
         [[nodiscard]] static bool export_z() { return false; }
     };
-
-    inline bool is_error_tag(const DXFTag &tag) {
-        return tag.group_code() < 0;
-    }
 
     TagType group_code_type(short);
 

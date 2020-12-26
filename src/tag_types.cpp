@@ -11,7 +11,7 @@ namespace ezdxf {
     }
 
     class TagTypeCache {
-        TagType cache[kGroupCodeCount]{};  // init with 0 == TagType::kUndefined
+        TagType cache[kGroupCodeCount]{}; // init with 0 == TagType::kUndefined
     public:
         TagTypeCache() = default;
 

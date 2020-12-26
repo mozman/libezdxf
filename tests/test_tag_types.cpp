@@ -90,7 +90,6 @@ TEST_CASE("Test StringTag", "[tag_types]") {
     SECTION("Test other type values are default values.") {
         REQUIRE(tag.decimal() == 0.0);
         REQUIRE(tag.int64() == 0);
-        REQUIRE(tag.uint64() == 0);
         REQUIRE(tag.vec3() == ezdxf::Vec3(0.0, 0.0, 0.0));
     }
 }
@@ -101,7 +100,6 @@ TEST_CASE("Test IntegerTag", "[tag_types]") {
         REQUIRE(tag.type() == ezdxf::TagType::kInteger);
         REQUIRE(tag.group_code() == 70);
         REQUIRE(tag.int64() == 16);
-        REQUIRE(tag.uint64() == 16);
     }
 
     SECTION("Test other type values are default values.") {
@@ -121,7 +119,6 @@ TEST_CASE("Test DecimalTag", "[tag_types]") {
 
     SECTION("Test other type values are default values.") {
         REQUIRE(tag.int64() == 0);  // does not convert double to int!
-        REQUIRE(tag.uint64() == 0);  // does not convert double to int!
         REQUIRE(tag.string().empty());
         REQUIRE(tag.vec3() == ezdxf::Vec3(0.0, 0.0, 0.0));
     }
@@ -138,7 +135,6 @@ TEST_CASE("Test VertexTag", "[tag_types]") {
 
     SECTION("Test other type values are default values.") {
         REQUIRE(tag.int64() == 0);
-        REQUIRE(tag.uint64() == 0);
         REQUIRE(tag.string().empty());
         REQUIRE(tag.decimal() == 0.0);
     }
