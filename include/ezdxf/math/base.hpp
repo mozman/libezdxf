@@ -9,6 +9,11 @@
 namespace ezdxf::math {
     const double kAbsTol = 1e-12;
     const double kRelTol = 1e-9;
+    const double kPi = 3.141592653589793;
+    const double kPi2 = kPi / 2.0;
+    const double kTau = kPi * 2.0;
+    const double kRad2Deg = 180.0 / kPi;
+    const double kDeg2Rad = kPi / 180.0;
 
     inline bool is_close(const double &a,
                          const double &b,

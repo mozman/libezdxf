@@ -4,7 +4,6 @@
 #include "catch.hpp"
 #include <ezdxf/math/vec3.hpp>
 #include <vector>
-#include <iostream>
 
 using ezdxf::math::Vec3;
 
@@ -152,5 +151,79 @@ TEST_CASE("Test math operators", "[math][vec3]") {
         REQUIRE(v1 * 2 == Vec3{2, 4, 6});
         REQUIRE(2 * v1 == Vec3{2, 4, 6});
         REQUIRE(v1 * 0 == Vec3{});
+    }
+
+}
+
+TEST_CASE("Test member functions", "[math][vec3]") {
+    SECTION("Test from_radians()") {
+        REQUIRE(Vec3::from_radians(0) == Vec3{1, 0, 0});
+        REQUIRE(Vec3::from_radians(ezdxf::math::kDeg2Rad * 45.0) ==
+                Vec3{0.7071067811865476, 0.7071067811865476, 0.0});
+    }
+
+    SECTION("Test from_radians() with scaling") {
+        REQUIRE(Vec3::from_radians(0, 5) == Vec3{5, 0, 0});
+        REQUIRE(Vec3::from_radians(ezdxf::math::kPi2, 3) == Vec3{0, 3, 0});
+    }
+
+    SECTION("Test magnitude2()") {
+        REQUIRE(Vec3{2, 0, 0}.magnitude2() == 4.0);
+        REQUIRE(Vec3{2, 2, 0}.magnitude2() == 8.0);
+        REQUIRE(Vec3{2, 2, 2}.magnitude2() == 12.0);
+    }
+
+    SECTION("Test magnitude()") {
+        REQUIRE(Vec3{2, 0, 0}.magnitude() == 2.0);
+        REQUIRE(Vec3{0, 2, 0}.magnitude() == 2.0);
+        REQUIRE(Vec3{0, 0, 2}.magnitude() == 2.0);
+        REQUIRE(Vec3{3, 4, 5}.magnitude() == 7.0710678118654755);
+        REQUIRE(Vec3{3, 4, 5}.magnitude() == Vec3{-3, -4, -5}.magnitude());
+    }
+
+    SECTION("Test normalize()") {
+        REQUIRE(Vec3{2, 0, 0}.normalize() == Vec3{1, 0, 0});
+        REQUIRE(Vec3{0, 3, 0}.normalize() == Vec3{0, 1, 0});
+        REQUIRE(Vec3{0, 0, -5}.normalize() == Vec3{0, 0, -1});
+    }
+
+    SECTION("Test normalize() with scaling") {
+        REQUIRE(Vec3{2, 0, 0}.normalize(3) == Vec3{3, 0, 0});
+        REQUIRE(Vec3{0, 3, 0}.normalize(3) == Vec3{0, 3, 0});
+        REQUIRE(Vec3{0, 0, -5}.normalize(3) == Vec3{0, 0, -3});
+    }
+
+    SECTION("Test dot() product") {
+        auto v1 = Vec3{2, 7, 1};
+        auto v2 = Vec3{3, 9, 8};
+        REQUIRE(v1.dot(v2) == 77);
+    }
+
+    SECTION("Test cross() product") {
+        auto v1 = Vec3{2, 7, 9};
+        auto v2 = Vec3{3, 9, 1};
+        REQUIRE(v1.cross(v2) == Vec3{-74, 25, -3});
+    }
+
+    SECTION("Test linear interpolation lerp()") {
+        auto v1 = Vec3{1, 1, 1};
+        auto v2 = Vec3{3, 3, 3};
+        REQUIRE(v1.lerp(v2, 0.5) == Vec3{2, 2, 2});
+        REQUIRE(v1.lerp(v2, 0.25) == Vec3{1.5, 1.5, 1.5});
+        REQUIRE(v1.lerp(v2, 0) == v1);
+        REQUIRE(v1.lerp(v2, 1) == v2);
+    }
+
+    SECTION("Test distance()") {
+        auto v1 = Vec3{};
+        auto v2 = Vec3{3, 4, 5};
+        REQUIRE(v1.distance(v2) == 7.0710678118654755);
+        REQUIRE(v1.distance(v1) == 0);
+        REQUIRE(v2.distance(v2) == 0);
+    }
+
+    SECTION("Test stringify str()") {
+        REQUIRE(Vec3{}.str() == "Vec3{0, 0, 0}");
+        REQUIRE(Vec3{1, 2, 3}.str() == "Vec3{1, 2, 3}");
     }
 }

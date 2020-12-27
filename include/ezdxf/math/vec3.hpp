@@ -37,6 +37,12 @@ namespace ezdxf::math {
 
         [[nodiscard]] auto tuple() const { return std::make_tuple(x_, y_, z_); }
 
+        static Vec3 from_radians(double rad, double length = 1.0) {
+            double x = cos(rad) * length;
+            double y = sin(rad) * length;
+            return Vec3(x, y, 0);
+        }
+
         [[nodiscard]] bool
         is_close(const Vec3 &other,
                  const double &abs_tol = kAbsTol) const {
@@ -70,7 +76,7 @@ namespace ezdxf::math {
             return Vec3(rhs.x_ * lhs, rhs.y_ * lhs, rhs.z_ * lhs);
         }
 
-        friend std::ostream & operator<<(std::ostream &os, const Vec3 &v) {
+        friend std::ostream &operator<<(std::ostream &os, const Vec3 &v) {
             os << v.str();
             return os;
         }
