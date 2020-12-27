@@ -4,6 +4,7 @@
 #include "catch.hpp"
 #include <ezdxf/math/vec3.hpp>
 #include <vector>
+#include <iostream>
 
 using ezdxf::math::Vec3;
 
@@ -133,3 +134,23 @@ TEST_CASE("Test vector comparisons.", "[math][vec3]") {
     }
 }
 
+TEST_CASE("Test math operators", "[math][vec3]") {
+    auto v1 = Vec3{1, 2, 3};
+    auto v2 = Vec3{4, 5, 6};
+    SECTION("Test add operator '+' ") {
+        REQUIRE(v1 + v2 == Vec3{5, 7, 9});
+        REQUIRE(v1 + Vec3{} == v1);
+    }
+
+    SECTION("Test subtract operator '-' ") {
+        REQUIRE(v2 - v1 == Vec3{3, 3, 3});
+        REQUIRE((v1 - v1) == Vec3{});
+        REQUIRE((v1 - v1).is_close_zero());
+    }
+
+    SECTION("Test scalar multiply operator '*' ") {
+        REQUIRE(v1 * 2 == Vec3{2, 4, 6});
+        REQUIRE(2 * v1 == Vec3{2, 4, 6});
+        REQUIRE(v1 * 0 == Vec3{});
+    }
+}

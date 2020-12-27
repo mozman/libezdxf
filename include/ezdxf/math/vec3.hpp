@@ -5,6 +5,8 @@
 #define EZDXF_MATH_VEC3_HPP
 
 #include <cmath>
+#include <iostream>
+#include <sstream>
 #include <ezdxf/math/base.hpp>
 
 namespace ezdxf::math {
@@ -52,16 +54,25 @@ namespace ezdxf::math {
                     fabs(z_) <= abs_tol);
         }
 
-        Vec3 operator+(const Vec3 &other) const {
-            return Vec3(x_ + other.x_, y_ + other.y_, z_ + other.z_);
+        Vec3 operator+(const Vec3 &rhs) const {
+            return Vec3(x_ + rhs.x_, y_ + rhs.y_, z_ + rhs.z_);
         }
 
-        Vec3 operator-(const Vec3 &other) const {
-            return Vec3(x_ - other.x_, y_ - other.y_, z_ - other.z_);
+        Vec3 operator-(const Vec3 &rhs) const {
+            return Vec3(x_ - rhs.x_, y_ - rhs.y_, z_ - rhs.z_);
         }
 
-        Vec3 operator*(double factor) const {
-            return Vec3(x_ * factor, y_ * factor, z_ * factor);
+        friend Vec3 operator*(const Vec3 &lhs, double rhs) {
+            return Vec3(lhs.x_ * rhs, lhs.y_ * rhs, lhs.z_ * rhs);
+        }
+
+        friend Vec3 operator*(double lhs, const Vec3 &rhs) {
+            return Vec3(rhs.x_ * lhs, rhs.y_ * lhs, rhs.z_ * lhs);
+        }
+
+        friend std::ostream & operator<<(std::ostream &os, const Vec3 &v) {
+            os << v.str();
+            return os;
         }
 
         bool operator==(const Vec3 &other) const {
@@ -70,6 +81,12 @@ namespace ezdxf::math {
 
         bool operator!=(const Vec3 &other) const {
             return !is_close(other);
+        }
+
+        [[nodiscard]] std::string str() const {
+            std::ostringstream str_stream;
+            str_stream << "Vec3{" << x_ << ", " << y_ << ", " << z_ << "}";
+            return str_stream.str();
         }
 
         [[nodiscard]] double magnitude2() const {
