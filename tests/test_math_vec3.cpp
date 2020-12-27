@@ -8,11 +8,19 @@
 using ezdxf::math::Vec3;
 
 TEST_CASE("Test Vec3 basic usage.", "[math][vec3]") {
-    SECTION("Test access of data members.") {
+    SECTION("Test access to data members.") {
         auto v = Vec3{1, 2, 3};
         REQUIRE(v.x() == 1.0);
         REQUIRE(v.y() == 2.0);
         REQUIRE(v.z() == 3.0);
+    }
+
+    SECTION("Test tuple deconstruction of data members.") {
+        auto v = Vec3{1, 2, 3};
+        auto[x, y, z] = v.tuple();
+        REQUIRE(x == 1.0);
+        REQUIRE(y == 2.0);
+        REQUIRE(z == 3.0);
     }
 
     SECTION("Test Vec3 as variable.") {

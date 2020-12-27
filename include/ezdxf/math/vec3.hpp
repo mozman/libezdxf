@@ -33,6 +33,8 @@ namespace ezdxf::math {
 
         [[nodiscard]] double z() const { return z_; }
 
+        [[nodiscard]] auto tuple() const { return std::make_tuple(x_, y_, z_); }
+
         [[nodiscard]] bool
         is_close(const Vec3 &other,
                  const double &abs_tol = kAbsTol) const {
@@ -76,7 +78,7 @@ namespace ezdxf::math {
 
         [[nodiscard]] double magnitude() const {
             return sqrt(magnitude2());
-        };
+        }
 
         [[nodiscard]] Vec3 normalize(double length = 1.0) const {
             double mag = magnitude();
