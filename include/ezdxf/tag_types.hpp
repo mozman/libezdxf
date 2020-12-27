@@ -139,7 +139,7 @@ namespace ezdxf {
             return TagType::kVec3;
         };
 
-        [[nodiscard]] static bool export_z() { return true; }
+        [[nodiscard]] virtual bool export_z() const { return true; }
     };
 
     // Special class for 2D only vertices is required for a generic DXF tag
@@ -153,7 +153,7 @@ namespace ezdxf {
                 const Real y) :
                 Vec3Tag(code, x, y, 0.0) {};
 
-        [[nodiscard]] static bool export_z() { return false; }
+        [[nodiscard]] bool export_z() const override { return false; }
     };
 
     TagType group_code_type(short);
