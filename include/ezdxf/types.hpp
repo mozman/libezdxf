@@ -8,10 +8,8 @@
 #include <tuple>
 
 namespace ezdxf {
-    typedef double Decimal;
+    typedef double Real;
     typedef std::string String;
-    // Place holder for ezdxf::math::Vec3
-    typedef std::tuple<double, double, double> Vec3;
 }
 
 #endif //EZDXF_TYPES_HPP

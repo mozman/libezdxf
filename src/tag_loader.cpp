@@ -5,14 +5,14 @@
 #include <ezdxf/tag_loader.hpp>
 
 namespace ezdxf {
-    Decimal safe_str_to_decimal(const String &s) {
+    Real safe_str_to_decimal(const String &s) {
         // TODO: Should return a double for every possible input string!
         return stod(s);
     }
 
     int64_t safe_str_to_int64(const String &s) {
-        // TODO: Should return an int64 for every possible input string!
-        // e.g. ProE stores some int64 as floating point values!
+        // TODO: Should return an integer for every possible input string!
+        // e.g. ProE stores some integer as floating point values!
         return stoll(s);
     }
 
@@ -21,14 +21,14 @@ namespace ezdxf {
         current = load_next();
     }
 
-    TextTag TagLoader::take() {
+    StringTag TagLoader::take() {
         // Returns the current tag and loads the next tag from stream.
         auto value = current;
         current = load_next();
         return value;
     }
 
-    TextTag TagLoader::load_next() {
+    StringTag TagLoader::load_next() {
         // How to read int and string from a stream?
 
         short code = GroupCode::kComment;
@@ -40,17 +40,17 @@ namespace ezdxf {
             // if (end of stream) { code = -1; value = "EOF"; }
             value = "Content";  // stream.readline();
         }
-        return TextTag(code, value);
-        // if stream is empty return TextTag(-1, "")
+        return StringTag(code, value);
+        // if stream is empty return StringTag(-1, "")
     }
 
     TagType TagCompiler::current_type() const {
         return group_code_type(current.group_code());
     }
 
-    TextTag TagCompiler::text_tag() {
-        // Returns next tag as TextTag.
-        TextTag tag = current;
+    StringTag TagCompiler::text_tag() {
+        // Returns next tag as StringTag.
+        StringTag tag = current;
         load_next_tag();
         return tag;
     }
@@ -67,21 +67,21 @@ namespace ezdxf {
         return IntegerTag(GroupCode::kError, 0);  // error tag
     }
 
-    DecimalTag TagCompiler::decimal_tag() {
-        // Returns next tag as DecimalTag or an error tag with group code < 0.
-        if (current_type() == TagType::kDecimal) {
-            DecimalTag ret{current.group_code(),
-                           safe_str_to_decimal(current.string())};
+    RealTag TagCompiler::decimal_tag() {
+        // Returns next tag as RealTag or an error tag with group code < 0.
+        if (current_type() == TagType::kReal) {
+            RealTag ret{current.group_code(),
+                        safe_str_to_decimal(current.string())};
             load_next_tag();
             return ret;
         }
-        return DecimalTag(GroupCode::kError, 0.0);  // error tag
+        return RealTag(GroupCode::kError, 0.0);  // error tag
     }
 
-    VertexTag TagCompiler::vertex_tag() {
-        // Returns next tag as VertexTag or an error tag with group code < 0.
+    Vec3Tag TagCompiler::vertex_tag() {
+        // Returns next tag as Vec3Tag or an error tag with group code < 0.
         double x = 0.0, y = 0.0, z = 0.0;
-        if (current_type() == TagType::kVertex) {
+        if (current_type() == TagType::kVec3) {
             short code = current.group_code();
             x = safe_str_to_decimal(current.string());
             load_next_tag();
@@ -91,15 +91,15 @@ namespace ezdxf {
                 if (current.group_code() == code + 20) {
                     z = safe_str_to_decimal(current.string());
                     load_next_tag();
-                    return VertexTag(code, x, y, z);
+                    return Vec3Tag(code, x, y, z);
                 } else {
-                    // Does this return a Vertex2Tag or is there an implicit cast
-                    // to VertexTag?
-                    return Vertex2Tag(code, x, y);
+                    // Does this return a Vec2Tag or is there an implicit cast
+                    // to Vec3Tag?
+                    return Vec2Tag(code, x, y);
                 }
 
             }
         }
-        return VertexTag(GroupCode::kError, x, y, z);  // error tag
+        return Vec3Tag(GroupCode::kError, x, y, z);  // error tag
     }
 }

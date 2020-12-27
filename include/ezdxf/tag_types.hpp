@@ -5,7 +5,9 @@
 #define EZDXF_TAG_TYPES_HPP
 
 #include <vector>
+#include <typeinfo>
 #include <ezdxf/types.hpp>
+#include <ezdxf/math/vec3.hpp>
 
 namespace ezdxf {
     typedef enum {
@@ -15,7 +17,7 @@ namespace ezdxf {
     } GroupCode;
 
     typedef enum {
-        kUndefined = 0, kText, kInteger, kDecimal, kVertex
+        kUndefined = 0, kString, kInteger, kReal, kVec3
     } TagType;
 
     class DXFTag {
@@ -35,24 +37,32 @@ namespace ezdxf {
             return code == GroupCode::kError;
         }
 
+        // All supported type casts:
         [[nodiscard]] virtual String string() const {
-            return "";
+            throw std::bad_cast();
         }
 
-        [[nodiscard]] virtual int64_t int64() const {
-            return 0;
+        [[nodiscard]] virtual int64_t integer() const {
+            throw std::bad_cast();
         }
 
-        [[nodiscard]] virtual Decimal decimal() const {
-            return 0.0;
+        [[nodiscard]] virtual Real real() const {
+            throw std::bad_cast();
         }
 
-        [[nodiscard]] virtual Vec3 vec3() const {
-            return Vec3(0.0, 0.0, 0.0);
+        [[nodiscard]] virtual ezdxf::math::Vec3 vec3() const {
+            throw std::bad_cast();
         }
+
+        [[nodiscard]] bool equals(short code_, const std::string &s) const {
+            return code == code_ &&
+                   type() == TagType::kString &&
+                   s == string();
+        }
+
     };
 
-    class TextTag : public DXFTag {
+    class StringTag : public DXFTag {
         // Text is stored as raw data (unencoded cp1252, utf8, ...) String
         // without line endings. White spaces in front and at the end of the
         // string are not striped, because sometimes they are important
@@ -62,15 +72,15 @@ namespace ezdxf {
         String s;
 
     public:
-        TextTag(const short code, String value) : DXFTag(code),
-                                                  s(std::move(value)) {}
+        StringTag(const short code, String value) : DXFTag(code),
+                                                    s(std::move(value)) {}
 
         [[nodiscard]] String string() const override {
             return s;
         }
 
         [[nodiscard]] TagType type() const override {
-            return TagType::kText;
+            return TagType::kString;
         }
     };
 
@@ -83,7 +93,7 @@ namespace ezdxf {
         IntegerTag(const short code, const int64_t value) : DXFTag(code),
                                                             i(value) {}
 
-        [[nodiscard]] int64_t int64() const override {
+        [[nodiscard]] int64_t integer() const override {
             return i;
         }
 
@@ -92,42 +102,41 @@ namespace ezdxf {
         }
     };
 
-    class DecimalTag : public DXFTag {
-        // Decimal value is stored as 64-bit double value.
+    class RealTag : public DXFTag {
+        // Real value is stored as 64-bit double value.
     private:
-        const Decimal d;
+        const Real d;
 
     public:
-        DecimalTag(const short code, const Decimal value) : DXFTag(code),
-                                                            d(value) {};
+        RealTag(const short code, const Real value) : DXFTag(code),
+                                                      d(value) {};
 
-        [[nodiscard]] Decimal decimal() const override{
+        [[nodiscard]] Real real() const override {
             return d;
         }
 
         [[nodiscard]] TagType type() const override {
-            return TagType::kDecimal;
+            return TagType::kReal;
         };
     };
 
-    class VertexTag : public DXFTag {
-        // Vertex axis are stored as 64-bit double values.
+    class Vec3Tag : public DXFTag {
     private:
-        Decimal x, y, z;
+        ezdxf::math::Vec3 vec3_;
 
     public:
-        VertexTag(const short code,
-                  const Decimal x,
-                  const Decimal y,
-                  const Decimal z) :
-                DXFTag(code), x(x), y(y), z(z) {};
+        Vec3Tag(const short code,
+                const Real x,
+                const Real y,
+                const Real z) :
+                DXFTag(code), vec3_{x, y, z} {};
 
-        [[nodiscard]] Vec3 vec3() const override{
-            return Vec3(x, y, z);
+        [[nodiscard]] ezdxf::math::Vec3 vec3() const override {
+            return vec3_;
         }
 
         [[nodiscard]] TagType type() const override {
-            return TagType::kVertex;
+            return TagType::kVec3;
         };
 
         [[nodiscard]] static bool export_z() { return true; }
@@ -135,14 +144,14 @@ namespace ezdxf {
 
     // Special class for 2D only vertices is required for a generic DXF tag
     // storage to preserve the vertices as stored in the original DXF document.
-    // Some tags have to be written as 2D tags with out a z-axis.
-    // But otherwise it is completely the same as VertexTag.
-    class Vertex2Tag : public VertexTag {
+    // Some tags have to be written as 2D tags without a z-axis.
+    // But otherwise it is completely the same as Vec3Tag.
+    class Vec2Tag : public Vec3Tag {
     public:
-        Vertex2Tag(const short code,
-                   const Decimal x,
-                   const Decimal y) :
-                VertexTag(code, x, y, 0.0) {};
+        Vec2Tag(const short code,
+                const Real x,
+                const Real y) :
+                Vec3Tag(code, x, y, 0.0) {};
 
         [[nodiscard]] static bool export_z() { return false; }
     };
