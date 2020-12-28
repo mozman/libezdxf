@@ -13,7 +13,7 @@ namespace ezdxf {
         // Main DXF document
     public:  // functions
         Document() = default;
-        bool load(const ezdxf::tag::TagLoader&);
+        bool load(const ezdxf::tag::Loader&);
 
     public:  // attributes
         std::string filename;

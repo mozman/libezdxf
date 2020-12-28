@@ -31,10 +31,10 @@ namespace ezdxf::tag {
     StringTag BasicLoader::load_next() {
         // How to read int and string from a stream?
 
-        short code = GroupCode::kComment;
+        short code = kComment;
         String value = "Content";
 
-        while (code == GroupCode::kComment) {
+        while (code == kComment) {
             code = 0;  // stream.readline();
             // How to check if the end of the stream is reached?
             // if (end of stream) { code = -1; value = "EOF"; }
@@ -44,44 +44,44 @@ namespace ezdxf::tag {
         // if stream is empty return StringTag(-1, "")
     }
 
-    TagType TagLoader::current_type() const {
+    TagType AscLoader::current_type() const {
         return group_code_type(current.group_code());
     }
 
-    StringTag TagLoader::string_tag() {
+    StringTag AscLoader::string_tag() {
         // Returns next tag as StringTag.
         StringTag tag = current;
         load_next_tag();
         return tag;
     }
 
-    IntegerTag TagLoader::integer_tag() {
+    IntegerTag AscLoader::integer_tag() {
         // Returns next tag as IntegerTag or an error tag with group code < 0.
-        if (current_type() == TagType::kInteger) {
+        if (current_type() == kInteger) {
 
             IntegerTag ret{current.group_code(),
                            safe_str_to_int64(current.string())};
             load_next_tag();
             return ret;
         }
-        return IntegerTag{GroupCode::kError, 0};  // error tag
+        return IntegerTag{kError, 0};  // error tag
     }
 
-    RealTag TagLoader::real_tag() {
+    RealTag AscLoader::real_tag() {
         // Returns next tag as RealTag or an error tag with group code < 0.
-        if (current_type() == TagType::kReal) {
+        if (current_type() == kReal) {
             RealTag ret{current.group_code(),
                         safe_str_to_decimal(current.string())};
             load_next_tag();
             return ret;
         }
-        return RealTag{GroupCode::kError, 0.0};  // error tag
+        return RealTag{kError, 0.0};  // error tag
     }
 
-    Vec3Tag TagLoader::vec3_tag() {
+    Vec3Tag AscLoader::vec3_tag() {
         // Returns next tag as Vec3Tag or an error tag with group code < 0.
         double x = 0.0, y = 0.0, z = 0.0;
-        if (current_type() == TagType::kVec3) {
+        if (current_type() == kVec3) {
             short code = current.group_code();
             x = safe_str_to_decimal(current.string());
             load_next_tag();
@@ -100,6 +100,7 @@ namespace ezdxf::tag {
 
             }
         }
-        return Vec3Tag{GroupCode::kError, x, y, z};  // error tag
+        return Vec3Tag{kError, x, y, z};  // error tag
     }
+
 }

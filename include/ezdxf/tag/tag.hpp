@@ -24,7 +24,7 @@ namespace ezdxf::tag {
 
     class DXFTag {
     private:
-        short code = GroupCode::kError;
+        short code = kError;
 
     public:
         explicit DXFTag(const short code) : code(code) {}
@@ -32,11 +32,11 @@ namespace ezdxf::tag {
         [[nodiscard]] short group_code() const { return code; }
 
         [[nodiscard]] virtual TagType type() const {
-            return TagType::kUndefined;
+            return kUndefined;
         }
 
         [[nodiscard]] inline bool is_error_tag() const {
-            return code == GroupCode::kError;
+            return code == kError;
         }
 
         // All supported type casts:
@@ -58,7 +58,7 @@ namespace ezdxf::tag {
 
         [[nodiscard]] bool equals(short code_, const std::string &s) const {
             return code == code_ &&
-                   type() == TagType::kString &&
+                   type() == kString &&
                    s == string();
         }
 
@@ -82,7 +82,7 @@ namespace ezdxf::tag {
         }
 
         [[nodiscard]] TagType type() const override {
-            return TagType::kString;
+            return kString;
         }
     };
 
@@ -100,7 +100,7 @@ namespace ezdxf::tag {
         }
 
         [[nodiscard]] TagType type() const override {
-            return TagType::kInteger;
+            return kInteger;
         }
     };
 
@@ -118,7 +118,7 @@ namespace ezdxf::tag {
         }
 
         [[nodiscard]] TagType type() const override {
-            return TagType::kReal;
+            return kReal;
         };
     };
 
@@ -138,7 +138,7 @@ namespace ezdxf::tag {
         }
 
         [[nodiscard]] TagType type() const override {
-            return TagType::kVec3;
+            return kVec3;
         };
 
         [[nodiscard]] virtual bool export_z() const { return true; }
