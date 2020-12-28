@@ -1,7 +1,7 @@
 // Copyright (c) 2020, Manfred Moitzi
 // License: MIT License
 //
-#include "catch.hpp"
+#include <catch2/catch.hpp>
 #include <ezdxf/math/vec3.hpp>
 #include <vector>
 

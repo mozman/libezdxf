@@ -1,27 +1,27 @@
 // Copyright (c) 2020, Manfred Moitzi
 // License: MIT License
 //
-#include "catch.hpp"
-#include "../src/tag/tag.cpp" // test local defined objects
+#include <catch2/catch.hpp>
+#include "../../src/tag/tag.cpp" // test local defined objects
 
 using namespace ezdxf::tag;
 
-TEST_CASE("Test group codes of type kString.", "[tag_types]") {
+TEST_CASE("Test group codes of type kString.", "[tag]") {
     short code = GENERATE(0, 8, 100, 1000);
     REQUIRE(group_code_type(code) == TagType::kString);
 }
 
-TEST_CASE("Test group codes of type kInteger.", "[tag_types]") {
+TEST_CASE("Test group codes of type kInteger.", "[tag]") {
     short code = GENERATE(60, 70, 79, 1060, 1071);
     REQUIRE(group_code_type(code) == TagType::kInteger);
 }
 
-TEST_CASE("Test group codes of type kReal.", "[tag_types]") {
+TEST_CASE("Test group codes of type kReal.", "[tag]") {
     short code = GENERATE(40, 48, 50, 51, 1014, 1059);
     REQUIRE(group_code_type(code) == TagType::kReal);
 }
 
-TEST_CASE("Test vertex group codes.", "[tag_types]") {
+TEST_CASE("Test vertex group codes.", "[tag]") {
     SECTION("Vertex x-axis group code is kVec3") {
         // A x-axis vertex tag starts the collecting process of 2 or 3 vertex axis.
         short code = GENERATE(10, 18, 210, 1010, 1013);
@@ -47,11 +47,11 @@ TEST_CASE("Test group codes out of defined range are kUndefined.",
 
 }
 
-TEST_CASE("Test if TagType::kUndefined is 0", "[tag_types]") {
+TEST_CASE("Test if TagType::kUndefined is 0", "[tag]") {
     REQUIRE(TagType::kUndefined == 0);
 }
 
-TEST_CASE("Test TagTypeCache", "[tag_types]") {
+TEST_CASE("Test TagTypeCache", "[tag]") {
     auto cache = TypeCache();
 
     SECTION("Test if new cache is empty.") {
@@ -81,7 +81,7 @@ TEST_CASE("Test TagTypeCache", "[tag_types]") {
     }
 }
 
-TEST_CASE("Test StringTag", "[tag_types]") {
+TEST_CASE("Test StringTag", "[tag]") {
     auto tag = StringTag{0, "LINE"};
     SECTION("Test get dedicated value type.") {
         REQUIRE(tag.type() == TagType::kString);
@@ -108,7 +108,7 @@ TEST_CASE("Test StringTag", "[tag_types]") {
     }
 }
 
-TEST_CASE("Test IntegerTag", "[tag_types]") {
+TEST_CASE("Test IntegerTag", "[tag]") {
     auto tag = IntegerTag{70, 16};
     SECTION("Test get dedicated value type.") {
         REQUIRE(tag.type() == TagType::kInteger);
@@ -123,7 +123,7 @@ TEST_CASE("Test IntegerTag", "[tag_types]") {
     }
 }
 
-TEST_CASE("Test RealTag", "[tag_types]") {
+TEST_CASE("Test RealTag", "[tag]") {
     auto tag = RealTag{40, 1.0};
     SECTION("Test get dedicated value type.") {
         REQUIRE(tag.type() == TagType::kReal);
@@ -138,7 +138,7 @@ TEST_CASE("Test RealTag", "[tag_types]") {
     }
 }
 
-TEST_CASE("Test Vec3Tag", "[tag_types]") {
+TEST_CASE("Test Vec3Tag", "[tag]") {
     auto tag = Vec3Tag{10, 1.0, 2.0, 3.0};
     SECTION("Test get dedicated value type.") {
         REQUIRE(tag.type() == TagType::kVec3);
@@ -154,7 +154,7 @@ TEST_CASE("Test Vec3Tag", "[tag_types]") {
     }
 }
 
-TEST_CASE("Store different tag types in a container.", "[tag_types]") {
+TEST_CASE("Store different tag types in a container.", "[tag]") {
     auto container = std::vector<DXFTag *>{};
     container.push_back(new StringTag(1, "NAME"));
     container.push_back(new IntegerTag(70, 7));

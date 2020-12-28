@@ -1,7 +1,7 @@
 // Copyright (c) 2020, Manfred Moitzi
 // License: MIT License
 //
-#include "catch.hpp"
+#include <catch2/catch.hpp>
 #include <ezdxf/math/base.hpp>
 
 using ezdxf::math::is_close;

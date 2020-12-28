@@ -4,6 +4,7 @@ project(ezdxf LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 include_directories(include)
+include_directories(extern)
 
 add_library(ezdxf STATIC
         include/ezdxf/ezdxf.hpp
@@ -22,9 +23,9 @@ add_library(ezdxf STATIC
 
 add_executable(run_tests
         tests/run_tests.cpp
-        tests/test_math_base.cpp
-        tests/test_math_vec3.cpp
-        tests/test_tag_tag.cpp
+        tests/math/101_base.cpp
+        tests/math/102_vec3.cpp
+        tests/tag/001_tag.cpp
         )
 
 target_link_libraries(run_tests PRIVATE ezdxf)
