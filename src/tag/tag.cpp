@@ -1,19 +1,19 @@
 // Copyright (c) 2020, Manfred Moitzi
 // License: MIT License
 //
-#include <ezdxf/tag_types.hpp>
+#include <ezdxf/tag/tag.hpp>
 
-namespace ezdxf {
+namespace ezdxf::tag {
     const short kGroupCodeCount = 1072; // defined by the DXF reference
 
     inline bool is_group_code_in_range(const short code) {
         return (code >= 0 && code < kGroupCodeCount);
     }
 
-    class TagTypeCache {
+    class TypeCache {
         TagType cache[kGroupCodeCount]{}; // init with 0 == TagType::kUndefined
     public:
-        TagTypeCache() = default;
+        TypeCache() = default;
 
         TagType get(const short code) {
             return is_group_code_in_range(code) ? cache[code]
@@ -28,7 +28,7 @@ namespace ezdxf {
     };
 
     TagType group_code_type(const short code) {
-        static auto cache = TagTypeCache();
+        static auto cache = TypeCache();
         if (!is_group_code_in_range(code)) {
             return TagType::kUndefined;
         }

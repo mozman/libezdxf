@@ -26,14 +26,14 @@
 #ifndef EZDXF_TAG_ALLOCATOR_HPP
 #define EZDXF_TAG_ALLOCATOR_HPP
 
-#include <ezdxf/tag_allocator.hpp>
+#include <ezdxf/tag/allocator.hpp>
 
-namespace ezdxf {
+namespace ezdxf::tag {
 
     class DXFTagAllocator {
     };
 
-    DXFTagAllocator dxf_tag_allocator();
+    DXFTagAllocator allocator();
 
 }
 

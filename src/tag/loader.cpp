@@ -1,10 +1,10 @@
 // Copyright (c) 2020, Manfred Moitzi
 // License: MIT License
 //
-#include <ezdxf/tag_types.hpp>
-#include <ezdxf/tag_loader.hpp>
+#include <ezdxf/tag/tag.hpp>
+#include <ezdxf/tag/loader.hpp>
 
-namespace ezdxf {
+namespace ezdxf::tag {
     Real safe_str_to_decimal(const String &s) {
         // TODO: Should return a double for every possible input string!
         return stod(s);
@@ -16,19 +16,19 @@ namespace ezdxf {
         return stoll(s);
     }
 
-    TagLoader::TagLoader(const String &filename) {
+    BasicLoader::BasicLoader(const String &filename) {
         // How to open a text_tag stream?
         current = load_next();
     }
 
-    StringTag TagLoader::take() {
+    StringTag BasicLoader::take() {
         // Returns the current tag and loads the next tag from stream.
         auto value = current;
         current = load_next();
         return value;
     }
 
-    StringTag TagLoader::load_next() {
+    StringTag BasicLoader::load_next() {
         // How to read int and string from a stream?
 
         short code = GroupCode::kComment;
@@ -40,22 +40,22 @@ namespace ezdxf {
             // if (end of stream) { code = -1; value = "EOF"; }
             value = "Content";  // stream.readline();
         }
-        return StringTag(code, value);
+        return StringTag{code, value};
         // if stream is empty return StringTag(-1, "")
     }
 
-    TagType TagCompiler::current_type() const {
+    TagType TagLoader::current_type() const {
         return group_code_type(current.group_code());
     }
 
-    StringTag TagCompiler::text_tag() {
+    StringTag TagLoader::string_tag() {
         // Returns next tag as StringTag.
         StringTag tag = current;
         load_next_tag();
         return tag;
     }
 
-    IntegerTag TagCompiler::integer_tag() {
+    IntegerTag TagLoader::integer_tag() {
         // Returns next tag as IntegerTag or an error tag with group code < 0.
         if (current_type() == TagType::kInteger) {
 
@@ -64,10 +64,10 @@ namespace ezdxf {
             load_next_tag();
             return ret;
         }
-        return IntegerTag(GroupCode::kError, 0);  // error tag
+        return IntegerTag{GroupCode::kError, 0};  // error tag
     }
 
-    RealTag TagCompiler::decimal_tag() {
+    RealTag TagLoader::real_tag() {
         // Returns next tag as RealTag or an error tag with group code < 0.
         if (current_type() == TagType::kReal) {
             RealTag ret{current.group_code(),
@@ -75,10 +75,10 @@ namespace ezdxf {
             load_next_tag();
             return ret;
         }
-        return RealTag(GroupCode::kError, 0.0);  // error tag
+        return RealTag{GroupCode::kError, 0.0};  // error tag
     }
 
-    Vec3Tag TagCompiler::vertex_tag() {
+    Vec3Tag TagLoader::vec3_tag() {
         // Returns next tag as Vec3Tag or an error tag with group code < 0.
         double x = 0.0, y = 0.0, z = 0.0;
         if (current_type() == TagType::kVec3) {
@@ -91,15 +91,15 @@ namespace ezdxf {
                 if (current.group_code() == code + 20) {
                     z = safe_str_to_decimal(current.string());
                     load_next_tag();
-                    return Vec3Tag(code, x, y, z);
+                    return Vec3Tag{code, x, y, z};
                 } else {
                     // Does this return a Vec2Tag or is there an implicit cast
                     // to Vec3Tag?
-                    return Vec2Tag(code, x, y);
+                    return Vec2Tag{code, x, y};
                 }
 
             }
         }
-        return Vec3Tag(GroupCode::kError, x, y, z);  // error tag
+        return Vec3Tag{GroupCode::kError, x, y, z};  // error tag
     }
 }

@@ -7,8 +7,8 @@
 
 ezdxf::Document readfile(const std::string &filename) {
     auto doc = ezdxf::Document();
-    auto string_tags = ezdxf::TagLoader(filename);
-    auto tags = ezdxf::TagCompiler(string_tags);
+    auto string_tags = ezdxf::tag::BasicLoader(filename);
+    auto tags = ezdxf::tag::TagLoader(string_tags);
     if (doc.load(tags)) {
         doc.filename = filename;
         return doc;
@@ -17,6 +17,6 @@ ezdxf::Document readfile(const std::string &filename) {
     }
 }
 
-bool ezdxf::Document::load(const ezdxf::TagCompiler &tags) {
+bool ezdxf::Document::load(const ezdxf::tag::TagLoader &tags) {
     return false;
 }

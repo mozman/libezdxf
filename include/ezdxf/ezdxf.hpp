@@ -6,14 +6,14 @@
 
 #include <string>
 #include <utility>
-#include <ezdxf/tag_loader.hpp>
+#include <ezdxf/tag/loader.hpp>
 
 namespace ezdxf {
     class Document {
         // Main DXF document
     public:  // functions
         Document() = default;
-        bool load(const TagCompiler&);
+        bool load(const ezdxf::tag::TagLoader&);
 
     public:  // attributes
         std::string filename;

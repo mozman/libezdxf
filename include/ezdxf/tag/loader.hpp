@@ -1,20 +1,20 @@
 // Copyright (c) 2020, Manfred Moitzi
 // License: MIT License
 //
-#ifndef EZDXF_CPP_TAG_LOADER_HPP
-#define EZDXF_CPP_TAG_LOADER_HPP
+#ifndef EZDXF_TAG_LOADER_HPP
+#define EZDXF_TAG_LOADER_HPP
 
-#include <ezdxf/tag_types.hpp>
+#include <ezdxf/tag/tag.hpp>
 
-namespace ezdxf {
+namespace ezdxf::tag {
 
-    class TagLoader {
+    class BasicLoader {
     private:
         StringTag current {0, ""};
         StringTag load_next();
 
     public:
-        explicit TagLoader(const String&);
+        explicit BasicLoader(const String&);
         [[nodiscard]] const StringTag& peek() const {
             return current;
         };
@@ -29,9 +29,9 @@ namespace ezdxf {
     //     tag = loader.next()
     // }
 
-    class TagCompiler {
+    class TagLoader {
     private:
-        TagLoader& loader;
+        BasicLoader& loader;
         StringTag current {0, ""};
 
         void load_next_tag() {
@@ -39,18 +39,18 @@ namespace ezdxf {
         };
 
     public:
-        explicit TagCompiler(TagLoader &loader_): loader(loader_) {
+        explicit TagLoader(BasicLoader &loader_): loader(loader_) {
             load_next_tag();
         };
         [[nodiscard]] TagType current_type() const;
         [[nodiscard]] bool is_empty() const {
             return current.is_error_tag();
         };
-        StringTag text_tag();
+        StringTag string_tag();
         IntegerTag integer_tag();
-        RealTag decimal_tag();
-        Vec3Tag vertex_tag();
+        RealTag real_tag();
+        Vec3Tag vec3_tag();
     };
 }
 
-#endif //EZDXF_CPP_TAG_LOADER_HPP
+#endif //EZDXF_TAG_LOADER_HPP

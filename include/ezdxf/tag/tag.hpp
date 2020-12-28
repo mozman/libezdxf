@@ -1,15 +1,17 @@
 // Copyright (c) 2020, Manfred Moitzi
 // License: MIT License
 //
-#ifndef EZDXF_TAG_TYPES_HPP
-#define EZDXF_TAG_TYPES_HPP
+#ifndef EZDXF_TAG_TAG_HPP
+#define EZDXF_TAG_TAG_HPP
 
 #include <vector>
 #include <typeinfo>
-#include <ezdxf/types.hpp>
+#include <ezdxf/type.hpp>
 #include <ezdxf/math/vec3.hpp>
 
-namespace ezdxf {
+using ezdxf::math::Vec3;
+
+namespace ezdxf::tag {
     typedef enum {
         kError = -1,
         kStructure = 0,
@@ -50,7 +52,7 @@ namespace ezdxf {
             throw std::bad_cast();
         }
 
-        [[nodiscard]] virtual ezdxf::math::Vec3 vec3() const {
+        [[nodiscard]] virtual Vec3 vec3() const {
             throw std::bad_cast();
         }
 
@@ -122,7 +124,7 @@ namespace ezdxf {
 
     class Vec3Tag : public DXFTag {
     private:
-        ezdxf::math::Vec3 vec3_;
+        Vec3 vec3_;
 
     public:
         Vec3Tag(const short code,
@@ -131,7 +133,7 @@ namespace ezdxf {
                 const Real z) :
                 DXFTag(code), vec3_{x, y, z} {};
 
-        [[nodiscard]] ezdxf::math::Vec3 vec3() const override {
+        [[nodiscard]] Vec3 vec3() const override {
             return vec3_;
         }
 
@@ -164,4 +166,4 @@ namespace ezdxf {
     };
 }
 
-#endif //EZDXF_TAG_TYPES_HPP
+#endif //EZDXF_TAG_TAG_HPP
