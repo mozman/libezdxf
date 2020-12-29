@@ -43,12 +43,12 @@ namespace ezdxf::tag {
         // to store the tag value.
         //
     private:
-        short code = kError;
+        int16_t code = kError;
 
     public:
-        explicit DXFTag(const short code) : code(code) {}
+        explicit DXFTag(const int16_t code) : code(code) {}
 
-        [[nodiscard]] short group_code() const { return code; }
+        [[nodiscard]] int16_t group_code() const { return code; }
 
         [[nodiscard]] virtual TagType type() const {
             return kUndefined;
@@ -111,12 +111,12 @@ namespace ezdxf::tag {
         }
 
         [[nodiscard]] bool
-        is_struct_tag(short code_, const std::string &s) const {
+        is_string_tag(int16_t code_, const std::string &s) const {
             // Returns true if the stored tag value is a string and matches
             // the given group code and value string.
             //
-            // This member function is meant to check for structural tag, which
-            // is a common taske for parsing DXF files, without testing the tag
+            // This member function is meant to check for structural tags, which
+            // is a common task for parsing DXF files, without testing the tag
             // type at first.
             return code == code_ &&
                    type() == kString &&
@@ -135,10 +135,10 @@ namespace ezdxf::tag {
         String s;
 
     public:
-        StringTag(const short code, String value) : DXFTag(code),
+        StringTag(const int16_t code, String value) : DXFTag(code),
                                                     s(std::move(value)) {}
 
-        explicit StringTag(const short code) : DXFTag(code), s() {}
+        explicit StringTag(const int16_t code) : DXFTag(code), s() {}
 
         [[nodiscard]] String string() const override {
             return s;
@@ -155,7 +155,7 @@ namespace ezdxf::tag {
         int64_t i;
 
     public:
-        IntegerTag(const short code, const int64_t value) : DXFTag(code),
+        IntegerTag(const int16_t code, const int64_t value) : DXFTag(code),
                                                             i(value) {}
 
         [[nodiscard]] int64_t integer() const override {
@@ -173,7 +173,7 @@ namespace ezdxf::tag {
         const Real d;
 
     public:
-        RealTag(const short code, const Real value) : DXFTag(code),
+        RealTag(const int16_t code, const Real value) : DXFTag(code),
                                                       d(value) {};
 
         [[nodiscard]] Real real() const override {
@@ -196,7 +196,7 @@ namespace ezdxf::tag {
         Vec3 vec3_;
 
     public:
-        Vec3Tag(const short code,
+        Vec3Tag(const int16_t code,
                 const Real x,
                 const Real y,
                 const Real z) :
@@ -218,7 +218,7 @@ namespace ezdxf::tag {
         // document. Some tags have to be written as 2D tags without a z-axis.
         // But otherwise this tag type is fully compatible to the Vec3Tag type.
     public:
-        Vec2Tag(const short code,
+        Vec2Tag(const int16_t code,
                 const Real x,
                 const Real y) :
                 Vec3Tag(code, x, y, 0.0) {};

@@ -114,16 +114,16 @@ TEST_CASE("Test StringTag", "[tag]") {
     }
 
     SECTION("Test for specific structure tags as string tags.") {
-        REQUIRE(StringTag(0, "SECTION").is_struct_tag(0, "SECTION") == true);
-        REQUIRE(StringTag(0, "SECTION").is_struct_tag(0, "ENDSEC") == false);
-        REQUIRE(StringTag(100, "AcDbEntity").is_struct_tag(
+        REQUIRE(StringTag(0, "SECTION").is_string_tag(0, "SECTION") == true);
+        REQUIRE(StringTag(0, "SECTION").is_string_tag(0, "ENDSEC") == false);
+        REQUIRE(StringTag(100, "AcDbEntity").is_string_tag(
                 100, "AcDbEntity") == true);
     }
 
     SECTION("Test for specific structure tags at invalid tag types.") {
         // This equal test should not throw an exception!
-        REQUIRE(IntegerTag(0, 0).is_struct_tag(0, "SECTION") == false);
-        REQUIRE(RealTag(0, 0).is_struct_tag(0, "SECTION") == false);
+        REQUIRE(IntegerTag(0, 0).is_string_tag(0, "SECTION") == false);
+        REQUIRE(RealTag(0, 0).is_string_tag(0, "SECTION") == false);
     }
 
     SECTION("Test other type values throw bad_cast exceptions.") {
