@@ -7,24 +7,24 @@
 using namespace ezdxf::tag;
 
 TEST_CASE("Test group codes of type kString.", "[tag]") {
-    short code = GENERATE(0, 8, 100, 1000);
+    int16_t code = GENERATE(0, 8, 100, 1000);
     REQUIRE(group_code_type(code) == kString);
 }
 
 TEST_CASE("Test group codes of type kInteger.", "[tag]") {
-    short code = GENERATE(60, 70, 79, 1060, 1071);
+    int16_t code = GENERATE(60, 70, 79, 1060, 1071);
     REQUIRE(group_code_type(code) == kInteger);
 }
 
 TEST_CASE("Test group codes of type kReal.", "[tag]") {
-    short code = GENERATE(40, 48, 50, 51, 1014, 1059);
+    int16_t code = GENERATE(40, 48, 50, 51, 1014, 1059);
     REQUIRE(group_code_type(code) == kReal);
 }
 
 TEST_CASE("Test vertex group codes.", "[tag]") {
     SECTION("Vertex x-axis group code is kVec3") {
         // A x-axis vertex tag starts the collecting process of 2 or 3 vertex axis.
-        short code = GENERATE(10, 18, 210, 1010, 1013);
+        int16_t code = GENERATE(10, 18, 210, 1010, 1013);
         REQUIRE(group_code_type(code) == kVec3);
     }
 
@@ -35,14 +35,14 @@ TEST_CASE("Test vertex group codes.", "[tag]") {
         // DXF related tools write vertices in xyz order!
         // The Python version of ezdxf has a recover mode which can read and
         // restructure files with unordered vertex axis.
-        short code = GENERATE(20, 30, 220, 230, 1020, 1030);
+        int16_t code = GENERATE(20, 30, 220, 230, 1020, 1030);
         REQUIRE(group_code_type(code) == kReal);
     }
 }
 
 TEST_CASE("Test group codes out of defined range are kUndefined.",
           "[tag_types]") {
-    short code = GENERATE(-1, 1072);
+    int16_t code = GENERATE(-1, 1072);
     REQUIRE(group_code_type(code) == kUndefined);
 
 }
@@ -55,7 +55,7 @@ TEST_CASE("Test TagTypeCache", "[tag]") {
     auto cache = TypeCache();
 
     SECTION("Test if new cache is empty.") {
-        for (short code = 0; code < kGroupCodeCount; code++) {
+        for (int16_t code = 0; code < kGroupCodeCount; code++) {
             REQUIRE(cache.get(code) == kUndefined);
         }
     }
@@ -71,12 +71,12 @@ TEST_CASE("Test TagTypeCache", "[tag]") {
     }
 
     SECTION("Test cache miss.") {
-        short code = GENERATE(1, 11, 1000);
+        int16_t code = GENERATE(1, 11, 1000);
         REQUIRE(cache.get(code) == kUndefined);
     }
 
     SECTION("Test if group codes out of defined range are kUndefined.") {
-        short code = GENERATE(-1, 1072);
+        int16_t code = GENERATE(-1, 1072);
         REQUIRE(cache.get(code) == kUndefined);
     }
 }

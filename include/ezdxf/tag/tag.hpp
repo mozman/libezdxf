@@ -110,7 +110,8 @@ namespace ezdxf::tag {
             throw std::bad_cast();
         }
 
-        [[nodiscard]] bool is_struct_tag(short code_, const std::string &s) const {
+        [[nodiscard]] bool
+        is_struct_tag(short code_, const std::string &s) const {
             // Returns true if the stored tag value is a string and matches
             // the given group code and value string.
             //
@@ -136,6 +137,8 @@ namespace ezdxf::tag {
     public:
         StringTag(const short code, String value) : DXFTag(code),
                                                     s(std::move(value)) {}
+
+        explicit StringTag(const short code) : DXFTag(code), s() {}
 
         [[nodiscard]] String string() const override {
             return s;
@@ -226,9 +229,10 @@ namespace ezdxf::tag {
 
     };
 
-    TagType group_code_type(short);
+    TagType group_code_type(int16_t);
+    bool is_valid_group_code(int64_t);
 
-    typedef DXFTag* pDXFTag;
+    typedef DXFTag *pDXFTag;
 
     class Tags {
     private:

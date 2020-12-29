@@ -24,6 +24,6 @@ add_executable(run_tests
         tests/math/101_base.cpp
         tests/math/102_vec3.cpp
         tests/tag/001_tag.cpp
-        )
+        tests/tag/002_loader.cpp)
 
 target_link_libraries(run_tests PRIVATE ezdxf)

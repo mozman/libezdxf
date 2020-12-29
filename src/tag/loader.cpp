@@ -1,11 +1,13 @@
 // Copyright (c) 2020, Manfred Moitzi
 // License: MIT License
 //
-#include <memory>
+#include<sstream>
 #include <ezdxf/tag/tag.hpp>
 #include <ezdxf/tag/loader.hpp>
 
+
 namespace ezdxf::tag {
+
     Real safe_str_to_decimal(const String &s) {
         // TODO: Should return a double for every possible input string!
         return stod(s);
@@ -17,12 +19,34 @@ namespace ezdxf::tag {
         return stoll(s);
     }
 
-    BasicLoader::BasicLoader(const String &filename) {
-        // How to open a text_tag stream?
-        current = load_next();
+    int16_t safe_group_code(const String &s) {
+        auto code = safe_str_to_int64(s);
+        // valid group code is in int16 range [0 .. 1071]
+        return is_valid_group_code(code) ? (int16_t) code : kError;
     }
 
-    StringTag BasicLoader::take() {
+    String clean_string(const String &s) {
+        // TODO: Should return an integer for every possible input string!
+        // e.g. ProE stores some integer as floating point values!
+        return s;
+    }
+
+    BasicLoader::BasicLoader(const String &s) {
+        input_stream = new std::basic_istringstream(s);
+        if (input_stream) {
+            is_stream_owner = true;
+            current = load_next();
+        }
+    }
+
+    BasicLoader::~BasicLoader() {
+        if (input_stream && is_stream_owner) {
+            delete input_stream;
+        }
+        input_stream = nullptr;
+    }
+
+    StringTag BasicLoader::get() {
         // Returns the current tag and loads the next tag from stream.
         auto value = current;
         current = load_next();
@@ -30,19 +54,30 @@ namespace ezdxf::tag {
     }
 
     StringTag BasicLoader::load_next() {
-        // How to read int and string from a stream?
+        StringTag error{kError}; // EOF marker
+        if (!input_stream) {
+            return error;
+        }
 
         short code = kComment;
-        String value = "Content";
-
-        while (code == kComment) {
-            code = 0;  // stream.readline();
-            // How to check if the end of the stream is reached?
-            // if (end of stream) { code = -1; value = "EOF"; }
-            value = "Content";  // stream.readline();
+        String value;
+        while (code == kComment) {  // skip comment tags
+            // read next group code tag or EOF
+            input_stream->getline(buffer, kMaxLineBuffer);
+            if (input_stream->gcount()) {
+                code = safe_group_code(String(buffer));
+                // read next value tag or EOF
+                input_stream->getline(buffer, kMaxLineBuffer);
+                if (input_stream->gcount()) {
+                    value = clean_string(String(buffer));
+                } else {
+                    return error;
+                }
+            } else {
+                return error;
+            }
         }
         return StringTag(code, value);
-        // if stream is empty return StringTag(-1, "")
     }
 
     TagType AscLoader::current_type() const {

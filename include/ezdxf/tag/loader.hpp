@@ -5,34 +5,52 @@
 #define EZDXF_TAG_LOADER_HPP
 
 #include <ezdxf/tag/tag.hpp>
+#include <istream>
 
 namespace ezdxf::tag {
+    // Quote DXF reference:
+    // Group code 0-9: With the introduction of extended symbol names in
+    // AutoCAD 2000, the 255-character limit has been increased to 2049
+    // single-byte characters without line endings.
+    //
+    // Every other group code value has a limit of 255 single-byte characters
+    // without line endings.
+    const size_t kMaxLineBuffer = 2051;  // <CR><LF>
 
     class BasicLoader {
         // Basic string tag loader, returns loaded tags by value!
     private:
-        StringTag current{0, ""};
+        // Each BasicLoader has its own input buffer:
+        // Parallel loading of DXF files should be possible!
+        char buffer[kMaxLineBuffer];
+
+        // Flag if stream was created by BasicLoader:
+        bool is_stream_owner = false;
+
+        // Pointer to a generic char (binary) input stream, should work with all
+        // kind of input streams: file, string, ...:
+        std::istream *input_stream = nullptr;
+
+        // Current loaded tag -- is an error tag if EOF is reached:
+        StringTag current{0};
 
         StringTag load_next();
 
     public:
         explicit BasicLoader(const String &);
 
+        ~BasicLoader();
+
         [[nodiscard]] const StringTag &peek() const {
             return current;
         };
 
-        StringTag take();  // returns loaded string tags by value!
+        StringTag get();  // returns loaded string tags by value!
 
         [[nodiscard]] bool is_empty() const {
-            return current.group_code() < 0;
+            return current.is_error_tag();
         }
     };
-    // Usage:
-    // while (not loader.is_empty()) {
-    //     tag = loader.peek()  // or
-    //     tag = loader.next()
-    // }
 
     class Loader {
         // Abstract base class
@@ -57,7 +75,7 @@ namespace ezdxf::tag {
         StringTag current{0, ""};
 
         void load_next_tag() {
-            current = loader.take();
+            current = loader.get();
         };
 
     public:

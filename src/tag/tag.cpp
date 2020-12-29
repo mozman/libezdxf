@@ -27,7 +27,7 @@ namespace ezdxf::tag {
         }
     };
 
-    TagType group_code_type(const short code) {
+    TagType group_code_type(const int16_t code) {
         static auto cache = TypeCache();
         if (!is_group_code_in_range(code)) {
             return TagType::kUndefined;
@@ -60,5 +60,9 @@ namespace ezdxf::tag {
         }
         cache.set(code, tag_type);
         return tag_type;
+    }
+
+    bool is_valid_group_code(int64_t code) {
+        return (code >= 0) && (code < kGroupCodeCount);
     }
 }
