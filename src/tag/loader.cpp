@@ -8,7 +8,7 @@
 
 namespace ezdxf::tag {
 
-    Real safe_str_to_decimal(const String &s) {
+    Real safe_str_to_real(const String &s) {
         // TODO: Should return a double for every possible input string!
         return stod(s);
     }
@@ -123,7 +123,7 @@ namespace ezdxf::tag {
         if (current_type() == kReal) {
             auto ptr = new RealTag(
                     current.group_code(),
-                    safe_str_to_decimal(current.string())
+                    safe_str_to_real(current.string())
             );
             load_next_tag();
             return ptr;
@@ -147,13 +147,13 @@ namespace ezdxf::tag {
         Real x = 0.0, y = 0.0, z = 0.0;
         if (current_type() == kVec3) {
             short code = current.group_code();
-            x = safe_str_to_decimal(current.string());
+            x = safe_str_to_real(current.string());
             load_next_tag();
             if (current.group_code() == code + 10) {
-                y = safe_str_to_decimal(current.string());
+                y = safe_str_to_real(current.string());
                 load_next_tag();
                 if (current.group_code() == code + 20) {
-                    z = safe_str_to_decimal(current.string());
+                    z = safe_str_to_real(current.string());
                     load_next_tag();
                     return new Vec3Tag(code, x, y, z);
                 } else {
