@@ -58,12 +58,12 @@ namespace ezdxf::tag {
         while (code == kComment) {
             // Read next group code tag or EOF
             input_stream->getline(buffer, kMaxLineBuffer);
-            if (input_stream->gcount()) {
+            if (!input_stream->fail()) {
                 line_number++;
                 code = safe_group_code(buffer);
                 // Read next value tag or EOF
                 input_stream->getline(buffer, kMaxLineBuffer);
-                if (input_stream->gcount()) {
+                if (!input_stream->fail()) {
                     line_number++;
                     value = String(buffer);
                     if (code == kStructure) {
