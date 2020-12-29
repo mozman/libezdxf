@@ -33,6 +33,7 @@ namespace ezdxf::tag {
 
         // Current loaded tag -- is an error tag if EOF is reached:
         StringTag current{0};
+        size_t line_number = 0;
 
         StringTag load_next();
 
@@ -50,6 +51,8 @@ namespace ezdxf::tag {
         [[nodiscard]] bool is_empty() const {
             return current.is_error_tag();
         }
+
+        [[nodiscard]] size_t get_line_number() const { return line_number; }
     };
 
     class Loader {

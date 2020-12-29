@@ -21,14 +21,8 @@ namespace ezdxf::tag {
 
     int16_t safe_group_code(const String &s) {
         auto code = safe_str_to_int64(s);
-        // valid group code is in int16 range [0 .. 1071]
+        // valid group codes are in the range [0 .. 1071]
         return is_valid_group_code(code) ? (int16_t) code : kError;
-    }
-
-    String clean_string(String s) {
-        // <CR> = (dec) 13 (hex) 0x0d; <LF> == (dec) 10 (hex) 0x0a
-        ezdxf::utils::rtrim_endl(s);
-        return s;
     }
 
     BasicLoader::BasicLoader(const String &s) {
@@ -58,18 +52,27 @@ namespace ezdxf::tag {
         if (!input_stream) {
             return error;
         }
-
         int16_t code = kComment;
         String value;
-        while (code == kComment) {  // skip comment tags
-            // read next group code tag or EOF
+        // Skip comment tags with group code 999:
+        while (code == kComment) {
+            // Read next group code tag or EOF
             input_stream->getline(buffer, kMaxLineBuffer);
             if (input_stream->gcount()) {
-                code = safe_group_code(String(buffer));
-                // read next value tag or EOF
+                line_number++;
+                code = safe_group_code(buffer);
+                // Read next value tag or EOF
                 input_stream->getline(buffer, kMaxLineBuffer);
                 if (input_stream->gcount()) {
-                    value = clean_string(buffer);
+                    line_number++;
+                    value = String(buffer);
+                    if (code == 0) {
+                        // Remove all whitespace from structure tags:
+                        ezdxf::utils::trim(value);
+                    } else {
+                        // Remove only line endings <CR> and <LF>:
+                        ezdxf::utils::rtrim_endl(value);
+                    }
                 } else {
                     return error;
                 }
