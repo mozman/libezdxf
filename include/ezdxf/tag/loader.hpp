@@ -22,7 +22,7 @@ namespace ezdxf::tag {
     private:
         // Each BasicLoader has its own input buffer:
         // Parallel loading of DXF files should be possible!
-        char buffer[kMaxLineBuffer];
+        char buffer[kMaxLineBuffer]{};
 
         // Flag if stream was created by BasicLoader:
         bool is_stream_owner = false;

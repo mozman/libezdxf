@@ -14,6 +14,7 @@ add_library(ezdxf STATIC
         include/ezdxf/math/vec3.hpp
         include/ezdxf/tag/loader.hpp
         include/ezdxf/tag/tag.hpp
+        include/ezdxf/utils.hpp
         src/ezdxf.cpp
         src/tag/loader.cpp
         src/tag/tag.cpp
@@ -24,6 +25,8 @@ add_executable(run_tests
         tests/math/101_base.cpp
         tests/math/102_vec3.cpp
         tests/tag/001_tag.cpp
-        tests/tag/002_loader.cpp)
+        tests/tag/002_loader.cpp
+        tests/utils/201_trim_strings.cpp
+        )
 
 target_link_libraries(run_tests PRIVATE ezdxf)

@@ -4,7 +4,7 @@
 #include<sstream>
 #include <ezdxf/tag/tag.hpp>
 #include <ezdxf/tag/loader.hpp>
-
+#include <ezdxf/utils.hpp>
 
 namespace ezdxf::tag {
 
@@ -25,9 +25,9 @@ namespace ezdxf::tag {
         return is_valid_group_code(code) ? (int16_t) code : kError;
     }
 
-    String clean_string(const String &s) {
-        // TODO: Should return an integer for every possible input string!
-        // e.g. ProE stores some integer as floating point values!
+    String clean_string(String s) {
+        // <CR> = (dec) 13 (hex) 0x0d; <LF> == (dec) 10 (hex) 0x0a
+        ezdxf::utils::rtrim_endl(s);
         return s;
     }
 
@@ -59,7 +59,7 @@ namespace ezdxf::tag {
             return error;
         }
 
-        short code = kComment;
+        int16_t code = kComment;
         String value;
         while (code == kComment) {  // skip comment tags
             // read next group code tag or EOF
@@ -69,7 +69,7 @@ namespace ezdxf::tag {
                 // read next value tag or EOF
                 input_stream->getline(buffer, kMaxLineBuffer);
                 if (input_stream->gcount()) {
-                    value = clean_string(String(buffer));
+                    value = clean_string(buffer);
                 } else {
                     return error;
                 }

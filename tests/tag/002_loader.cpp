@@ -6,7 +6,7 @@
 
 
 TEST_CASE("Test BasicLoader from strings.", "[tag][BasicLoader]") {
-    SECTION("Test only valid structure tags.") {
+    SECTION("Test valid structure tags and a single <LF> as line ending.") {
         auto bl = ezdxf::tag::BasicLoader("0\nSECTION\n0\nEOF");
         REQUIRE(bl.is_empty() == false);
 
