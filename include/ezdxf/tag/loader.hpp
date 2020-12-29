@@ -32,7 +32,7 @@ namespace ezdxf::tag {
         std::istream *input_stream = nullptr;
 
         // Current loaded tag -- is an error tag if EOF is reached:
-        StringTag current{0};
+        StringTag current{kStructure};
         size_t line_number = 0;
 
         StringTag load_next();
@@ -75,7 +75,7 @@ namespace ezdxf::tag {
     class AscLoader : public Loader {
     private:
         BasicLoader &loader;
-        StringTag current{0, ""};
+        StringTag current{kStructure, ""};
 
         void load_next_tag() {
             current = loader.get();

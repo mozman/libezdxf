@@ -66,7 +66,7 @@ namespace ezdxf::tag {
                 if (input_stream->gcount()) {
                     line_number++;
                     value = String(buffer);
-                    if (code == 0) {
+                    if (code == kStructure) {
                         // Remove all whitespace from structure tags:
                         ezdxf::utils::trim(value);
                     } else {
