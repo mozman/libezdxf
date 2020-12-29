@@ -12,11 +12,9 @@ add_library(ezdxf STATIC
         include/ezdxf/type.hpp
         include/ezdxf/math/base.hpp
         include/ezdxf/math/vec3.hpp
-        include/ezdxf/tag/allocator.hpp
         include/ezdxf/tag/loader.hpp
         include/ezdxf/tag/tag.hpp
         src/ezdxf.cpp
-        src/tag/allocator.cpp
         src/tag/loader.cpp
         src/tag/tag.cpp
         )

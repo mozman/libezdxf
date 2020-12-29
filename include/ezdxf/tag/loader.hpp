@@ -9,6 +9,7 @@
 namespace ezdxf::tag {
 
     class BasicLoader {
+        // Basic string tag loader, returns loaded tags by value!
     private:
         StringTag current{0, ""};
 
@@ -21,7 +22,7 @@ namespace ezdxf::tag {
             return current;
         };
 
-        StringTag take();
+        StringTag take();  // returns loaded string tags by value!
 
         [[nodiscard]] bool is_empty() const {
             return current.group_code() < 0;
@@ -40,13 +41,14 @@ namespace ezdxf::tag {
 
         [[nodiscard]] virtual bool eof() const = 0;
 
-        virtual StringTag string_tag() = 0;
+        // TODO: return loaded tags as sharded pointers!
+        virtual pDXFTag string_tag() = 0;
 
-        virtual IntegerTag integer_tag() = 0;
+        virtual pDXFTag integer_tag() = 0;
 
-        virtual RealTag real_tag() = 0;
+        virtual pDXFTag real_tag() = 0;
 
-        virtual Vec3Tag vec3_tag() = 0;
+        virtual pDXFTag vec3_tag() = 0;
     };
 
     class AscLoader : public Loader {
@@ -69,13 +71,13 @@ namespace ezdxf::tag {
             return current.is_error_tag();
         }
 
-        StringTag string_tag() override;
+        pDXFTag string_tag() override;
 
-        IntegerTag integer_tag() override;
+        pDXFTag integer_tag() override;
 
-        RealTag real_tag() override;
+        pDXFTag real_tag() override;
 
-        Vec3Tag vec3_tag() override;
+        pDXFTag vec3_tag() override;
     };
 
 }

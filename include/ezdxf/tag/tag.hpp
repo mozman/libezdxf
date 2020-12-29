@@ -28,11 +28,20 @@ namespace ezdxf::tag {
     } TagType;
 
     class DXFTag {
-        // Base tag which provides all possible checks.
+        // The abstract base class which is the foundation of the DXF tag type
+        // system. The DXFTag type provides already the full functionality, but
+        // is itself an undefined (kUndefined) tag and should not be
+        // instantiated (no clever tricks uses to prevent this)!
         //
         // The basic DXF tag system with the types kString, kInteger and kReal
         // is finally defined. No changes since the first DXF version!
         // The kVec3 and kVec2 types are composed types of 2 or 3 kReal tags.
+        //
+        // Every extension of the DXF tag functionality has to be implemented in
+        // the DXFTag type, the subclasses only define the tag type by
+        // implementing the virtual type() member function and constructor(s)
+        // to store the tag value.
+        //
     private:
         short code = kError;
 
@@ -47,6 +56,7 @@ namespace ezdxf::tag {
 
         [[nodiscard]] inline bool is_error_tag() const {
             // Returns true if tag represents an error tag.
+            // Every tag type can represent an error tag.
             return code == kError;
         }
 
@@ -77,7 +87,7 @@ namespace ezdxf::tag {
         }
 
         [[nodiscard]] inline bool export_2d() const {
-            // Special mark for vectors loaded without z-axis. The tag value is
+            // Special flag for vectors loaded without z-axis. The tag value is
             // stored as type Vec3 with z-axis is 0.
             return type() == kVec2;
         }
@@ -173,6 +183,12 @@ namespace ezdxf::tag {
     };
 
     class Vec3Tag : public DXFTag {
+        // Vectors and vertices are stored as 2- or 3 Real tags of the x-, y-
+        // and z-axis.
+        // The group codes for the axis tags follow the rule:
+        // group code for x = code
+        // group code for y = code + 10
+        // group code for z = code + 20
     private:
         Vec3 vec3_;
 
@@ -193,11 +209,11 @@ namespace ezdxf::tag {
 
     };
 
-    // Special class for 2D only vertices is required for a generic DXF tag
-    // storage to preserve the vertices as stored in the original DXF document.
-    // Some tags have to be written as 2D tags without a z-axis.
-    // But otherwise it is completely the same as Vec3Tag.
     class Vec2Tag : public Vec3Tag {
+        // Special class for 2D only vertices is required for a generic DXF tag
+        // storage to preserve the vertices as stored in the original DXF
+        // document. Some tags have to be written as 2D tags without a z-axis.
+        // But otherwise this tag type is fully compatible to the Vec3Tag type.
     public:
         Vec2Tag(const short code,
                 const Real x,
@@ -211,6 +227,8 @@ namespace ezdxf::tag {
     };
 
     TagType group_code_type(short);
+
+    typedef DXFTag* pDXFTag;
 
     class Tags {
     private:

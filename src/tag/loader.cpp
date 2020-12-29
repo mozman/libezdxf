@@ -1,6 +1,7 @@
 // Copyright (c) 2020, Manfred Moitzi
 // License: MIT License
 //
+#include <memory>
 #include <ezdxf/tag/tag.hpp>
 #include <ezdxf/tag/loader.hpp>
 
@@ -40,7 +41,7 @@ namespace ezdxf::tag {
             // if (end of stream) { code = -1; value = "EOF"; }
             value = "Content";  // stream.readline();
         }
-        return StringTag{code, value};
+        return StringTag(code, value);
         // if stream is empty return StringTag(-1, "")
     }
 
@@ -48,39 +49,64 @@ namespace ezdxf::tag {
         return group_code_type(current.group_code());
     }
 
-    StringTag AscLoader::string_tag() {
-        // Returns next tag as StringTag.
-        StringTag tag = current;
+    pDXFTag AscLoader::string_tag() {
+        // Returns next tag as pointer to a StringTag.
+        // Returns an error tag if EOF is reached.
+        auto ptr = new StringTag(
+                current.group_code(),
+                current.string()
+        );
         load_next_tag();
-        return tag;
+        return ptr;
     }
 
-    IntegerTag AscLoader::integer_tag() {
-        // Returns next tag as IntegerTag or an error tag with group code < 0.
+    pDXFTag AscLoader::integer_tag() {
+        // Returns next tag as pointer to a IntegerTag.
+        // Returns an error tag if the next tag is not an IntegerTag or
+        // premature EOF is reached.
+        // DXF file has to end with a (0, "EOF") StringTag.
         if (current_type() == kInteger) {
 
-            IntegerTag ret{current.group_code(),
-                           safe_str_to_int64(current.string())};
+            auto ptr = new IntegerTag(
+                    current.group_code(),
+                    safe_str_to_int64(current.string())
+            );
             load_next_tag();
-            return ret;
+            return ptr;
         }
-        return IntegerTag{kError, 0};  // error tag
+        return new IntegerTag(kError, 0);  // error tag
     }
 
-    RealTag AscLoader::real_tag() {
-        // Returns next tag as RealTag or an error tag with group code < 0.
+    pDXFTag AscLoader::real_tag() {
+        // Returns next tag as pointer to a RealTag.
+        // Returns an error tag if the next tag is not a RealTag or
+        // premature EOF is reached.
+        // DXF file has to end with a (0, "EOF") StringTag.
         if (current_type() == kReal) {
-            RealTag ret{current.group_code(),
-                        safe_str_to_decimal(current.string())};
+            auto ptr = new RealTag(
+                    current.group_code(),
+                    safe_str_to_decimal(current.string())
+            );
             load_next_tag();
-            return ret;
+            return ptr;
         }
-        return RealTag{kError, 0.0};  // error tag
+        return new RealTag(kError, 0.0);  // error tag
     }
 
-    Vec3Tag AscLoader::vec3_tag() {
-        // Returns next tag as Vec3Tag or an error tag with group code < 0.
-        double x = 0.0, y = 0.0, z = 0.0;
+    pDXFTag AscLoader::vec3_tag() {
+        // Returns next tag as pointer to a Vec3Tag/Vec2Tag/RealTag.
+        //
+        // Returns Vec3Tag: valid 3D vector
+        // Returns Vec2Tag: valid 2D vector, z-axis is 0
+        // Returns RealTag: Unordered or invalid composed vector, returns first
+        // component as RealTag, the following layer may recover unordered
+        // vector tags.
+        //
+        // Returns an error tag if the next tag is not a Vec2Tag/Vec3Tag or
+        // premature EOF is reached.
+        // DXF file has to end with a (0, "EOF") StringTag.
+        //
+        Real x = 0.0, y = 0.0, z = 0.0;
         if (current_type() == kVec3) {
             short code = current.group_code();
             x = safe_str_to_decimal(current.string());
@@ -91,16 +117,20 @@ namespace ezdxf::tag {
                 if (current.group_code() == code + 20) {
                     z = safe_str_to_decimal(current.string());
                     load_next_tag();
-                    return Vec3Tag{code, x, y, z};
+                    return new Vec3Tag(code, x, y, z);
                 } else {
-                    // Does this return a Vec2Tag or is there an implicit cast
-                    // to Vec3Tag?
-                    return Vec2Tag{code, x, y};
+                    // Preserve loading state for 2D only vectors.
+                    return new Vec2Tag(code, x, y);
                 }
-
+            } else {
+                // Unordered or invalid composed DXF vector.
+                // Return all vector tags as RealTag: member function code()
+                // returns kReal even for group codes which should represent
+                // vectors like group code 10.
+                return new RealTag(code, x);
             }
         }
-        return Vec3Tag{kError, x, y, z};  // error tag
+        return new Vec3Tag(kError, x, y, z);  // error tag
     }
 
 }
