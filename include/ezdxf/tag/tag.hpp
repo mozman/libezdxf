@@ -18,11 +18,21 @@ namespace ezdxf::tag {
         kComment = 999,
     } GroupCode;
 
+    // Type kVec2 is a special type which indicates vectors and vertices
+    // which were loaded as 2D points without a z-axis. The tag value is still
+    // stored as Vec3 object, it's just meant to preserve the loaded state for
+    // rewrite.
+
     typedef enum {
-        kUndefined = 0, kString, kInteger, kReal, kVec3
+        kUndefined = 0, kString, kInteger, kReal, kVec3, kVec2
     } TagType;
 
     class DXFTag {
+        // Base tag which provides all possible checks.
+        //
+        // The basic DXF tag system with the types kString, kInteger and kReal
+        // is finally defined. No changes since the first DXF version!
+        // The kVec3 and kVec2 types are composed types of 2 or 3 kReal tags.
     private:
         short code = kError;
 
@@ -36,8 +46,42 @@ namespace ezdxf::tag {
         }
 
         [[nodiscard]] inline bool is_error_tag() const {
+            // Returns true if tag represents an error tag.
             return code == kError;
         }
+
+        [[nodiscard]] inline bool is_undefined() const {
+            // Returns true if tag is undefined.
+            return type() == kUndefined;
+        }
+
+        [[nodiscard]] inline bool has_string_value() const {
+            // Returns true if the tag value type is String.
+            return type() == kString;
+        }
+
+        [[nodiscard]] inline bool has_real_value() const {
+            // Returns true if the tag value type is Real.
+            return type() == kReal;
+        }
+
+        [[nodiscard]] inline bool has_integer_value() const {
+            // Returns true if the tag value type is Integer (int64_t).
+            return type() == kInteger;
+        }
+
+        [[nodiscard]] inline bool has_vec3_value() const {
+            // Returns true if the tag value type is Vec3, which is also
+            // true for kVec2!
+            return type() == kVec2 || type() == kVec3;
+        }
+
+        [[nodiscard]] inline bool export_2d() const {
+            // Special mark for vectors loaded without z-axis. The tag value is
+            // stored as type Vec3 with z-axis is 0.
+            return type() == kVec2;
+        }
+
 
         // All supported type casts:
         [[nodiscard]] virtual String string() const {
@@ -56,7 +100,13 @@ namespace ezdxf::tag {
             throw std::bad_cast();
         }
 
-        [[nodiscard]] bool equals(short code_, const std::string &s) const {
+        [[nodiscard]] bool is_struct_tag(short code_, const std::string &s) const {
+            // Returns true if the stored tag value is a string and matches
+            // the given group code and value string.
+            //
+            // This member function is meant to check for structural tag, which
+            // is a common taske for parsing DXF files, without testing the tag
+            // type at first.
             return code == code_ &&
                    type() == kString &&
                    s == string();
@@ -141,7 +191,6 @@ namespace ezdxf::tag {
             return kVec3;
         };
 
-        [[nodiscard]] virtual bool export_z() const { return true; }
     };
 
     // Special class for 2D only vertices is required for a generic DXF tag
@@ -155,7 +204,10 @@ namespace ezdxf::tag {
                 const Real y) :
                 Vec3Tag(code, x, y, 0.0) {};
 
-        [[nodiscard]] bool export_z() const override { return false; }
+        [[nodiscard]] TagType type() const override {
+            return kVec2;
+        };
+
     };
 
     TagType group_code_type(short);

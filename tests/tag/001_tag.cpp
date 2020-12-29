@@ -81,24 +81,49 @@ TEST_CASE("Test TagTypeCache", "[tag]") {
     }
 }
 
+TEST_CASE("Test undefined DXFTag", "[tag]") {
+    auto tag = DXFTag{70};
+    SECTION("Test get dedicated value type.") {
+        REQUIRE(tag.type() == kUndefined);
+        REQUIRE(tag.is_undefined() == true);
+        REQUIRE(tag.group_code() == 70);
+        REQUIRE(tag.is_error_tag() == false);
+        REQUIRE(tag.has_string_value() == false);
+        REQUIRE(tag.has_integer_value() == false);
+        REQUIRE(tag.has_real_value() == false);
+        REQUIRE(tag.has_vec3_value() == false);
+    }
+
+    SECTION("Test all type values casts throw bad_cast exceptions.") {
+        REQUIRE_THROWS_AS(tag.integer(), std::bad_cast);
+        REQUIRE_THROWS_AS(tag.real(), std::bad_cast);
+        REQUIRE_THROWS_AS(tag.string(), std::bad_cast);
+        REQUIRE_THROWS_AS(tag.vec3(), std::bad_cast);
+    }
+}
+
 TEST_CASE("Test StringTag", "[tag]") {
     auto tag = StringTag{0, "LINE"};
     SECTION("Test get dedicated value type.") {
         REQUIRE(tag.type() == kString);
         REQUIRE(tag.group_code() == 0);
         REQUIRE(tag.string() == "LINE");
+        REQUIRE(tag.is_error_tag() == false);
+        REQUIRE(tag.is_undefined() == false);
+        REQUIRE(tag.has_string_value() == true);
     }
 
     SECTION("Test for specific structure tags as string tags.") {
-        REQUIRE(StringTag(0, "SECTION").equals(0, "SECTION") == true);
-        REQUIRE(StringTag(0, "SECTION").equals(0, "ENDSEC") == false);
-        REQUIRE(StringTag(100, "AcDbEntity").equals(100, "AcDbEntity") == true);
+        REQUIRE(StringTag(0, "SECTION").is_struct_tag(0, "SECTION") == true);
+        REQUIRE(StringTag(0, "SECTION").is_struct_tag(0, "ENDSEC") == false);
+        REQUIRE(StringTag(100, "AcDbEntity").is_struct_tag(
+                100, "AcDbEntity") == true);
     }
 
     SECTION("Test for specific structure tags at invalid tag types.") {
         // This equal test should not throw an exception!
-        REQUIRE(IntegerTag(0, 0).equals(0, "SECTION") == false);
-        REQUIRE(RealTag(0, 0).equals(0, "SECTION") == false);
+        REQUIRE(IntegerTag(0, 0).is_struct_tag(0, "SECTION") == false);
+        REQUIRE(RealTag(0, 0).is_struct_tag(0, "SECTION") == false);
     }
 
     SECTION("Test other type values throw bad_cast exceptions.") {
@@ -114,6 +139,9 @@ TEST_CASE("Test IntegerTag", "[tag]") {
         REQUIRE(tag.type() == kInteger);
         REQUIRE(tag.group_code() == 70);
         REQUIRE(tag.integer() == 16);
+        REQUIRE(tag.is_error_tag() == false);
+        REQUIRE(tag.is_undefined() == false);
+        REQUIRE(tag.has_integer_value() == true);
     }
 
     SECTION("Test other type values throw bad_cast exceptions.") {
@@ -129,6 +157,9 @@ TEST_CASE("Test RealTag", "[tag]") {
         REQUIRE(tag.type() == kReal);
         REQUIRE(tag.group_code() == 40);
         REQUIRE(tag.real() == 1.0);
+        REQUIRE(tag.is_error_tag() == false);
+        REQUIRE(tag.is_undefined() == false);
+        REQUIRE(tag.has_real_value() == true);
     }
 
     SECTION("Test other type values throw bad_cast exceptions.") {
@@ -144,7 +175,32 @@ TEST_CASE("Test Vec3Tag", "[tag]") {
         REQUIRE(tag.type() == kVec3);
         REQUIRE(tag.group_code() == 10);
         REQUIRE(tag.vec3() == Vec3(1.0, 2.0, 3.0));
-        REQUIRE(tag.export_z());
+        REQUIRE(tag.has_vec3_value() == true);
+        REQUIRE(tag.is_error_tag() == false);
+        REQUIRE(tag.is_undefined() == false);
+        REQUIRE(tag.export_2d() == false);
+    }
+
+    SECTION("Test other type values throw bad_cast exceptions.") {
+        REQUIRE_THROWS_AS(tag.integer(), std::bad_cast);
+        REQUIRE_THROWS_AS(tag.string(), std::bad_cast);
+        REQUIRE_THROWS_AS(tag.real(), std::bad_cast);
+    }
+}
+
+TEST_CASE("Test Vec2Tag, Vec3 type loaded as 2d type.", "[tag]") {
+    auto tag = Vec2Tag{10, 1.0, 2.0};
+    SECTION("Test get dedicated value type.") {
+        // The following two tests have different results to Vec3Tag.
+        REQUIRE(tag.type() == kVec2);
+        REQUIRE(tag.export_2d() == true);
+
+        // Everything else should be equal to Vec3tag:
+        REQUIRE(tag.group_code() == 10);
+        REQUIRE(tag.vec3() == Vec3(1.0, 2.0, 0.0));
+        REQUIRE(tag.has_vec3_value() == true);
+        REQUIRE(tag.is_error_tag() == false);
+        REQUIRE(tag.is_undefined() == false);
     }
 
     SECTION("Test other type values throw bad_cast exceptions.") {
