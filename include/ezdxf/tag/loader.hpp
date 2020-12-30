@@ -67,7 +67,7 @@ namespace ezdxf::tag {
     class Loader {
         // Abstract base class
     public:
-        [[nodiscard]] virtual TagType current_type() const = 0;
+        [[nodiscard]] virtual TagType detect_current_type() const = 0;
 
         [[nodiscard]] virtual bool eof() const = 0;
 
@@ -101,7 +101,7 @@ namespace ezdxf::tag {
             load_next_tag();
         };
 
-        [[nodiscard]] TagType current_type() const override;
+        [[nodiscard]] TagType detect_current_type() const override;
 
         [[nodiscard]] bool eof() const override {
             return current.is_error_tag();

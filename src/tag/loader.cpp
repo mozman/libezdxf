@@ -72,11 +72,13 @@ namespace ezdxf::tag {
     }
 
     void AscLoader::load_next_tag() {
-        current = loader.get();
         line_number = loader.get_line_number();
+        current = loader.get();
     }
 
-    TagType AscLoader::current_type() const {
+    TagType AscLoader::detect_current_type() const {
+        // Detect real tag type defined by the group code for the current tag
+        // because current.type() is always kString.
         return group_code_type(current.group_code());
     }
 
@@ -92,11 +94,11 @@ namespace ezdxf::tag {
     }
 
     pDXFTag AscLoader::integer_tag() {
-        // Returns next tag as pointer to a IntegerTag.
+        // Returns next tag as pointer to an IntegerTag.
         // Returns an error tag if the next tag is not an IntegerTag or
         // premature EOF is reached.
         // DXF file has to end with a (0, "EOF") StringTag.
-        if (current_type() == kInteger) {
+        if (detect_current_type() == kInteger) {
             auto[err, value] = utils::safe_str_to_int64(current.string());
             if (!err) {
                 auto ptr = new IntegerTag(current.group_code(), value);
@@ -112,7 +114,7 @@ namespace ezdxf::tag {
         // Returns an error tag if the next tag is not a RealTag or
         // premature EOF is reached.
         // DXF file has to end with a (0, "EOF") StringTag.
-        if (current_type() == kReal) {
+        if (detect_current_type() == kReal) {
             auto[err, value] = utils::safe_str_to_real(current.string());
             if (!err) {
                 auto ptr = new RealTag(current.group_code(), value);
@@ -138,7 +140,7 @@ namespace ezdxf::tag {
         //
         Real x = 0.0, y = 0.0, z = 0.0;
 
-        if (current_type() == kVec3) {
+        if (detect_current_type() == kVec3) {
             short code = current.group_code();
             auto[err, value] = utils::safe_str_to_real(current.string());
             if (err) {
@@ -149,8 +151,7 @@ namespace ezdxf::tag {
             }
             load_next_tag();
             if (current.group_code() == code + 10) {
-                auto[err, value] = utils::safe_str_to_real(
-                        current.string());
+                auto[err, value] = utils::safe_str_to_real(current.string());
                 if (err) {
                     log_invalid_real_value();
                     return new Vec3Tag(kError, x, y, z);  // error tag
