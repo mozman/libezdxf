@@ -18,6 +18,7 @@ add_library(ezdxf STATIC
         src/ezdxf.cpp
         src/tag/loader.cpp
         src/tag/tag.cpp
+        src/utils.cpp
         )
 
 add_executable(run_tests

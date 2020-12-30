@@ -4,38 +4,21 @@
 #ifndef EZDXF_UTILS_HPP
 #define EZDXF_UTILS_HPP
 
-// Source & thx to:
-// https://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
+#include <ezdxf/type.hpp>
 
 namespace ezdxf::utils {
-// trim from start (in place)
-    static inline void ltrim(std::string &s) {
-        s.erase(s.begin(),
-                std::find_if(s.begin(), s.end(), [](unsigned char ch) {
-                    return !std::isspace(ch);
-                }));
-    }
+    void ltrim(String &);
 
-// trim from end (in place)
-    static inline void rtrim(std::string &s) {
-        s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
-            return !std::isspace(ch);
-        }).base(), s.end());
-    }
+    void rtrim(String &);
 
-// trim from both ends (in place)
-    static inline void trim(std::string &s) {
-        ltrim(s);
-        rtrim(s);
-    }
+    void trim(String &);
 
-// trim <CR><LF> from end (in place)
-    static inline void rtrim_endl(std::string &s) {
-        s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
-            return ch != 10 && ch != 13;
-        }).base(), s.end());
-    }
+    void rtrim_endl(String &);
 
+    std::pair<bool, Real> safe_str_to_real(const String &);
+
+    std::pair<bool, int64_t> safe_str_to_int64(const String &);
+
+    int16_t safe_group_code(const String &);
 }
-
 #endif //EZDXF_UTILS_HPP

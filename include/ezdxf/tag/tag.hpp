@@ -136,7 +136,7 @@ namespace ezdxf::tag {
 
     public:
         StringTag(const int16_t code, String value) : DXFTag(code),
-                                                    s(std::move(value)) {}
+                                                      s(std::move(value)) {}
 
         explicit StringTag(const int16_t code) : DXFTag(code), s() {}
 
@@ -156,7 +156,7 @@ namespace ezdxf::tag {
 
     public:
         IntegerTag(const int16_t code, const int64_t value) : DXFTag(code),
-                                                            i(value) {}
+                                                              i(value) {}
 
         [[nodiscard]] int64_t integer() const override {
             return i;
@@ -174,7 +174,7 @@ namespace ezdxf::tag {
 
     public:
         RealTag(const int16_t code, const Real value) : DXFTag(code),
-                                                      d(value) {};
+                                                        d(value) {};
 
         [[nodiscard]] Real real() const override {
             return d;
@@ -230,6 +230,7 @@ namespace ezdxf::tag {
     };
 
     TagType group_code_type(int16_t);
+
     bool is_valid_group_code(int64_t);
 
     typedef DXFTag *pDXFTag;

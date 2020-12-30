@@ -6,6 +6,7 @@
 
 #include <ezdxf/tag/tag.hpp>
 #include <istream>
+#include <vector>
 
 namespace ezdxf::tag {
     // Quote DXF reference:
@@ -34,8 +35,11 @@ namespace ezdxf::tag {
         // Current loaded tag -- is an error tag if EOF is reached:
         StringTag current{kStructure};
         size_t line_number = 0;
+        ErrorMessages errors{};
 
         StringTag load_next();
+
+        void log_invalid_group_code();
 
     public:
         explicit BasicLoader(const String &);
@@ -53,6 +57,11 @@ namespace ezdxf::tag {
         }
 
         [[nodiscard]] size_t get_line_number() const { return line_number; }
+
+        [[nodiscard]] bool has_errors() const { return !errors.empty(); }
+
+        [[nodiscard]] const ErrorMessages &get_errors() const { return errors; }
+
     };
 
     class Loader {
@@ -76,10 +85,16 @@ namespace ezdxf::tag {
     private:
         BasicLoader &loader;
         StringTag current{kStructure, ""};
+        size_t line_number = 0;
+        ErrorMessages errors{};
 
-        void load_next_tag() {
-            current = loader.get();
-        };
+        void load_next_tag();
+
+        [[nodiscard]] size_t get_line_number() const { return line_number; };
+
+        void log_invalid_real_value();
+
+        void log_invalid_integer_value();
 
     public:
         explicit AscLoader(BasicLoader &bl) : loader(bl) {
@@ -99,6 +114,11 @@ namespace ezdxf::tag {
         pDXFTag real_tag() override;
 
         pDXFTag vec3_tag() override;
+
+        [[nodiscard]] bool has_errors() const { return !errors.empty(); }
+
+        [[nodiscard]] const ErrorMessages &get_errors() const { return errors; }
+
     };
 
 }
