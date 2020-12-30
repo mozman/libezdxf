@@ -82,6 +82,18 @@ namespace ezdxf::tag {
         return group_code_type(current.group_code());
     }
 
+    // Error handling for the following tag loading functions:
+    //
+    // In most common cases an error tag indicates:
+    // DXF structure error or premature end of file and therefore end of
+    // processing!
+    //
+    // A well formed DXF file has to end with a (0, "EOF") StringTag.
+    //
+    // For recover modes which try to fix errors, the caller has to skip the
+    // erroneous current tag by load_next_tag() to continue loading
+    // else we are entering an infinite loop!
+
     pDXFTag AscLoader::string_tag() {
         // Returns next tag as pointer to a StringTag.
         // Returns an error tag if EOF is reached.
@@ -149,7 +161,6 @@ namespace ezdxf::tag {
             } else {
                 x = value;
             }
-            load_next_tag();
             if (current.group_code() == code + 10) {
                 auto[err, value] = utils::safe_str_to_real(current.string());
                 if (err) {
@@ -176,9 +187,12 @@ namespace ezdxf::tag {
                 }
             } else {
                 // Unordered or invalid composed DXF vector.
-                // Return all vector tags as RealTag: member function group_code()
-                // returns kReal even for group codes which should represent
-                // vectors like group code 10.
+                // Return first vector tag as RealTag:
+                // The member function group_code() returns kReal, even for
+                // group codes which represent vectors like group code 10.
+                //
+                // Do not log an error here, this should be decided by the
+                // caller if this could be fixed or if it's an error.
                 return new RealTag(code, x);
             }
         }
