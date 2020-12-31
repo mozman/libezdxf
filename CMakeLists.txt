@@ -28,6 +28,6 @@ add_executable(run_tests
         tests/tag/001_tag.cpp
         tests/tag/002_loader.cpp
         tests/utils/201_trim_strings.cpp
-        )
+        tests/utils/202_safe_converters.cpp)
 
 target_link_libraries(run_tests PRIVATE ezdxf)
