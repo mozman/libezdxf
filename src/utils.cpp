@@ -37,38 +37,34 @@ namespace ezdxf::utils {
         }).base(), s.end());
     }
 
-    std::pair<bool, Real> safe_str_to_real(const String &s) {
-        // pair.first: true if an error occurs
-        bool err = false;
-        Real value = 0;
+    std::optional<Real> safe_str_to_real(const String &s) {
         try {
-            value = stod(s);
+            return stod(s);
         }
         catch (...) {
-            err = true;
+            return {};
         }
-        return std::make_pair(err, value);
     }
 
-    std::pair<bool, int64_t> safe_str_to_int64(const String &s) {
-        // pair.first: true if an error occurs
-        // e.g. ProE stores some integer as floating point values!
-        bool err = false;
-        int64_t value = 0;
+    std::optional<int64_t> safe_str_to_int64(const String &s) {
         try {
-            value = stoll(s);
+            return stoll(s);
         }
         catch (...) {
-            err = true;
+            return {};
         }
-        return std::make_pair(err, value);
     }
 
     int16_t safe_group_code(const String &s) {
         // Returns kError for invalid group codes.
-        auto[err, code] = safe_str_to_int64(s);
         // valid group codes are in the range [0 .. 1071]
-        return !err && is_valid_group_code(code) ? code : GroupCode::kError;
+        try {
+            auto code = stoi(s);
+            return is_valid_group_code(code) ? code : GroupCode::kError;
+        }
+        catch (...) {
+            return GroupCode::kError;
+        }
     }
 
 }

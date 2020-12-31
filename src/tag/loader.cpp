@@ -112,9 +112,9 @@ namespace ezdxf::tag {
         // premature EOF is reached.
         // DXF file has to end with a (0, "EOF") StringTag.
         if (detect_current_type() == TagType::kInteger) {
-            auto[err, value] = utils::safe_str_to_int64(current.string());
-            if (!err) {
-                auto ptr = new IntegerTag(current.group_code(), value);
+            auto value = utils::safe_str_to_int64(current.string());
+            if (value) {
+                auto ptr = new IntegerTag(current.group_code(), value.value());
                 load_next_tag();
                 return ptr;
             } else log_invalid_integer_value();
@@ -128,9 +128,9 @@ namespace ezdxf::tag {
         // premature EOF is reached.
         // DXF file has to end with a (0, "EOF") StringTag.
         if (detect_current_type() == TagType::kReal) {
-            auto[err, value] = utils::safe_str_to_real(current.string());
-            if (!err) {
-                auto ptr = new RealTag(current.group_code(), value);
+            auto value = utils::safe_str_to_real(current.string());
+            if (value) {
+                auto ptr = new RealTag(current.group_code(), value.value());
                 load_next_tag();
                 return ptr;
             } else log_invalid_real_value();
@@ -155,32 +155,29 @@ namespace ezdxf::tag {
 
         if (detect_current_type() == TagType::kVec3) {
             short code = current.group_code();
-            auto[err, value] = utils::safe_str_to_real(current.string());
-            if (err) {
-                log_invalid_real_value();
-                return new Vec3Tag(GroupCode::kError, x, y, z);  // error tag
+            auto opt_x = utils::safe_str_to_real(current.string());
+            if (opt_x) {
+                x = opt_x.value();
             } else {
-                x = value;
+                log_invalid_real_value();
+                return new Vec3Tag(GroupCode::kError, x, y, z);
             }
             if (current.group_code() == code + 10) {
-                auto[err, value] = utils::safe_str_to_real(current.string());
-                if (err) {
-                    log_invalid_real_value();
-                    return new Vec3Tag(GroupCode::kError, x, y,
-                                       z);  // error tag
+                auto opt_y = utils::safe_str_to_real(current.string());
+                if (opt_y) {
+                    y = opt_y.value();
                 } else {
-                    y = value;
+                    log_invalid_real_value();
+                    return new Vec3Tag(GroupCode::kError, x, y, z);
                 }
                 load_next_tag();
                 if (current.group_code() == code + 20) {
-                    auto[err, value] = utils::safe_str_to_real(
-                            current.string());
-                    if (err) {
-                        log_invalid_real_value();
-                        return new Vec3Tag(GroupCode::kError, x, y,
-                                           z);  // error tag
+                    auto opt_z = utils::safe_str_to_real(current.string());
+                    if (opt_z) {
+                        z = opt_z.value();
                     } else {
-                        z = value;
+                        log_invalid_real_value();
+                        return new Vec3Tag(GroupCode::kError, x, y, z);
                     }
                     load_next_tag();
                     return new Vec3Tag(code, x, y, z);

@@ -5,20 +5,21 @@
 #define EZDXF_UTILS_HPP
 
 #include <ezdxf/type.hpp>
+#include <optional>
 
 namespace ezdxf::utils {
-    void ltrim(String &);
+    void ltrim(String &s);
 
-    void rtrim(String &);
+    void rtrim(String &s);
 
-    void trim(String &);
+    void trim(String &s);
 
-    void rtrim_endl(String &);
+    void rtrim_endl(String &s);
 
-    std::pair<bool, Real> safe_str_to_real(const String &);
+    std::optional<Real> safe_str_to_real(const String &s);
 
-    std::pair<bool, int64_t> safe_str_to_int64(const String &);
+    std::optional<int64_t> safe_str_to_int64(const String &s);
 
-    int16_t safe_group_code(const String &);
+    int16_t safe_group_code(const String &s);
 }
 #endif //EZDXF_UTILS_HPP
