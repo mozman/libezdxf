@@ -9,13 +9,12 @@
 #include <vector>
 
 namespace ezdxf {
-    typedef enum {
-        // 001-099 - DXF structural errors
-        kGenericError = 1,
-        kInvalidGroupCodeTag = 2,
-        kInvalidIntegerTag = 3,
-        kInvalidRealTag = 4,
-    } ErrorCode;
+    enum class ErrorCode {
+        kGenericError=100,
+        kInvalidGroupCodeTag,
+        kInvalidIntegerTag,
+        kInvalidRealTag,
+    };
     typedef double Real;
     typedef std::string String;
     typedef std::pair<ErrorCode, String> ErrorMessage;

@@ -31,20 +31,20 @@ namespace ezdxf::tag {
     }
 
     StringTag BasicLoader::load_next() {
-        StringTag error{kError}; // EOF marker
+        StringTag error{GroupCode::kError}; // EOF marker
         if (!input_stream) {
             return error;
         }
-        int16_t code = kComment;
+        int16_t code = GroupCode::kComment;
         String value;
         // Skip comment tags with group code 999:
-        while (code == kComment) {
+        while (code == GroupCode::kComment) {
             // Read next group code tag or EOF
             input_stream->getline(buffer, kMaxLineBuffer);
             if (!input_stream->fail()) {
                 line_number++;
                 code = utils::safe_group_code(buffer);
-                if (code == kError) {
+                if (code == GroupCode::kError) {
                     log_invalid_group_code();
                 }
                 // Read next value tag or EOF
@@ -52,7 +52,7 @@ namespace ezdxf::tag {
                 if (!input_stream->fail()) {
                     line_number++;
                     value = String(buffer);
-                    if (code == kStructure) {
+                    if (code == GroupCode::kStructure) {
                         // Remove all whitespace from structure tags:
                         utils::trim(value);
                     } else {
@@ -68,7 +68,8 @@ namespace ezdxf::tag {
     void BasicLoader::log_invalid_group_code() {
         std::ostringstream msg;
         msg << "Invalid group code in line " << get_line_number();
-        errors.push_back(ErrorMessage(kInvalidGroupCodeTag, msg.str()));
+        errors.push_back(
+                ErrorMessage(ErrorCode::kInvalidGroupCodeTag, msg.str()));
     }
 
     void AscLoader::load_next_tag() {
@@ -110,7 +111,7 @@ namespace ezdxf::tag {
         // Returns an error tag if the next tag is not an IntegerTag or
         // premature EOF is reached.
         // DXF file has to end with a (0, "EOF") StringTag.
-        if (detect_current_type() == kInteger) {
+        if (detect_current_type() == TagType::kInteger) {
             auto[err, value] = utils::safe_str_to_int64(current.string());
             if (!err) {
                 auto ptr = new IntegerTag(current.group_code(), value);
@@ -118,7 +119,7 @@ namespace ezdxf::tag {
                 return ptr;
             } else log_invalid_integer_value();
         }
-        return new IntegerTag(kError, 0);  // error tag
+        return new IntegerTag(GroupCode::kError, 0);  // error tag
     }
 
     pDXFTag AscLoader::real_tag() {
@@ -126,7 +127,7 @@ namespace ezdxf::tag {
         // Returns an error tag if the next tag is not a RealTag or
         // premature EOF is reached.
         // DXF file has to end with a (0, "EOF") StringTag.
-        if (detect_current_type() == kReal) {
+        if (detect_current_type() == TagType::kReal) {
             auto[err, value] = utils::safe_str_to_real(current.string());
             if (!err) {
                 auto ptr = new RealTag(current.group_code(), value);
@@ -134,7 +135,7 @@ namespace ezdxf::tag {
                 return ptr;
             } else log_invalid_real_value();
         }
-        return new RealTag(kError, 0.0);  // error tag
+        return new RealTag(GroupCode::kError, 0.0);  // error tag
     }
 
     pDXFTag AscLoader::vec3_tag() {
@@ -152,12 +153,12 @@ namespace ezdxf::tag {
         //
         Real x = 0.0, y = 0.0, z = 0.0;
 
-        if (detect_current_type() == kVec3) {
+        if (detect_current_type() == TagType::kVec3) {
             short code = current.group_code();
             auto[err, value] = utils::safe_str_to_real(current.string());
             if (err) {
                 log_invalid_real_value();
-                return new Vec3Tag(kError, x, y, z);  // error tag
+                return new Vec3Tag(GroupCode::kError, x, y, z);  // error tag
             } else {
                 x = value;
             }
@@ -165,7 +166,8 @@ namespace ezdxf::tag {
                 auto[err, value] = utils::safe_str_to_real(current.string());
                 if (err) {
                     log_invalid_real_value();
-                    return new Vec3Tag(kError, x, y, z);  // error tag
+                    return new Vec3Tag(GroupCode::kError, x, y,
+                                       z);  // error tag
                 } else {
                     y = value;
                 }
@@ -175,7 +177,8 @@ namespace ezdxf::tag {
                             current.string());
                     if (err) {
                         log_invalid_real_value();
-                        return new Vec3Tag(kError, x, y, z);  // error tag
+                        return new Vec3Tag(GroupCode::kError, x, y,
+                                           z);  // error tag
                     } else {
                         z = value;
                     }
@@ -196,21 +199,22 @@ namespace ezdxf::tag {
                 return new RealTag(code, x);
             }
         }
-        return new Vec3Tag(kError, x, y, z);  // error tag
+        return new Vec3Tag(GroupCode::kError, x, y, z);  // error tag
     }
 
     void AscLoader::log_invalid_real_value() {
         std::ostringstream msg;
         msg << "Invalid floating point value in line "
             << get_line_number();
-        errors.push_back(ErrorMessage(kInvalidRealTag, msg.str()));
+        errors.push_back(ErrorMessage(ErrorCode::kInvalidRealTag, msg.str()));
     }
 
     void AscLoader::log_invalid_integer_value() {
         std::ostringstream msg;
         msg << "Invalid integer value in line "
             << get_line_number();
-        errors.push_back(ErrorMessage(kInvalidIntegerTag, msg.str()));
+        errors.push_back(
+                ErrorMessage(ErrorCode::kInvalidIntegerTag, msg.str()));
     }
 
 }

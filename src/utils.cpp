@@ -68,7 +68,7 @@ namespace ezdxf::utils {
         // Returns kError for invalid group codes.
         auto[err, code] = safe_str_to_int64(s);
         // valid group codes are in the range [0 .. 1071]
-        return !err && is_valid_group_code(code) ? code : kError;
+        return !err && is_valid_group_code(code) ? code : GroupCode::kError;
     }
 
 }

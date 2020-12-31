@@ -43,7 +43,7 @@ namespace ezdxf::tag {
         // to store the tag value.
         //
     private:
-        int16_t code = kError;
+        int16_t code = GroupCode::kError;
 
     public:
         explicit DXFTag(const int16_t code) : code(code) {}
@@ -51,45 +51,45 @@ namespace ezdxf::tag {
         [[nodiscard]] int16_t group_code() const { return code; }
 
         [[nodiscard]] virtual TagType type() const {
-            return kUndefined;
+            return TagType::kUndefined;
         }
 
         [[nodiscard]] inline bool is_error_tag() const {
             // Returns true if tag represents an error tag.
             // Every tag type can represent an error tag.
-            return code == kError;
+            return code == GroupCode::kError;
         }
 
         [[nodiscard]] inline bool is_undefined() const {
             // Returns true if tag is undefined.
-            return type() == kUndefined;
+            return type() == TagType::kUndefined;
         }
 
         [[nodiscard]] inline bool has_string_value() const {
             // Returns true if the tag value type is String.
-            return type() == kString;
+            return type() == TagType::kString;
         }
 
         [[nodiscard]] inline bool has_real_value() const {
             // Returns true if the tag value type is Real.
-            return type() == kReal;
+            return type() == TagType::kReal;
         }
 
         [[nodiscard]] inline bool has_integer_value() const {
             // Returns true if the tag value type is Integer (int64_t).
-            return type() == kInteger;
+            return type() == TagType::kInteger;
         }
 
         [[nodiscard]] inline bool has_vec3_value() const {
             // Returns true if the tag value type is Vec3, which is also
             // true for kVec2!
-            return type() == kVec2 || type() == kVec3;
+            return type() == TagType::kVec2 || type() == TagType::kVec3;
         }
 
         [[nodiscard]] inline bool export_2d() const {
             // Special flag for vectors loaded without z-axis. The tag value is
             // stored as type Vec3 with z-axis is 0.
-            return type() == kVec2;
+            return type() == TagType::kVec2;
         }
 
 
@@ -119,7 +119,7 @@ namespace ezdxf::tag {
             // is a common task for parsing DXF files, without testing the tag
             // type at first.
             return code == code_ &&
-                   type() == kString &&
+                   type() == TagType::kString &&
                    s == string();
         }
 
@@ -145,7 +145,7 @@ namespace ezdxf::tag {
         }
 
         [[nodiscard]] TagType type() const override {
-            return kString;
+            return TagType::kString;
         }
     };
 
@@ -163,7 +163,7 @@ namespace ezdxf::tag {
         }
 
         [[nodiscard]] TagType type() const override {
-            return kInteger;
+            return TagType::kInteger;
         }
     };
 
@@ -181,7 +181,7 @@ namespace ezdxf::tag {
         }
 
         [[nodiscard]] TagType type() const override {
-            return kReal;
+            return TagType::kReal;
         };
     };
 
@@ -207,7 +207,7 @@ namespace ezdxf::tag {
         }
 
         [[nodiscard]] TagType type() const override {
-            return kVec3;
+            return TagType::kVec3;
         };
 
     };
@@ -224,7 +224,7 @@ namespace ezdxf::tag {
                 Vec3Tag(code, x, y, 0.0) {};
 
         [[nodiscard]] TagType type() const override {
-            return kVec2;
+            return TagType::kVec2;
         };
 
     };
