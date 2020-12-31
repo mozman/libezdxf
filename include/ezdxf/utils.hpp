@@ -16,6 +16,10 @@ namespace ezdxf::utils {
 
     void rtrim_endl(String &s);
 
+    // Important note:
+    // This converters are optimized to load DXF tags and nothing else,
+    // they are not meant as general purpose functions.
+
     std::optional<Real> safe_str_to_real(const String &s);
 
     std::optional<int64_t> safe_str_to_int64(const String &s);

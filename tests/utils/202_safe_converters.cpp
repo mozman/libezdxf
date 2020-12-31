@@ -9,6 +9,10 @@
 using namespace ezdxf::utils;
 using namespace ezdxf::tag;
 
+// Important note:
+// This converters are optimized to load DXF tags and nothing else,
+// they are not meant as general purpose functions.
+
 TEST_CASE("Test VALID group codes converted by safe_group_code()",
           "[utils][safe]") {
     SECTION("Test without whitespaces") {
