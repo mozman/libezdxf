@@ -41,28 +41,31 @@ namespace ezdxf::tag {
         while (code == GroupCode::kComment) {
             // Read next group code tag or EOF
             input_stream->getline(buffer, kMaxLineBuffer);
-            if (!input_stream->fail()) {
-                line_number++;
-                code = utils::safe_group_code(buffer);
-                if (code == GroupCode::kError) {
-                    log_invalid_group_code();
-                }
-                // Read next value tag or EOF
-                input_stream->getline(buffer, kMaxLineBuffer);
-                if (!input_stream->fail()) {
-                    line_number++;
-                    value = String(buffer);
-                    if (code == GroupCode::kStructure) {
-                        // Remove all whitespace from structure tags:
-                        utils::trim(value);
-                    } else {
-                        // Remove only line endings <CR> and <LF>:
-                        utils::rtrim_endl(value);
-                    }
-                } else return error;
-            } else return error;
+            if (input_stream->fail()) {
+                return error;
+            }
+            line_number++;
+            code = utils::safe_group_code(buffer);
+            if (code == GroupCode::kError) {
+                log_invalid_group_code();
+                return error;
+            }
+            // Read next value tag or EOF
+            input_stream->getline(buffer, kMaxLineBuffer);
+            if (input_stream->fail()) {
+                return error;
+            }
+            line_number++;
+            value = String(buffer);
+            if (code == GroupCode::kStructure) {
+                // Remove all whitespace from structure tags:
+                utils::trim(value);
+            } else {
+                // Remove only line endings <CR> and <LF>:
+                utils::rtrim_endl(value);
+            }
         }
-        return StringTag(code, value);
+        return {code, value};
     }
 
     void BasicLoader::log_invalid_group_code() {
