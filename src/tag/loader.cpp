@@ -41,28 +41,31 @@ namespace ezdxf::tag {
         while (code == GroupCode::kComment) {
             // Read next group code tag or EOF
             input_stream->getline(buffer, kMaxLineBuffer);
-            if (!input_stream->fail()) {
-                line_number++;
-                code = utils::safe_group_code(buffer);
-                if (code == GroupCode::kError) {
-                    log_invalid_group_code();
-                }
-                // Read next value tag or EOF
-                input_stream->getline(buffer, kMaxLineBuffer);
-                if (!input_stream->fail()) {
-                    line_number++;
-                    value = String(buffer);
-                    if (code == GroupCode::kStructure) {
-                        // Remove all whitespace from structure tags:
-                        utils::trim(value);
-                    } else {
-                        // Remove only line endings <CR> and <LF>:
-                        utils::rtrim_endl(value);
-                    }
-                } else return error;
-            } else return error;
+            if (input_stream->fail()) {
+                return error;
+            }
+            line_number++;
+            code = utils::safe_group_code(buffer);
+            if (code == GroupCode::kError) {
+                log_invalid_group_code();
+                return error;
+            }
+            // Read next value tag or EOF
+            input_stream->getline(buffer, kMaxLineBuffer);
+            if (input_stream->fail()) {
+                return error;
+            }
+            line_number++;
+            value = String(buffer);
+            if (code == GroupCode::kStructure) {
+                // Remove all whitespace from structure tags:
+                utils::trim(value);
+            } else {
+                // Remove only line endings <CR> and <LF>:
+                utils::rtrim_endl(value);
+            }
         }
-        return StringTag(code, value);
+        return {code, value};
     }
 
     void BasicLoader::log_invalid_group_code() {
@@ -151,52 +154,51 @@ namespace ezdxf::tag {
         // premature EOF is reached.
         // DXF file has to end with a (0, "EOF") StringTag.
         //
+        if (detect_current_type() != TagType::kVec3) {
+            return new Vec3Tag(GroupCode::kError, 0, 0, 0);  // error tag
+        }
         Real x = 0.0, y = 0.0, z = 0.0;
-
-        if (detect_current_type() == TagType::kVec3) {
-            short code = current.group_code();
-            auto opt_x = utils::safe_str_to_real(current.string());
-            if (opt_x) {
-                x = opt_x.value();
+        short code = current.group_code();
+        auto opt_x = utils::safe_str_to_real(current.string());
+        if (opt_x) {
+            x = opt_x.value();
+        } else {
+            log_invalid_real_value();
+            return new Vec3Tag(GroupCode::kError, x, y, z);
+        }
+        if (current.group_code() == code + 10) {
+            auto opt_y = utils::safe_str_to_real(current.string());
+            if (opt_y) {
+                y = opt_y.value();
             } else {
                 log_invalid_real_value();
                 return new Vec3Tag(GroupCode::kError, x, y, z);
             }
-            if (current.group_code() == code + 10) {
-                auto opt_y = utils::safe_str_to_real(current.string());
-                if (opt_y) {
-                    y = opt_y.value();
+            load_next_tag();
+            if (current.group_code() == code + 20) {
+                auto opt_z = utils::safe_str_to_real(current.string());
+                if (opt_z) {
+                    z = opt_z.value();
                 } else {
                     log_invalid_real_value();
                     return new Vec3Tag(GroupCode::kError, x, y, z);
                 }
                 load_next_tag();
-                if (current.group_code() == code + 20) {
-                    auto opt_z = utils::safe_str_to_real(current.string());
-                    if (opt_z) {
-                        z = opt_z.value();
-                    } else {
-                        log_invalid_real_value();
-                        return new Vec3Tag(GroupCode::kError, x, y, z);
-                    }
-                    load_next_tag();
-                    return new Vec3Tag(code, x, y, z);
-                } else {
-                    // Preserve loading state for 2D only vectors.
-                    return new Vec2Tag(code, x, y);
-                }
+                return new Vec3Tag(code, x, y, z);
             } else {
-                // Unordered or invalid composed DXF vector.
-                // Return first vector tag as RealTag:
-                // The member function group_code() returns kReal, even for
-                // group codes which represent vectors like group code 10.
-                //
-                // Do not log an error here, this should be decided by the
-                // caller if this could be fixed or if it's an error.
-                return new RealTag(code, x);
+                // Preserve loading state for 2D only vectors.
+                return new Vec2Tag(code, x, y);
             }
+        } else {
+            // Unordered or invalid composed DXF vector.
+            // Return first vector tag as RealTag:
+            // The member function group_code() returns kReal, even for
+            // group codes which represent vectors like group code 10.
+            //
+            // Do not log an error here, this should be decided by the
+            // caller if this could be fixed or if it's an error.
+            return new RealTag(code, x);
         }
-        return new Vec3Tag(GroupCode::kError, x, y, z);  // error tag
     }
 
     void AscLoader::log_invalid_real_value() {
@@ -213,5 +215,4 @@ namespace ezdxf::tag {
         errors.push_back(
                 ErrorMessage(ErrorCode::kInvalidIntegerTag, msg.str()));
     }
-
 }
