@@ -15,6 +15,7 @@ namespace ezdxf::tag {
     // An enum class is not suitable for GroupCode, because not automatically
     // compatible to numeric types and won't define all possible group codes
     // as enum constants:
+
     using GroupCode = enum {
         kError = -1,
         kStructure = 0,
@@ -44,7 +45,7 @@ namespace ezdxf::tag {
         // the DXFTag type, the subclasses only define the tag type by
         // implementing the virtual type() member function and constructor(s)
         // to store the tag value.
-        //
+
     public:
         explicit DXFTag(const int16_t code) : code(code) {}
 
@@ -111,7 +112,7 @@ namespace ezdxf::tag {
         }
 
         [[nodiscard]] bool
-        is_string_tag(int16_t code_, const std::string &s) const {
+        equals(int16_t code_, const std::string &s) const {
             // Returns true if the stored tag value is a string and matches
             // the given group code and value string.
             //

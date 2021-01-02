@@ -11,20 +11,20 @@ TEST_CASE("Test BasicLoader() loading from strings.", "[tag][BasicLoader]") {
         REQUIRE(reader.is_empty() == false);
 
         // Look at first tag:
-        REQUIRE(reader.peek().is_string_tag(0, "SECTION"));
+        REQUIRE(reader.peek().equals(0, "SECTION"));
         REQUIRE(reader.is_empty() == false);
 
         // Get first tag:
         auto tag = reader.get();
-        REQUIRE(tag.is_string_tag(0, "SECTION"));
+        REQUIRE(tag.equals(0, "SECTION"));
         REQUIRE(reader.is_empty() == false);
 
         // Look at the next tag:
-        REQUIRE(reader.peek().is_string_tag(0, "EOF"));
+        REQUIRE(reader.peek().equals(0, "EOF"));
 
         // Get last tag:
         tag = reader.get();
-        REQUIRE(tag.is_string_tag(0, "EOF"));
+        REQUIRE(tag.equals(0, "EOF"));
 
         // Look at the next tag or in this case EOF is reached:
         REQUIRE(reader.peek().is_error_tag());
@@ -36,9 +36,9 @@ TEST_CASE("Test BasicLoader() loading from strings.", "[tag][BasicLoader]") {
         auto reader = ezdxf::tag::BasicLoader(
                 " 0 \n  SECTION \r\n  0\n  EOF \r\n");
         auto tag = reader.get();
-        REQUIRE(tag.is_string_tag(0, "SECTION"));
+        REQUIRE(tag.equals(0, "SECTION"));
         tag = reader.get();
-        REQUIRE(tag.is_string_tag(0, "EOF"));
+        REQUIRE(tag.equals(0, "EOF"));
         REQUIRE(reader.is_empty());
     }
 
@@ -46,9 +46,9 @@ TEST_CASE("Test BasicLoader() loading from strings.", "[tag][BasicLoader]") {
         auto reader = ezdxf::tag::BasicLoader(
                 "999\nxxx\n0\nSECTION\n0\nEOF\n999\nxxx\n");
         auto tag = reader.get();
-        REQUIRE(tag.is_string_tag(0, "SECTION"));
+        REQUIRE(tag.equals(0, "SECTION"));
         tag = reader.get();
-        REQUIRE(tag.is_string_tag(0, "EOF"));
+        REQUIRE(tag.equals(0, "EOF"));
         // Comment tags after EOF should be removed:
         REQUIRE(reader.is_empty());
     }
