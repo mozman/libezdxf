@@ -23,11 +23,11 @@ add_library(ezdxf STATIC
 
 add_executable(run_tests
         tests/run_tests.cpp
-        tests/math/101_base.cpp
-        tests/math/102_vec3.cpp
-        tests/tag/001_tag.cpp
-        tests/tag/002_loader.cpp
-        tests/utils/201_trim_strings.cpp
-        tests/utils/202_safe_converters.cpp)
+        tests/0_tag/001_tag.cpp
+        tests/0_tag/002_loader.cpp
+        tests/1_math/101_base.cpp
+        tests/1_math/102_vec3.cpp
+        tests/2_utils/201_trim_strings.cpp
+        tests/2_utils/202_safe_converters.cpp)
 
 target_link_libraries(run_tests PRIVATE ezdxf)
