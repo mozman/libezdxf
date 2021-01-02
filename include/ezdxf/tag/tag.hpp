@@ -12,7 +12,10 @@
 using ezdxf::math::Vec3;
 
 namespace ezdxf::tag {
-    using GroupCode =  enum {
+    // An enum class is not suitable for GroupCode, because not automatically
+    // compatible to numeric types and won't define all possible group codes
+    // as enum constants:
+    using GroupCode = enum {
         kError = -1,
         kStructure = 0,
         kComment = 999,
@@ -23,7 +26,7 @@ namespace ezdxf::tag {
     // stored as Vec3 object, it's just meant to preserve the loaded state for
     // rewrite.
 
-    using TagType =  enum {
+    enum class TagType {
         kUndefined = 0, kString, kInteger, kReal, kVec3, kVec2
     };
 
@@ -42,9 +45,6 @@ namespace ezdxf::tag {
         // implementing the virtual type() member function and constructor(s)
         // to store the tag value.
         //
-    private:
-        int16_t code = GroupCode::kError;
-
     public:
         explicit DXFTag(const int16_t code) : code(code) {}
 
@@ -123,6 +123,9 @@ namespace ezdxf::tag {
                    s == string();
         }
 
+    private:
+        int16_t code = GroupCode::kError;
+
     };
 
     class StringTag : public DXFTag {
@@ -131,8 +134,6 @@ namespace ezdxf::tag {
         // string are not striped, because sometimes they are important
         // (e.g. DIMENSION text_tag), except for structure tags with group code 0,
         // for these tags white spaces are obstructive.
-    private:
-        String s;
 
     public:
         StringTag(const int16_t code, String value) : DXFTag(code),
@@ -147,12 +148,14 @@ namespace ezdxf::tag {
         [[nodiscard]] TagType type() const override {
             return TagType::kString;
         }
+
+    private:
+        String s;
+
     };
 
     class IntegerTag : public DXFTag {
         // Integer value is stored as signed 64-bit value.
-    private:
-        int64_t i;
 
     public:
         IntegerTag(const int16_t code, const int64_t value) : DXFTag(code),
@@ -165,12 +168,14 @@ namespace ezdxf::tag {
         [[nodiscard]] TagType type() const override {
             return TagType::kInteger;
         }
+
+    private:
+        int64_t i;
+
     };
 
     class RealTag : public DXFTag {
         // Real value is stored as 64-bit double value.
-    private:
-        const Real d;
 
     public:
         RealTag(const int16_t code, const Real value) : DXFTag(code),
@@ -183,6 +188,10 @@ namespace ezdxf::tag {
         [[nodiscard]] TagType type() const override {
             return TagType::kReal;
         };
+
+    private:
+        const Real d;
+
     };
 
     class Vec3Tag : public DXFTag {
@@ -192,9 +201,6 @@ namespace ezdxf::tag {
         // group code for x = code
         // group code for y = code + 10
         // group code for z = code + 20
-    private:
-        Vec3 vec3_;
-
     public:
         Vec3Tag(const int16_t code,
                 const Real x,
@@ -209,6 +215,9 @@ namespace ezdxf::tag {
         [[nodiscard]] TagType type() const override {
             return TagType::kVec3;
         };
+
+    private:
+        Vec3 vec3_;
 
     };
 

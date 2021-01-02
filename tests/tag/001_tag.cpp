@@ -48,7 +48,7 @@ TEST_CASE("Test group codes out of defined range are kUndefined.",
 }
 
 TEST_CASE("Test if TagType::kUndefined is 0", "[tag]") {
-    REQUIRE(TagType::kUndefined == 0);
+    REQUIRE(static_cast<int>(TagType::kUndefined) == 0);
 }
 
 TEST_CASE("Test TagTypeCache", "[tag]") {
