@@ -12,20 +12,20 @@
 using ezdxf::math::Vec3;
 
 namespace ezdxf::tag {
-    typedef enum {
+    using GroupCode =  enum {
         kError = -1,
         kStructure = 0,
         kComment = 999,
-    } GroupCode;
+    };
 
     // Type kVec2 is a special type which indicates vectors and vertices
     // which were loaded as 2D points without a z-axis. The tag value is still
     // stored as Vec3 object, it's just meant to preserve the loaded state for
     // rewrite.
 
-    typedef enum {
+    using TagType =  enum {
         kUndefined = 0, kString, kInteger, kReal, kVec3, kVec2
-    } TagType;
+    };
 
     class DXFTag {
         // The abstract base class which is the foundation of the DXF tag type

@@ -10,15 +10,15 @@
 
 namespace ezdxf {
     enum class ErrorCode {
-        kGenericError=100,
+        kGenericError = 100,
         kInvalidGroupCodeTag,
         kInvalidIntegerTag,
         kInvalidRealTag,
     };
-    typedef double Real;
-    typedef std::string String;
-    typedef std::pair<ErrorCode, String> ErrorMessage;
-    typedef std::vector<ErrorMessage> ErrorMessages;
+    using Real = double;
+    using String = std::string;
+    using ErrorMessage = std::pair<ErrorCode, String>;
+    using ErrorMessages = std::vector<ErrorMessage>;
 
 }
 
