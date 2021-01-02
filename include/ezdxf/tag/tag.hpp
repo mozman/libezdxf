@@ -35,7 +35,7 @@ namespace ezdxf::tag {
         // The abstract base class which is the foundation of the DXF tag type
         // system. The DXFTag type provides already the full functionality, but
         // is itself an undefined (kUndefined) tag and should not be
-        // instantiated (no clever tricks uses to prevent this)!
+        // instantiated (no clever tricks used to prevent this)!
         //
         // The basic DXF tag system with the types kString, kInteger and kReal
         // is finally defined. No changes since the first DXF version!
