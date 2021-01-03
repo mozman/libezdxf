@@ -224,3 +224,11 @@ TEST_CASE("Store different tag types in a container.", "[tag]") {
     REQUIRE(container[2]->type() == TagType::kReal);
     REQUIRE(container[2]->real() == 13.0);
 }
+
+TEST_CASE("Test error tag.", "[tag]") {
+    auto error = ezdxf::tag::make_error_tag();
+    REQUIRE(error->is_error_tag() == true);
+    REQUIRE(error->type() == TagType::kUndefined);
+    // Indicates only an error and has no error message attached:
+    REQUIRE_THROWS_AS(error->string(), std::bad_cast);
+}

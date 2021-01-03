@@ -6,6 +6,7 @@
 
 #include <string>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 namespace ezdxf {
@@ -15,9 +16,14 @@ namespace ezdxf {
         kInvalidIntegerTag,
         kInvalidRealTag,
     };
+    struct ErrorMessage {
+        ErrorCode code;
+        std::string message;
+        ErrorMessage(ErrorCode code_, std::string msg) :
+            code(code_), message(std::move(msg)) {};
+    };
     using Real = double;
     using String = std::string;
-    using ErrorMessage = std::pair<ErrorCode, String>;
     using ErrorMessages = std::vector<ErrorMessage>;
 
 }

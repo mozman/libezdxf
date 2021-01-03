@@ -8,6 +8,8 @@
 
 namespace ezdxf::tag {
     std::unique_ptr<DXFTag> make_error_tag() {
+        // Error tag type is TagType::kUndefined!
+        // use member function is_error_tag() to detect error tags.
         return std::make_unique<DXFTag>(GroupCode::kError);
     }
 
@@ -74,8 +76,7 @@ namespace ezdxf::tag {
     void BasicLoader::log_invalid_group_code() {
         std::ostringstream msg;
         msg << "Invalid group code in line " << get_line_number();
-        errors.push_back(
-                ErrorMessage(ErrorCode::kInvalidGroupCodeTag, msg.str()));
+        errors.emplace_back(ErrorCode::kInvalidGroupCodeTag, msg.str());
     }
 
     void AscLoader::load_next_tag() {
@@ -86,6 +87,7 @@ namespace ezdxf::tag {
     TagType AscLoader::detect_current_type() const {
         // Detect real tag type defined by the group code for the current tag
         // because current.type() is always kString.
+        // Returns TagType::kUndefined for error tags!
         return group_code_type(current.group_code());
     }
 
@@ -210,14 +212,13 @@ namespace ezdxf::tag {
         std::ostringstream msg;
         msg << "Invalid floating point value in line "
             << get_line_number();
-        errors.push_back(ErrorMessage(ErrorCode::kInvalidRealTag, msg.str()));
+        errors.emplace_back(ErrorCode::kInvalidRealTag, msg.str());
     }
 
     void AscLoader::log_invalid_integer_value() {
         std::ostringstream msg;
         msg << "Invalid integer value in line "
             << get_line_number();
-        errors.push_back(
-                ErrorMessage(ErrorCode::kInvalidIntegerTag, msg.str()));
+        errors.emplace_back(ErrorCode::kInvalidIntegerTag, msg.str());
     }
 }
