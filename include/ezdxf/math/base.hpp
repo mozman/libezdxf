@@ -7,17 +7,17 @@
 #include <cmath>
 
 namespace ezdxf::math {
-    const double kAbsTol = 1e-12;
-    const double kRelTol = 1e-9;
-    const double kPi = 3.141592653589793;
-    const double kPi2 = kPi / 2.0;
-    const double kTau = kPi * 2.0;
-    const double kRad2Deg = 180.0 / kPi;
-    const double kDeg2Rad = kPi / 180.0;
+    constexpr double kAbsTol = 1e-12;
+    constexpr double kRelTol = 1e-9;
+    constexpr double kPi = 3.141592653589793;
+    constexpr double kPi2 = kPi / 2.0;
+    constexpr double kTau = kPi * 2.0;
+    constexpr double kRad2Deg = 180.0 / kPi;
+    constexpr double kDeg2Rad = kPi / 180.0;
 
-    inline bool is_close(const double &a,
-                         const double &b,
-                         double const &abs_tol = kAbsTol) {
+    inline bool is_close(const double a,
+                         const double b,
+                         const double abs_tol = kAbsTol) {
         // Matches the Python implementation!
         const double diff = fabs(b - a);
         return diff <= fabs(kRelTol * b) ||
