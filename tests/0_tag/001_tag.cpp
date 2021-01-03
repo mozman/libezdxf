@@ -178,7 +178,7 @@ TEST_CASE("Test Vec3Tag", "[tag]") {
         REQUIRE(tag.has_vec3_value() == true);
         REQUIRE(tag.is_error_tag() == false);
         REQUIRE(tag.is_undefined() == false);
-        REQUIRE(tag.export_2d() == false);
+        REQUIRE(tag.export_vec2() == false);
     }
 
     SECTION("Test other type values throw bad_cast exceptions.") {
@@ -193,7 +193,7 @@ TEST_CASE("Test Vec2Tag, Vec3 type loaded as 2d type.", "[tag]") {
     SECTION("Test get dedicated value type.") {
         // The following two tests have different results to Vec3Tag.
         REQUIRE(tag.type() == TagType::kVec2);
-        REQUIRE(tag.export_2d() == true);
+        REQUIRE(tag.export_vec2() == true);
 
         // Everything else should be equal to Vec3tag:
         REQUIRE(tag.group_code() == 10);

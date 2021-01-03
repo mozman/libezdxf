@@ -24,8 +24,9 @@ namespace ezdxf::tag {
 
     // Type kVec2 is a special type which indicates vectors and vertices
     // which were loaded as 2D points without a z-axis. The tag value is still
-    // stored as Vec3 object, it's just meant to preserve the loaded state for
-    // rewrite.
+    // stored as Vec3 object, this type is just meant to preserve the loading
+    // state for rewriting. kVec3 behaves like kVec2 and vice versa, except
+    // for functions type() and export_vec2().
 
     enum class TagType {
         kUndefined = 0, kString, kInteger, kReal, kVec3, kVec2
@@ -84,12 +85,14 @@ namespace ezdxf::tag {
         [[nodiscard]] inline bool has_vec3_value() const {
             // Returns true if the tag value type is Vec3, which is also
             // true for kVec2!
+            // See comment in front of TagType about kVec2/kVec3 handling.
             return type() == TagType::kVec2 || type() == TagType::kVec3;
         }
 
-        [[nodiscard]] inline bool export_2d() const {
+        [[nodiscard]] inline bool export_vec2() const {
             // Special flag for vectors loaded without z-axis. The tag value is
-            // stored as type Vec3 with z-axis is 0.
+            // stored as Vec3 and z-axis is 0.
+            // See comment in front of TagType about kVec2/kVec3 handling.
             return type() == TagType::kVec2;
         }
 
@@ -243,7 +246,7 @@ namespace ezdxf::tag {
 
     bool is_valid_group_code(int64_t);
 
-    typedef DXFTag *pDXFTag;
+    std::unique_ptr<DXFTag> make_error_tag();
 
     class Tags {
     private:

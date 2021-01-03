@@ -72,13 +72,13 @@ namespace ezdxf::tag {
         [[nodiscard]] virtual bool eof() const = 0;
 
         // TODO: return loaded tags as sharded pointers!
-        virtual pDXFTag string_tag() = 0;
+        virtual std::unique_ptr<DXFTag> string_tag() = 0;
 
-        virtual pDXFTag integer_tag() = 0;
+        virtual std::unique_ptr<DXFTag> integer_tag() = 0;
 
-        virtual pDXFTag real_tag() = 0;
+        virtual std::unique_ptr<DXFTag> real_tag() = 0;
 
-        virtual pDXFTag vec3_tag() = 0;
+        virtual std::unique_ptr<DXFTag> vec3_tag() = 0;
     };
 
     class AscLoader : public Loader {
@@ -107,13 +107,13 @@ namespace ezdxf::tag {
             return current.is_error_tag();
         }
 
-        pDXFTag string_tag() override;
+        std::unique_ptr<DXFTag> string_tag() override;
 
-        pDXFTag integer_tag() override;
+        std::unique_ptr<DXFTag> integer_tag() override;
 
-        pDXFTag real_tag() override;
+        std::unique_ptr<DXFTag> real_tag() override;
 
-        pDXFTag vec3_tag() override;
+        std::unique_ptr<DXFTag> vec3_tag() override;
 
         [[nodiscard]] bool has_errors() const { return !errors.empty(); }
 

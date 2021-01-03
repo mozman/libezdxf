@@ -7,6 +7,9 @@
 #include <ezdxf/utils.hpp>
 
 namespace ezdxf::tag {
+    std::unique_ptr<DXFTag> make_error_tag() {
+        return std::make_unique<DXFTag>(GroupCode::kError);
+    }
 
     BasicLoader::BasicLoader(const String &s) {
         input_stream = new std::basic_istringstream(s);
@@ -98,10 +101,10 @@ namespace ezdxf::tag {
     // erroneous current tag by load_next_tag() to continue loading
     // else we are entering an infinite loop!
 
-    pDXFTag AscLoader::string_tag() {
+    std::unique_ptr<DXFTag> AscLoader::string_tag() {
         // Returns next tag as pointer to a StringTag.
         // Returns an error tag if EOF is reached.
-        auto ptr = new StringTag(
+        auto ptr = std::make_unique<StringTag>(
                 current.group_code(),
                 current.string()
         );
@@ -109,7 +112,7 @@ namespace ezdxf::tag {
         return ptr;
     }
 
-    pDXFTag AscLoader::integer_tag() {
+    std::unique_ptr<DXFTag> AscLoader::integer_tag() {
         // Returns next tag as pointer to an IntegerTag.
         // Returns an error tag if the next tag is not an IntegerTag or
         // premature EOF is reached.
@@ -117,15 +120,16 @@ namespace ezdxf::tag {
         if (detect_current_type() == TagType::kInteger) {
             auto value = utils::safe_str_to_int64(current.string());
             if (value) {
-                auto ptr = new IntegerTag(current.group_code(), value.value());
+                auto ptr = std::make_unique<IntegerTag>(
+                        current.group_code(), value.value());
                 load_next_tag();
                 return ptr;
             } else log_invalid_integer_value();
         }
-        return new IntegerTag(GroupCode::kError, 0);  // error tag
+        return make_error_tag();
     }
 
-    pDXFTag AscLoader::real_tag() {
+    std::unique_ptr<DXFTag> AscLoader::real_tag() {
         // Returns next tag as pointer to a RealTag.
         // Returns an error tag if the next tag is not a RealTag or
         // premature EOF is reached.
@@ -133,15 +137,16 @@ namespace ezdxf::tag {
         if (detect_current_type() == TagType::kReal) {
             auto value = utils::safe_str_to_real(current.string());
             if (value) {
-                auto ptr = new RealTag(current.group_code(), value.value());
+                auto ptr = std::make_unique<RealTag>(
+                        current.group_code(), value.value());
                 load_next_tag();
                 return ptr;
             } else log_invalid_real_value();
         }
-        return new RealTag(GroupCode::kError, 0.0);  // error tag
+        return make_error_tag();
     }
 
-    pDXFTag AscLoader::vec3_tag() {
+    std::unique_ptr<DXFTag> AscLoader::vec3_tag() {
         // Returns next tag as pointer to a Vec3Tag/Vec2Tag/RealTag.
         //
         // Returns Vec3Tag: valid 3D vector
@@ -155,7 +160,7 @@ namespace ezdxf::tag {
         // DXF file has to end with a (0, "EOF") StringTag.
         //
         if (detect_current_type() != TagType::kVec3) {
-            return new Vec3Tag(GroupCode::kError, 0, 0, 0);  // error tag
+            return make_error_tag();
         }
         Real x = 0.0, y = 0.0, z = 0.0;
         short code = current.group_code();
@@ -164,7 +169,7 @@ namespace ezdxf::tag {
             x = opt_x.value();
         } else {
             log_invalid_real_value();
-            return new Vec3Tag(GroupCode::kError, x, y, z);
+            return make_error_tag();
         }
         if (current.group_code() == code + 10) {
             auto opt_y = utils::safe_str_to_real(current.string());
@@ -172,7 +177,7 @@ namespace ezdxf::tag {
                 y = opt_y.value();
             } else {
                 log_invalid_real_value();
-                return new Vec3Tag(GroupCode::kError, x, y, z);
+                return make_error_tag();
             }
             load_next_tag();
             if (current.group_code() == code + 20) {
@@ -181,13 +186,13 @@ namespace ezdxf::tag {
                     z = opt_z.value();
                 } else {
                     log_invalid_real_value();
-                    return new Vec3Tag(GroupCode::kError, x, y, z);
+                    return make_error_tag();
                 }
                 load_next_tag();
-                return new Vec3Tag(code, x, y, z);
+                return std::make_unique<Vec3Tag>(code, x, y, z);
             } else {
                 // Preserve loading state for 2D only vectors.
-                return new Vec2Tag(code, x, y);
+                return std::make_unique<Vec2Tag>(code, x, y);
             }
         } else {
             // Unordered or invalid composed DXF vector.
@@ -197,7 +202,7 @@ namespace ezdxf::tag {
             //
             // Do not log an error here, this should be decided by the
             // caller if this could be fixed or if it's an error.
-            return new RealTag(code, x);
+            return std::make_unique<RealTag>(code, x);
         }
     }
 
