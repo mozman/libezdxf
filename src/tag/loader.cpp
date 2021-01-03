@@ -165,7 +165,7 @@ namespace ezdxf::tag {
             return make_error_tag();
         }
         Real x = 0.0, y = 0.0, z = 0.0;
-        short code = current.group_code();
+        int code = current.group_code();
         auto opt_x = utils::safe_str_to_real(current.string());
         if (opt_x) {
             x = opt_x.value();

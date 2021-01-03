@@ -29,7 +29,7 @@ namespace ezdxf::tag {
     // for functions type() and export_vec2().
 
     enum class TagType {
-        kUndefined = 0, kString, kInteger, kReal, kVec3, kVec2, kError
+        kUndefined = 0, kString, kInteger, kReal, kVec3, kVec2
     };
 
     class DXFTag {
