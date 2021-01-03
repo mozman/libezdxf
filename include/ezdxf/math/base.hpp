@@ -18,7 +18,6 @@ namespace ezdxf::math {
     inline bool is_close(const double a,
                          const double b,
                          const double abs_tol = kAbsTol) {
-        // Matches the Python implementation!
         const double diff = fabs(b - a);
         return diff <= fabs(kRelTol * b) ||
                diff <= fabs(kRelTol * a) ||

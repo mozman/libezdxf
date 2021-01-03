@@ -25,7 +25,8 @@ namespace ezdxf::math {
     public:
         Vec3() = default;
 
-        Vec3(double x, double y, double z) : x_(x), y_(y), z_(z) {};
+        Vec3(const double x, const double y, const double z) :
+                x_(x), y_(y), z_(z) {};
 
         ~Vec3() = default;
 
@@ -37,9 +38,9 @@ namespace ezdxf::math {
 
         [[nodiscard]] auto tuple() const { return std::make_tuple(x_, y_, z_); }
 
-        static Vec3 from_radians(double rad, double length = 1.0) {
-            double x = cos(rad) * length;
-            double y = sin(rad) * length;
+        static Vec3 from_radians(const double rad, const double length = 1.0) {
+            const double x = cos(rad) * length;
+            const double y = sin(rad) * length;
             return Vec3(x, y, 0);
         }
 
@@ -90,9 +91,9 @@ namespace ezdxf::math {
         }
 
         [[nodiscard]] std::string str() const {
-            std::ostringstream str_stream;
-            str_stream << "Vec3{" << x_ << ", " << y_ << ", " << z_ << "}";
-            return str_stream.str();
+            std::ostringstream out_str;
+            out_str << "Vec3{" << x_ << ", " << y_ << ", " << z_ << "}";
+            return out_str.str();
         }
 
         [[nodiscard]] double magnitude2() const {
@@ -103,10 +104,10 @@ namespace ezdxf::math {
             return sqrt(magnitude2());
         }
 
-        [[nodiscard]] Vec3 normalize(double length = 1.0) const {
-            double mag = magnitude();
+        [[nodiscard]] Vec3 normalize(const double length = 1.0) const {
+            const double mag = magnitude();
             if (fabs(mag) < kAbsTol) return *this;
-            double f = length / mag;
+            const double f = length / mag;
             return Vec3(x_ * f, y_ * f, z_ * f);
         }
 
@@ -126,7 +127,8 @@ namespace ezdxf::math {
             return (*this - other).magnitude();
         }
 
-        [[nodiscard]] Vec3 lerp(const Vec3 &other, double factor = 0.5) const {
+        [[nodiscard]] Vec3 lerp(const Vec3 &other,
+                                const double factor = 0.5) const {
             return *this + (other - *this) * factor;
         }
 
@@ -135,7 +137,6 @@ namespace ezdxf::math {
     const Vec3 X_Axis{1, 0, 0}; // NOLINT(cert-err58-cpp)
     const Vec3 Y_Axis{0, 1, 0}; // NOLINT(cert-err58-cpp)
     const Vec3 Z_Axis{0, 0, 1}; // NOLINT(cert-err58-cpp)
-
 }
 
 #endif  // EZDXF_MATH_VEC3_HPP
