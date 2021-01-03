@@ -24,6 +24,6 @@ namespace ezdxf::utils {
 
     std::optional<int64_t> safe_str_to_int64(const String &s);
 
-    int16_t safe_group_code(const String &s);
+    int safe_group_code(const String &s);
 }
 #endif //EZDXF_UTILS_HPP

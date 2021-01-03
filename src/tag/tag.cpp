@@ -6,7 +6,7 @@
 namespace ezdxf::tag {
     const short kGroupCodeCount = 1072; // defined by the DXF reference
 
-    inline bool is_group_code_in_range(const short code) {
+    inline bool is_group_code_in_range(const int code) {
         return (code >= 0 && code < kGroupCodeCount);
     }
 
@@ -15,19 +15,19 @@ namespace ezdxf::tag {
     public:
         TypeCache() = default;
 
-        TagType get(const short code) {
+        TagType get(const int code) {
             return is_group_code_in_range(code) ? cache[code]
                                                 : TagType::kUndefined;
         }
 
-        void set(const short code, const TagType tag_type) {
+        void set(const int code, const TagType tag_type) {
             if (is_group_code_in_range(code)) {
                 cache[code] = tag_type;
             }
         }
     };
 
-    TagType group_code_type(const int16_t code) {
+    TagType group_code_type(const int code) {
         static auto cache = TypeCache();
         if (!is_group_code_in_range(code)) {
             return TagType::kUndefined;

@@ -55,7 +55,7 @@ namespace ezdxf::utils {
         }
     }
 
-    int16_t safe_group_code(const String &s) {
+    int safe_group_code(const String &s) {
         // Returns kError for invalid group codes.
         // valid group codes are in the range [0 .. 1071]
         try {

@@ -40,7 +40,7 @@ namespace ezdxf::tag {
         if (!input_stream) {
             return error;
         }
-        int16_t code = GroupCode::kComment;
+        int code = GroupCode::kComment;
         String value;
         // Skip comment tags with group code 999:
         while (code == GroupCode::kComment) {
