@@ -210,11 +210,11 @@ TEST_CASE("Test Vec2Tag, Vec3 type loaded as 2d type.", "[tag]") {
     }
 }
 
-TEST_CASE("Store different tag types in a container.", "[tag]") {
-    auto container = std::vector<DXFTag *>{};
-    container.push_back(new StringTag(1, "NAME"));
-    container.push_back(new IntegerTag(70, 7));
-    container.push_back(new RealTag(40, 13.0));
+TEST_CASE("Store polymorphic tag types in a vector.", "[tag]") {
+    auto container = std::vector<std::unique_ptr<DXFTag>>{};
+    container.push_back(std::make_unique<StringTag>(1, "NAME"));
+    container.push_back(std::make_unique<IntegerTag>(70, 7));
+    container.push_back(std::make_unique<RealTag>(40, 13.0));
 
     REQUIRE(container.size() == 3);
     REQUIRE(container[0]->type() == TagType::kString);
