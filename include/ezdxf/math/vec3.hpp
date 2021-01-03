@@ -17,7 +17,6 @@ namespace ezdxf::math {
     private:
         // Can't use const data members x, y and z, because usage as variable
         // would not be possible, see test_math_vec3.cpp.
-        //
         double x_;
         double y_;
         double z_;
@@ -46,7 +45,7 @@ namespace ezdxf::math {
 
         [[nodiscard]] bool
         is_close(const Vec3 &other,
-                 const double &abs_tol = kAbsTol) const {
+                 const double abs_tol = kAbsTol) const {
             // General comparisons method between Vec3 objects.
             return ezdxf::math::is_close(x_, other.x_, abs_tol) &&
                    ezdxf::math::is_close(y_, other.y_, abs_tol) &&
@@ -54,7 +53,7 @@ namespace ezdxf::math {
         }
 
         [[nodiscard]] bool
-        is_close_zero(const double &abs_tol = kAbsTol) const {
+        is_close_zero(const double abs_tol = kAbsTol) const {
             // Specialized and faster test for near zero objects.
             return (fabs(x_) <= abs_tol &&
                     fabs(y_) <= abs_tol &&
@@ -69,11 +68,11 @@ namespace ezdxf::math {
             return Vec3(x_ - rhs.x_, y_ - rhs.y_, z_ - rhs.z_);
         }
 
-        friend Vec3 operator*(const Vec3 &lhs, double rhs) {
+        friend Vec3 operator*(const Vec3 &lhs, const double rhs) {
             return Vec3(lhs.x_ * rhs, lhs.y_ * rhs, lhs.z_ * rhs);
         }
 
-        friend Vec3 operator*(double lhs, const Vec3 &rhs) {
+        friend Vec3 operator*(const double lhs, const Vec3 &rhs) {
             return Vec3(rhs.x_ * lhs, rhs.y_ * lhs, rhs.z_ * lhs);
         }
 
