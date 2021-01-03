@@ -40,7 +40,7 @@ namespace ezdxf::math {
         static Vec3 from_radians(const double rad, const double length = 1.0) {
             const double x = cos(rad) * length;
             const double y = sin(rad) * length;
-            return Vec3(x, y, 0);
+            return {x, y, 0};
         }
 
         [[nodiscard]] bool
@@ -61,19 +61,19 @@ namespace ezdxf::math {
         }
 
         Vec3 operator+(const Vec3 &rhs) const {
-            return Vec3(x_ + rhs.x_, y_ + rhs.y_, z_ + rhs.z_);
+            return {x_ + rhs.x_, y_ + rhs.y_, z_ + rhs.z_};
         }
 
         Vec3 operator-(const Vec3 &rhs) const {
-            return Vec3(x_ - rhs.x_, y_ - rhs.y_, z_ - rhs.z_);
+            return {x_ - rhs.x_, y_ - rhs.y_, z_ - rhs.z_};
         }
 
         friend Vec3 operator*(const Vec3 &lhs, const double rhs) {
-            return Vec3(lhs.x_ * rhs, lhs.y_ * rhs, lhs.z_ * rhs);
+            return {lhs.x_ * rhs, lhs.y_ * rhs, lhs.z_ * rhs};
         }
 
         friend Vec3 operator*(const double lhs, const Vec3 &rhs) {
-            return Vec3(rhs.x_ * lhs, rhs.y_ * lhs, rhs.z_ * lhs);
+            return {rhs.x_ * lhs, rhs.y_ * lhs, rhs.z_ * lhs};
         }
 
         friend std::ostream &operator<<(std::ostream &os, const Vec3 &v) {
@@ -107,15 +107,13 @@ namespace ezdxf::math {
             const double mag = magnitude();
             if (fabs(mag) < kAbsTol) return *this;
             const double f = length / mag;
-            return Vec3(x_ * f, y_ * f, z_ * f);
+            return {x_ * f, y_ * f, z_ * f};
         }
 
         [[nodiscard]] Vec3 cross(const Vec3 &other) const {
-            return Vec3(
-                    y_ * other.z_ - z_ * other.y_,
+            return {y_ * other.z_ - z_ * other.y_,
                     z_ * other.x_ - x_ * other.z_,
-                    x_ * other.y_ - y_ * other.x_
-            );
+                    x_ * other.y_ - y_ * other.x_};
         }
 
         [[nodiscard]] double dot(const Vec3 &other) const {
