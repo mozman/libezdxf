@@ -4,8 +4,9 @@
 #ifndef EZDXF_UTILS_HPP
 #define EZDXF_UTILS_HPP
 
-#include <ezdxf/type.hpp>
 #include <optional>
+#include "ezdxf/type.hpp"
+
 
 namespace ezdxf::utils {
     void ltrim(String &s);
@@ -29,7 +30,7 @@ namespace ezdxf::utils {
     // Utility functions to manage binary data in binary tags with
     // group codes 310-319 & 1004.
     String hexlify(const Bytes &data);
-    Bytes unhexlify(const String &s);
+    std::optional<Bytes> unhexlify(const String &s);
 
 }
 #endif //EZDXF_UTILS_HPP

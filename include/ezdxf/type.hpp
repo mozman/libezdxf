@@ -26,16 +26,6 @@ namespace ezdxf {
     using String = std::string;
     using ErrorMessages = std::vector<ErrorMessage>;
     using Bytes = std::vector<unsigned char>;
-
-    class BinaryData {
-    public:
-        BinaryData() = default;
-        BinaryData(const BinaryData &b) = default;
-        explicit BinaryData(const String &hexstr);
-
-    private:
-        Bytes data_ {};
-    };
 }
 
 #endif //EZDXF_TYPE_HPP

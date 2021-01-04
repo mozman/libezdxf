@@ -1,8 +1,8 @@
 // Copyright (c) 2020, Manfred Moitzi
 // License: MIT License
 //
-#include <ezdxf/utils.hpp>
-#include <ezdxf/tag/tag.hpp>
+#include "ezdxf/utils.hpp"
+#include "ezdxf/tag/tag.hpp"
 
 using namespace ezdxf::tag;
 
@@ -83,7 +83,7 @@ namespace ezdxf::utils {
         return buffer;
     }
 
-    Bytes unhexlify(const String &s) {
+    std::optional<Bytes> unhexlify(const String &s) {
         return {};  // todo
     }
 

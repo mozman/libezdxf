@@ -4,6 +4,7 @@
 #ifndef EZDXF_TAG_TAG_HPP
 #define EZDXF_TAG_TAG_HPP
 
+#include <utility>
 #include <vector>
 #include <typeinfo>
 #include <ezdxf/type.hpp>
@@ -109,7 +110,7 @@ namespace ezdxf::tag {
             throw std::bad_cast();
         }
 
-        [[nodiscard]] virtual BinaryData binary_data() const {
+        [[nodiscard]] virtual Bytes binary_data() const {
             throw std::bad_cast();
         }
 
@@ -177,11 +178,11 @@ namespace ezdxf::tag {
         // legit 127 (254 hexlyfied) bytes in raw DXF tags.
 
     public:
-        BinaryTag(const int code, const BinaryData &value) :
+        BinaryTag(const int code, Bytes value) :
                 DXFTag(code),
-                value_(value) {}
+                value_(std::move(value)) {}
 
-        [[nodiscard]] BinaryData binary_data() const override {
+        [[nodiscard]] Bytes binary_data() const override {
             return value_;
         }
 
@@ -190,7 +191,7 @@ namespace ezdxf::tag {
         }
 
     private:
-        BinaryData value_;
+        Bytes value_;
     };
 
     class IntegerTag : public DXFTag {
