@@ -27,6 +27,7 @@ namespace ezdxf::tag {
         }
     };
 
+    // {310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 1004}
     TagType group_code_type(const int code) {
         static auto cache = TypeCache();
         if (!is_group_code_in_range(code)) {
@@ -57,6 +58,8 @@ namespace ezdxf::tag {
                    (code >= 440 && code < 460) ||
                    (code >= 1060 && code < 1072)) {
             tag_type = TagType::kInteger;
+        } else if ((code >= 310 && code < 320) || code == 1004) {
+            tag_type = TagType::kBinaryData;
         }
         cache.set(code, tag_type);
         return tag_type;

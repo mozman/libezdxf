@@ -66,5 +66,12 @@ namespace ezdxf::utils {
             return GroupCode::kError;
         }
     }
+    String hexlify(const Bytes &data){
+        return {};  // todo
+    }
+
+    Bytes unhexlify(const String &s){
+        return {};  // todo
+    }
 
 }

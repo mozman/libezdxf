@@ -27,9 +27,10 @@ namespace ezdxf::tag {
     // stored as Vec3 object, this type is just meant to preserve the loading
     // state for rewriting. kVec3 behaves like kVec2 and vice versa, except
     // for functions type() and export_vec2().
+    // kBinaryData -- can contain 0 bytes
 
     enum class TagType {
-        kUndefined = 0, kString, kInteger, kReal, kVec3, kVec2
+        kUndefined = 0, kString, kInteger, kReal, kVec3, kVec2, kBinaryData
     };
 
     class DXFTag {
@@ -72,6 +73,12 @@ namespace ezdxf::tag {
             return type() == TagType::kString;
         }
 
+        [[nodiscard]] inline bool has_binary_data() const {
+            // Returns true if the tag value type is binary data.
+            // (can contain 0)
+            return type() == TagType::kBinaryData;
+        }
+
         [[nodiscard]] inline bool has_real_value() const {
             // Returns true if the tag value type is Real.
             return type() == TagType::kReal;
@@ -99,6 +106,10 @@ namespace ezdxf::tag {
 
         // All supported type casts:
         [[nodiscard]] virtual String string() const {
+            throw std::bad_cast();
+        }
+
+        [[nodiscard]] virtual BinaryData binary_data() const {
             throw std::bad_cast();
         }
 
@@ -141,12 +152,12 @@ namespace ezdxf::tag {
 
     public:
         StringTag(const int code, String value) : DXFTag(code),
-                                                  s(std::move(value)) {}
+                                                  value_(std::move(value)) {}
 
-        explicit StringTag(const int code) : DXFTag(code), s() {}
+        explicit StringTag(const int code) : DXFTag(code), value_() {}
 
         [[nodiscard]] String string() const override {
-            return s;
+            return value_;
         }
 
         [[nodiscard]] TagType type() const override {
@@ -154,8 +165,32 @@ namespace ezdxf::tag {
         }
 
     private:
-        String s;
+        String value_;
 
+    };
+
+    class BinaryTag : public DXFTag {
+        // Stores binary data.
+        //
+        // Stores multiple consecutive DXF tags with the same group code as a
+        // single tag. Therefore a single BinaryTag can contain more than the
+        // legit 127 (254 hexlyfied) bytes in raw DXF tags.
+
+    public:
+        BinaryTag(const int code, const BinaryData &value) :
+                DXFTag(code),
+                value_(value) {}
+
+        [[nodiscard]] BinaryData binary_data() const override {
+            return value_;
+        }
+
+        [[nodiscard]] TagType type() const override {
+            return TagType::kBinaryData;
+        }
+
+    private:
+        BinaryData value_;
     };
 
     class IntegerTag : public DXFTag {
@@ -163,10 +198,10 @@ namespace ezdxf::tag {
 
     public:
         IntegerTag(const int code, const int64_t value) : DXFTag(code),
-                                                          i(value) {}
+                                                          value_(value) {}
 
         [[nodiscard]] int64_t integer() const override {
-            return i;
+            return value_;
         }
 
         [[nodiscard]] TagType type() const override {
@@ -174,7 +209,7 @@ namespace ezdxf::tag {
         }
 
     private:
-        int64_t i;
+        int64_t value_;
 
     };
 
@@ -183,10 +218,10 @@ namespace ezdxf::tag {
 
     public:
         RealTag(const int code, const Real value) : DXFTag(code),
-                                                    d(value) {};
+                                                    value_(value) {};
 
         [[nodiscard]] Real real() const override {
-            return d;
+            return value_;
         }
 
         [[nodiscard]] TagType type() const override {
@@ -194,7 +229,7 @@ namespace ezdxf::tag {
         };
 
     private:
-        const Real d;
+        const Real value_;
 
     };
 
@@ -210,10 +245,10 @@ namespace ezdxf::tag {
                 const Real x,
                 const Real y,
                 const Real z) :
-                DXFTag(code), vec3_{x, y, z} {};
+                DXFTag(code), value_{x, y, z} {};
 
         [[nodiscard]] Vec3 vec3() const override {
-            return vec3_;
+            return value_;
         }
 
         [[nodiscard]] TagType type() const override {
@@ -221,7 +256,7 @@ namespace ezdxf::tag {
         };
 
     private:
-        Vec3 vec3_;
+        Vec3 value_;
 
     };
 
