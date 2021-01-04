@@ -5,7 +5,7 @@
 #define EZDXF_MATH_HPP
 
 // Use this header to include all math related tools at once:
-#include <ezdxf/math/base.hpp>
-#include <ezdxf/math/vec3.hpp>
+#include "ezdxf/math/base.hpp"
+#include "ezdxf/math/vec3.hpp"
 
 #endif //EZDXF_MATH_HPP

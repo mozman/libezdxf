@@ -1,10 +1,10 @@
 // Copyright (c) 2020, Manfred Moitzi
 // License: MIT License
 //
-#include<sstream>
-#include <ezdxf/tag/tag.hpp>
-#include <ezdxf/tag/loader.hpp>
-#include <ezdxf/utils.hpp>
+#include <sstream>
+#include "ezdxf/tag/tag.hpp"
+#include "ezdxf/tag/loader.hpp"
+#include "ezdxf/utils.hpp"
 
 namespace ezdxf::tag {
     std::unique_ptr<DXFTag> make_error_tag() {

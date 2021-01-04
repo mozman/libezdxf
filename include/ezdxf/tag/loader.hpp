@@ -4,9 +4,9 @@
 #ifndef EZDXF_TAG_LOADER_HPP
 #define EZDXF_TAG_LOADER_HPP
 
-#include <ezdxf/tag/tag.hpp>
 #include <istream>
 #include <vector>
+#include "ezdxf/tag/tag.hpp"
 
 namespace ezdxf::tag {
     // Quote DXF reference:

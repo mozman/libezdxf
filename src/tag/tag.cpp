@@ -1,7 +1,7 @@
 // Copyright (c) 2020, Manfred Moitzi
 // License: MIT License
 //
-#include <ezdxf/tag/tag.hpp>
+#include "ezdxf/tag/tag.hpp"
 
 namespace ezdxf::tag {
     const short kGroupCodeCount = 1072; // defined by the DXF reference
