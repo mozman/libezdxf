@@ -118,7 +118,7 @@ namespace ezdxf::tag {
         // Returns next tag as pointer to an BinaryTag. Merges multiple binary
         // tags with the same group code into a single tag.
         //
-        // Returns an error tag if the next tag is not an BinaryTag or
+        // Returns an error tag if the next tag is not a BinaryTag or
         // premature EOF is reached.
 
         if (detect_current_type() != TagType::kBinaryData) {
