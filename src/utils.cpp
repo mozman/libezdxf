@@ -89,7 +89,7 @@ namespace ezdxf::utils {
     }
 
     inline static char _char_to_nibble(const char c) {
-        // Convert an ascii char into a number e.g. 'A' -> 10.
+        // Convert an ascii hex char into a number e.g. 'A' -> 10.
         // Valid chars '0'-'9', 'A'-'F', 'a'-'f'
         //
         // Returns -1 for invalid chars.

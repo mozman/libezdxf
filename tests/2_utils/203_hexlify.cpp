@@ -65,10 +65,8 @@ TEST_CASE("Test unhexlify binary data", "[utils][hex]") {
     }
 
     SECTION("Test if last nibble is ignored for uneven string length.") {
-        auto result = unhexlify("FEFE0");
-        REQUIRE(result.has_value() == true);
-        auto value = result.value();
-        REQUIRE(value == ezdxf::Bytes{0xfe, 0xfe});
+        REQUIRE(unhexlify("0").value().empty() == true);
+        REQUIRE(unhexlify("FEFE0").value() == ezdxf::Bytes{0xfe, 0xfe});
     }
 
 }
