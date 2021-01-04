@@ -15,6 +15,7 @@ namespace ezdxf {
         kInvalidGroupCodeTag,
         kInvalidIntegerTag,
         kInvalidRealTag,
+        kInvalidBinaryTag,
     };
     struct ErrorMessage {
         ErrorCode code;

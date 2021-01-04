@@ -7,8 +7,8 @@
 #include <utility>
 #include <vector>
 #include <typeinfo>
-#include <ezdxf/type.hpp>
-#include <ezdxf/math/vec3.hpp>
+#include "ezdxf/type.hpp"
+#include "ezdxf/math/vec3.hpp"
 
 using ezdxf::math::Vec3;
 
@@ -110,7 +110,7 @@ namespace ezdxf::tag {
             throw std::bad_cast();
         }
 
-        [[nodiscard]] virtual Bytes binary_data() const {
+        [[nodiscard]] virtual Bytes bytes() const {
             throw std::bad_cast();
         }
 
@@ -182,7 +182,7 @@ namespace ezdxf::tag {
                 DXFTag(code),
                 value_(std::move(value)) {}
 
-        [[nodiscard]] Bytes binary_data() const override {
+        [[nodiscard]] Bytes bytes() const override {
             return value_;
         }
 
