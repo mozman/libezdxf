@@ -69,7 +69,7 @@ namespace ezdxf::utils {
 
     inline static unsigned char _nibble_to_char(const unsigned char nibble) {
         // Convert a nibble (0-15) into a char '0'-'9', 'A'-'F'
-        return nibble + (nibble < 10 ? 0x30 : 0x37); // "0" : "A" - 10
+        return nibble + (nibble < 10 ? 0x30 : 0x37); // '0' : 'A' - 10
     }
 
     String hexlify(const Bytes &data) {
@@ -111,7 +111,7 @@ namespace ezdxf::utils {
         // ignored!
 
         Bytes bytes{};
-        bytes.reserve(s.size() / 2);
+        bytes.reserve(s.size() >> 1);
         bool high_nibble = true;
         unsigned char byte;
         signed char nibble;
@@ -122,7 +122,7 @@ namespace ezdxf::utils {
             if (high_nibble) {
                 byte = nibble << 4;
             } else {
-                bytes.push_back(byte + nibble);
+                bytes.push_back(byte | nibble);
             }
             high_nibble = !high_nibble;
         }
