@@ -2,7 +2,7 @@
 // License: MIT License
 //
 #include <catch2/catch.hpp>
-#include <ezdxf/utils.hpp>
+#include "ezdxf/utils.hpp"
 
 using namespace ezdxf::utils;
 
