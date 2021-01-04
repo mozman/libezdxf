@@ -33,4 +33,42 @@ TEST_CASE("Test hexlify binary data", "[utils][hex]") {
 
 // Convert a hex strings like  "FEFE" into binary data {0xfe, 0xfe}
 TEST_CASE("Test unhexlify binary data", "[utils][hex]") {
+    SECTION("Convert no data") {
+        auto result = unhexlify("");
+        REQUIRE(result.has_value() == true);
+        auto value = result.value();
+        REQUIRE(value.empty() == true);
+    }
+
+    SECTION("Test invalid input data") {
+        auto s = GENERATE("x", "00%", "gg", "GG");
+        REQUIRE(unhexlify(s).has_value() == false);
+    }
+
+    SECTION("Convert zero data") {
+        auto result = unhexlify("00000000");
+        REQUIRE(result.has_value() == true);
+        auto value = result.value();
+        REQUIRE(value == ezdxf::Bytes{0, 0, 0, 0});
+    }
+
+    SECTION("Test all hex char cases.") {
+        auto s = GENERATE("FEFE", "fefe", "FEfe", "feFE", "FeFe", "fEfE");
+        auto result = unhexlify(s);
+        REQUIRE(result.value() == ezdxf::Bytes{0xfe, 0xfe});
+    }
+
+    SECTION("Test all chars.") {
+        auto result = unhexlify("0123456789abcdef");
+        REQUIRE(result.value() == ezdxf::Bytes{0x01, 0x23, 0x45, 0x67,
+                                               0x89, 0xab, 0xcd, 0xef});
+    }
+
+    SECTION("Test if last nibble is ignored for uneven string length.") {
+        auto result = unhexlify("FEFE0");
+        REQUIRE(result.has_value() == true);
+        auto value = result.value();
+        REQUIRE(value == ezdxf::Bytes{0xfe, 0xfe});
+    }
+
 }

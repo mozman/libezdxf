@@ -67,13 +67,18 @@ namespace ezdxf::utils {
         }
     }
 
-    inline unsigned char _nibble_to_char(unsigned char nibble) {
+    inline static unsigned char _nibble_to_char(const unsigned char nibble) {
+        // Convert a nibble (0-15) into a char '0'-'9', 'A'-'F'
         return nibble + (nibble < 10 ? 0x30 : 0x37); // "0" : "A" - 10
     }
 
     String hexlify(const Bytes &data) {
+        // Convert Binary data into a continuous hex string
+        // e.g. {0xfe, 0xfe, ...} to "FEFE..."
+        //
+        // Returns uppercase hex chars.
+
         auto buffer = String();
-        // Result requires two chars per data byte:
         buffer.reserve(data.size() * 2);
 
         for (const unsigned char byte: data) {
@@ -83,8 +88,45 @@ namespace ezdxf::utils {
         return buffer;
     }
 
+    inline static char _char_to_nibble(const char c) {
+        // Convert an ascii char into a number e.g. 'A' -> 10.
+        // Valid chars '0'-'9', 'A'-'F', 'a'-'f'
+        //
+        // Returns -1 for invalid chars.
+
+        if (c >= '0' && c <= '9')
+            return c - 0x30;
+        if (c >= 'A' && c <= 'F')
+            return c - 0x37;
+        if (c >= 'a' && c <= 'f')
+            return c - 0x57;
+        return -1;  // error
+    }
+
     std::optional<Bytes> unhexlify(const String &s) {
-        return {};  // todo
+        // Convert a continuous hex string into binary data
+        // e.g. "FEFE..." to {0xfe, 0xfe, ...}.
+        //
+        // If argument `s` contains an uneven count of chars, the last char is
+        // ignored!
+
+        Bytes bytes{};
+        bytes.reserve(s.size() / 2);
+        bool high_nibble = true;
+        unsigned char byte;
+        signed char nibble;
+
+        for (const char c : s) {
+            nibble = _char_to_nibble(c);
+            if (nibble < 0) return {};  // string contains invalid chars
+            if (high_nibble) {
+                byte = nibble << 4;
+            } else {
+                bytes.push_back(byte + nibble);
+            }
+            high_nibble = !high_nibble;
+        }
+        return bytes;
     }
 
 }
