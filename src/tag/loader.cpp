@@ -116,11 +116,11 @@ namespace ezdxf::tag {
 
     std::unique_ptr<DXFTag> AscLoader::binary_tag() {
         // Returns next tag as pointer to an BinaryTag. Merges multiple binary
-        // tags with the same group code into am single tag.
+        // tags with the same group code into a single tag.
         //
         // Returns an error tag if the next tag is not an BinaryTag or
         // premature EOF is reached.
-        // DXF file has to end with a (0, "EOF") StringTag.
+
         if (detect_current_type() != TagType::kBinaryData) {
             return make_error_tag();
         }
@@ -145,7 +145,7 @@ namespace ezdxf::tag {
         // Returns next tag as pointer to an IntegerTag.
         // Returns an error tag if the next tag is not an IntegerTag or
         // premature EOF is reached.
-        // DXF file has to end with a (0, "EOF") StringTag.
+
         if (detect_current_type() == TagType::kInteger) {
             auto value = utils::safe_str_to_int64(current.string());
             if (value) {
@@ -162,7 +162,7 @@ namespace ezdxf::tag {
         // Returns next tag as pointer to a RealTag.
         // Returns an error tag if the next tag is not a RealTag or
         // premature EOF is reached.
-        // DXF file has to end with a (0, "EOF") StringTag.
+
         if (detect_current_type() == TagType::kReal) {
             auto value = utils::safe_str_to_real(current.string());
             if (value) {
@@ -186,8 +186,7 @@ namespace ezdxf::tag {
         //
         // Returns an error tag if the next tag is not a Vec2Tag/Vec3Tag or
         // premature EOF is reached.
-        // DXF file has to end with a (0, "EOF") StringTag.
-        //
+
         if (detect_current_type() != TagType::kVec3) {
             return make_error_tag();
         }
