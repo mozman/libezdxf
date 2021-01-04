@@ -26,6 +26,8 @@ namespace ezdxf::utils {
 
     int safe_group_code(const String &s);
 
+    // Utility functions to manage binary data in binary tags with
+    // group codes 310-319 & 1004.
     String hexlify(const Bytes &data);
     Bytes unhexlify(const String &s);
 

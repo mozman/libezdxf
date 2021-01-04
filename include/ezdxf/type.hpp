@@ -25,7 +25,7 @@ namespace ezdxf {
     using Real = double;
     using String = std::string;
     using ErrorMessages = std::vector<ErrorMessage>;
-    using Bytes = std::vector<char>;
+    using Bytes = std::vector<unsigned char>;
 
     class BinaryData {
     public:

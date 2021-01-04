@@ -28,6 +28,7 @@ add_executable(run_tests
         tests/1_math/101_base.cpp
         tests/1_math/102_vec3.cpp
         tests/2_utils/201_trim_strings.cpp
-        tests/2_utils/202_safe_converters.cpp)
+        tests/2_utils/202_safe_converters.cpp
+        tests/2_utils/203_hexlify.cpp)
 
 target_link_libraries(run_tests PRIVATE ezdxf)

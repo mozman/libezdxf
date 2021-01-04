@@ -66,11 +66,24 @@ namespace ezdxf::utils {
             return GroupCode::kError;
         }
     }
-    String hexlify(const Bytes &data){
-        return {};  // todo
+
+    inline unsigned char _nibble_to_char(unsigned char nibble) {
+        return nibble + (nibble < 10 ? 0x30 : 0x37); // "0" : "A" - 10
     }
 
-    Bytes unhexlify(const String &s){
+    String hexlify(const Bytes &data) {
+        auto buffer = String();
+        // Result requires two chars per data byte:
+        buffer.reserve(data.size() * 2);
+
+        for (const unsigned char byte: data) {
+            buffer.push_back(_nibble_to_char(byte >> 4));
+            buffer.push_back(_nibble_to_char(byte & 0x0f));
+        }
+        return buffer;
+    }
+
+    Bytes unhexlify(const String &s) {
         return {};  // todo
     }
 

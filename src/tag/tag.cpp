@@ -27,7 +27,6 @@ namespace ezdxf::tag {
         }
     };
 
-    // {310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 1004}
     TagType group_code_type(const int code) {
         static auto cache = TypeCache();
         if (!is_group_code_in_range(code)) {
