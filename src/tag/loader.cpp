@@ -114,6 +114,33 @@ namespace ezdxf::tag {
         return ptr;
     }
 
+    std::unique_ptr<DXFTag> AscLoader::binary_tag() {
+        // Returns next tag as pointer to an BinaryTag. Merges multiple binary
+        // tags with the same group code into am single tag.
+        //
+        // Returns an error tag if the next tag is not an BinaryTag or
+        // premature EOF is reached.
+        // DXF file has to end with a (0, "EOF") StringTag.
+        if (detect_current_type() != TagType::kBinaryData) {
+            return make_error_tag();
+        }
+        auto data = std::vector<Bytes>{};
+        const auto same_group_code = current.group_code();
+        while (current.group_code() == same_group_code) {
+            auto result = ezdxf::utils::unhexlify(current.string());
+            if (result) {
+                data.push_back(result.value());
+            } else {  // invalid binary data
+                log_invalid_binary_value();
+                return make_error_tag();
+            }
+            load_next_tag();
+        }
+        return std::make_unique<BinaryTag>(
+                same_group_code, ezdxf::utils::concatenate_bytes(data)
+        );
+    }
+
     std::unique_ptr<DXFTag> AscLoader::integer_tag() {
         // Returns next tag as pointer to an IntegerTag.
         // Returns an error tag if the next tag is not an IntegerTag or
@@ -221,4 +248,12 @@ namespace ezdxf::tag {
             << get_line_number();
         errors.emplace_back(ErrorCode::kInvalidIntegerTag, msg.str());
     }
+
+    void AscLoader::log_invalid_binary_value() {
+        std::ostringstream msg;
+        msg << "Invalid binary value in line "
+            << get_line_number();
+        errors.emplace_back(ErrorCode::kInvalidBinaryTag, msg.str());
+    }
+
 }

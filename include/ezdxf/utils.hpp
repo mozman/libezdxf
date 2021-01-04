@@ -30,7 +30,8 @@ namespace ezdxf::utils {
     // Utility functions to manage binary data in binary tags with
     // group codes 310-319 & 1004.
     String hexlify(const Bytes &data);
-    std::optional<Bytes> unhexlify(const String &s);
+    std::optional<Bytes> unhexlify(String s);
+    Bytes concatenate_bytes(const std::vector<Bytes> &data);
 
 }
 #endif //EZDXF_UTILS_HPP

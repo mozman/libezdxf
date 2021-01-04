@@ -69,4 +69,43 @@ TEST_CASE("Test unhexlify binary data", "[utils][hex]") {
         REQUIRE(unhexlify("FEFE0").value() == ezdxf::Bytes{0xfe, 0xfe});
     }
 
+    SECTION("Test if whitespace left and right is trimmed.") {
+        auto s = GENERATE(" FEFE", "FEFE ", " FEFE ", "\tFEFE\t");
+        REQUIRE(unhexlify(s).value() == ezdxf::Bytes{0xfe, 0xfe});
+    }
+
+    SECTION("Test if whitespace in the middle is an error.") {
+        auto s = GENERATE("FE FE", "FE\tFE", "FE\rFE", "FE\nFE");
+        REQUIRE(unhexlify(s).has_value() == false);
+    }
+
+}
+
+TEST_CASE("Test concatenate bytes", "[utils][hex]") {
+    SECTION("Test empty data vector.") {
+        auto data = std::vector<ezdxf::Bytes>{};
+        REQUIRE(concatenate_bytes(data).empty() == true);
+    }
+
+    SECTION("Test concatenate empty bytes.") {
+        auto data = std::vector<ezdxf::Bytes>{
+                ezdxf::Bytes{}, ezdxf::Bytes{}, ezdxf::Bytes{},
+        };
+        REQUIRE(concatenate_bytes(data).empty() == true);
+    }
+
+    SECTION("Test concatenate bytes.") {
+        auto data = std::vector<ezdxf::Bytes>{
+                ezdxf::Bytes{0, 1}, ezdxf::Bytes{2, 3}, ezdxf::Bytes{4, 5},
+        };
+        REQUIRE(concatenate_bytes(data) == ezdxf::Bytes{0, 1, 2, 3, 4, 5});
+    }
+
+    SECTION("Test concatenate bytes including empty bytes.") {
+        auto data = std::vector<ezdxf::Bytes>{
+                ezdxf::Bytes{0, 1}, ezdxf::Bytes{}, ezdxf::Bytes{4, 5},
+        };
+        REQUIRE(concatenate_bytes(data) == ezdxf::Bytes{0, 1, 4, 5});
+    }
+
 }

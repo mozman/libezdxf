@@ -71,8 +71,9 @@ namespace ezdxf::tag {
 
         [[nodiscard]] virtual bool eof() const = 0;
 
-        // TODO: return loaded tags as sharded pointers!
         virtual std::unique_ptr<DXFTag> string_tag() = 0;
+
+        virtual std::unique_ptr<DXFTag> binary_tag() = 0;
 
         virtual std::unique_ptr<DXFTag> integer_tag() = 0;
 
@@ -96,6 +97,8 @@ namespace ezdxf::tag {
 
         void log_invalid_integer_value();
 
+        void log_invalid_binary_value();
+
     public:
         explicit AscLoader(BasicLoader &bl) : loader(bl) {
             load_next_tag();
@@ -108,6 +111,8 @@ namespace ezdxf::tag {
         }
 
         std::unique_ptr<DXFTag> string_tag() override;
+
+        std::unique_ptr<DXFTag> binary_tag() override;
 
         std::unique_ptr<DXFTag> integer_tag() override;
 

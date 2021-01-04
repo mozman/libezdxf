@@ -103,13 +103,14 @@ namespace ezdxf::utils {
         return -1;  // error
     }
 
-    std::optional<Bytes> unhexlify(const String &s) {
+    std::optional<Bytes> unhexlify(String s) {
         // Convert a continuous hex string into binary data
         // e.g. "FEFE..." to {0xfe, 0xfe, ...}.
         //
         // If argument `s` contains an uneven count of chars, the last char is
         // ignored!
 
+        trim(s); // trim white space on both sides inplace
         Bytes bytes{};
         bytes.reserve(s.size() >> 1);
         bool high_nibble = true;
@@ -129,4 +130,18 @@ namespace ezdxf::utils {
         return bytes;
     }
 
+    Bytes concatenate_bytes(const std::vector<Bytes> &data) {
+        Bytes merged = Bytes{};
+        if (!data.empty()) {
+            std::size_t sum = 0;
+            for (const auto &bytes : data) {
+                sum += bytes.size();
+            }
+            merged.reserve(sum);
+            for (const auto &bytes : data) {
+                merged.insert(merged.end(), bytes.begin(), bytes.end());
+            }
+        }
+        return merged;
+    }
 }
