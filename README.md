@@ -12,6 +12,11 @@ The goal is a simple to use C++ interface to read and write DXF like my Python
 
 - Read ASCII/Binary DXF and DWG.
 
+- The lib does not support concurrency beyond loading multiple DXF documents 
+  -- each document in one separated thread. Do no process a DXF document in 
+  multiple threads! Providing thread safety is a lot of work without much 
+  benefit.   
+
 - The DWG reader will convert DWG data into DXF data and can only 
   support entities documented by the Open Design Alliance(ODA).
 
@@ -31,7 +36,7 @@ The goal is a simple to use C++ interface to read and write DXF like my Python
 
 - Edit entities and resources.
 
-- Delete DXF entities.
+- Delete graphical DXF entities from blocks and layouts.
 
 - Audit DXF entities, objects, resources.
 
@@ -41,13 +46,20 @@ The goal is a simple to use C++ interface to read and write DXF like my Python
 
 - Entity query language.
 
+- *Expert* mode for low level features:
+  - Has to be activated deliberately: `doc.active_expert_mode(magic);`, 
+    the magic number is required to ensure that lib users have read the 
+    documentation or at least looked at the source code and saw the 
+    warnings.
+  - Expert mode allows deleting resources -- everything which is referenced 
+    by other entities. But deleting such entities can do more harm than good! 
+    This feature requires full resource tracking which is not possible for 
+    a file format that is not fully documented and supports custom data 
+    and entities.
+
 ## Not Supported - Not Planned
 
-- No support to delete resources/objects - it can do more harm than good!
-  It may be possible, but it will never be a documented feature.
-  This feature requires full resource tracking which is not possible for a 
-  file format that is not fully documented and supports custom 
-  data and entities.
+- No support to delete resources without activating the *expert* mode.
   
 - No support for creating BLOCK renderings for entities like DIMENSION and 
   ACAD_TABLE.
