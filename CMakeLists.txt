@@ -9,6 +9,7 @@ include_directories(extern)
 add_library(ezdxf STATIC
         include/ezdxf/ezdxf.hpp
         include/ezdxf/math.hpp
+        include/ezdxf/resource_reference.hpp
         include/ezdxf/type.hpp
         include/ezdxf/math/base.hpp
         include/ezdxf/math/vec3.hpp
