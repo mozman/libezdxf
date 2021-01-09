@@ -163,6 +163,16 @@ container could also store the entity pointer instead of the DBIndex.
 Using an `unique_ptr` to store entities in the database shows clearly who owns 
 the entity!
 
+Simple hash-map entity database: 
+Key is the entity handle & `0x3FF`, which creates 1024 different hash values. 
+The DXF entities are stored as unique pointers in an unordered `std::vector`. 
+Top level structure is another `std::vector` which stores an entity sub-list 
+for each hash value. A simple linear search is used to find entities by handle 
+in this sub-lists. 
+This should be fast enough, access by handle will not be the main access method, 
+references between various DXF entities will be stored as raw pointers.
+
+
 ### Entities/Objects
 
 **Entities are not destroyed during the lifetime of a DXF document!**
