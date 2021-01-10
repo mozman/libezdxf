@@ -169,8 +169,6 @@ namespace ezdxf::utils {
                 return "AC1027";
             case Version::R2018:
                 return "AC1032";
-            default:
-                return "AC1009";
         }
     }
 
@@ -186,7 +184,7 @@ namespace ezdxf::utils {
         if (s == "AC1024") return Version::R2010;
         if (s == "AC1027") return Version::R2013;
         if (s == "AC1032") return Version::R2018;
-        return Version::R12;
+        return Version::R12;  // Default
     }
 
 }
