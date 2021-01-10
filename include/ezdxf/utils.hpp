@@ -32,6 +32,8 @@ namespace ezdxf::utils {
     String hexlify(const Bytes &data);
     std::optional<Bytes> unhexlify(String s);
     Bytes concatenate_bytes(const std::vector<Bytes> &data);
+    String dxf_version_to_str(Version v);
+    Version str_to_dxf_version(String s);
 
 }
 #endif //EZDXF_UTILS_HPP

@@ -144,4 +144,49 @@ namespace ezdxf::utils {
         }
         return merged;
     }
+
+    String dxf_version_to_str(Version v) {
+        switch (v) {
+            case Version::R9:
+                return "AC1004";
+            case Version::R10:
+                return "AC1006";
+            case Version::R12:
+                return "AC1009";
+            case Version::R13:
+                return "AC1012";
+            case Version::R14:
+                return "AC1014";
+            case Version::R2000:
+                return "AC1015";
+            case Version::R2004:
+                return "AC1018";
+            case Version::R2007:
+                return "AC1021";
+            case Version::R2010:
+                return "AC1024";
+            case Version::R2013:
+                return "AC1027";
+            case Version::R2018:
+                return "AC1032";
+            default:
+                return "AC1009";
+        }
+    }
+
+    Version str_to_dxf_version(const String s) { // NOLINT(performance-unnecessary-value-param)
+        if (s == "AC1004") return Version::R9;
+        if (s == "AC1006") return Version::R10;
+        if (s == "AC1009") return Version::R12;
+        if (s == "AC1012") return Version::R13;
+        if (s == "AC1014") return Version::R14;
+        if (s == "AC1015") return Version::R2000;
+        if (s == "AC1018") return Version::R2004;
+        if (s == "AC1021") return Version::R2007;
+        if (s == "AC1024") return Version::R2010;
+        if (s == "AC1027") return Version::R2013;
+        if (s == "AC1032") return Version::R2018;
+        return Version::R12;
+    }
+
 }

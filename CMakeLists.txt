@@ -19,6 +19,7 @@ add_library(ezdxf STATIC
         src/ezdxf.cpp
         src/tag/loader.cpp
         src/tag/tag.cpp
+        src/type.cpp
         src/utils.cpp
         )
 
@@ -30,6 +31,6 @@ add_executable(run_tests
         tests/1_math/102_vec3.cpp
         tests/2_utils/201_trim_strings.cpp
         tests/2_utils/202_safe_converters.cpp
-        tests/2_utils/203_hexlify.cpp)
+        tests/2_utils/203_hexlify.cpp tests/2_utils/204_dxf_version.cpp)
 
 target_link_libraries(run_tests PRIVATE ezdxf)

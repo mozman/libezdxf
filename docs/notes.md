@@ -193,7 +193,7 @@ referenced by multiple DXF entities/objects.
 1. Global factory function:
 
 ```C++
-auto doc = ezdxf::new_doc(ezdxf::R2010);
+auto doc = ezdxf::new_doc(ezdxf::Version::R2010);
 // Create a new LINE entity, returns an unique_ptr<ezdxf::entities::DXFEntity>
 auto line = ezdxf::factory::create(ezdxf::ents::Line);
 auto msp = doc.get_modelspace();
@@ -213,7 +213,7 @@ pline->set_properties(props);
 2. Factory functions of layouts, like in the Python version:
 
 ```C++
-auto doc = ezdxf::new_doc(ezdxf::R2010); // unique_ptr<ezdxf::Document>
+auto doc = ezdxf::new_doc(ezdxf::Version::R2010); // unique_ptr<ezdxf::Document>
 auto msp = doc.get_modelspace();  // ezdxf::Layout*, just a reference
 auto = doc.layers.create("MyLayer");  // ezdxf::entities::Layer*
 my_layer->set_aci_color(2);
