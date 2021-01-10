@@ -62,5 +62,6 @@ namespace ezdxf::utils {
         std::vector<T> data_{};
     };
 
+    extern const SimpleSet<Version> DXFExportVersions;
 }
 #endif //EZDXF_UTILS_HPP

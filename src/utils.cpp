@@ -189,4 +189,13 @@ namespace ezdxf::utils {
         return Version::R12;  // Default
     }
 
+    const SimpleSet<Version> DXFExportVersions {
+            Version::R12,
+            Version::R2000,
+            Version::R2004,
+            Version::R2007,
+            Version::R2010,
+            Version::R2013,
+            Version::R2018,
+    };
 }
