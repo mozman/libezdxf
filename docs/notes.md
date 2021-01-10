@@ -185,13 +185,130 @@ At some time the raw pointer to a DXF entity has to be exposed to the lib
 users. Lib users have to agree to the policy: 
 "You don't own it, don't delete it!" ?
 
+Every DXF entity/object reside in ONE container (owner), but can be 
+referenced by multiple DXF entities/objects.
+
+#### Creating DXF entities
+
+1. Global factory function:
+
+```C++
+auto doc = ezdxf::new_doc(ezdxf::R2010);
+// Create a new LINE entity, returns an unique_ptr<ezdxf::entities::DXFEntity>
+auto line = ezdxf::factory::create(ezdxf::ents::Line);
+auto msp = doc.get_modelspace();
+// Adding the entity to a layout moves the entity ownership 
+// into the EntityDB:
+// Returns a new reference as raw pointer to the Line object
+auto pline = msp.add(line); 
+// unique_ptr<...> line is now a nullptr
+
+// Set DXF properties, see also 2. point:
+auto props ezdxf::DXFProperties{doc};
+// ...
+pline->set_properties(props);
+
+```
+
+2. Factory functions of layouts, like in the Python version:
+
+```C++
+auto doc = ezdxf::new_doc(ezdxf::R2010); // unique_ptr<ezdxf::Document>
+auto msp = doc.get_modelspace();  // ezdxf::Layout*, just a reference
+auto = doc.layers.create("MyLayer");  // ezdxf::entities::Layer*
+my_layer->set_aci_color(2);
+my_layer->set_lineweight(50);
+
+// Create a reusable DXF properties object and get default values 
+// from the DXF document like the default layer or text style:
+auto props ezdxf::DXFProperties{doc};  
+props.set_aci_color(1);
+props.set_layer(my_layer);
+
+// create new entities by factory methods: 
+auto pline = msp.add_line({0, 0, 0}, {1, 0, 0}, props); 
+auto pline = msp.add_line({2, 0, 0}, {3, 0, 0}, props);
+
+```
+   
+3. Direct instantiation and copying:
+
+```C++
+auto line = ezdxf::entities::Line();
+auto msp = doc.get_modelspace();
+// Adding the entity to a layout as local object 
+// creates a new entity in the EntityDB:
+// Returns a reference as raw pointer to the Line() object
+auto pline = msp.add(line); 
+```
+
+#### DXF Attribute Access
+
+The static nature of C++ will prevent the dynamic features of the Python 
+version like `get_dxf_attrib("lineweight")`, the return type would be a 
+`std::variant` or `std::any` and access is not that "easy" as I would like.
+
+So the DXF attribute will be a static approach, some ideas:
+
+1. Simple direct solution
+   
+Store attributes as members of the entity class, access by getter/setter 
+functions:
+   
+```C++
+auto line = ezdxf::factory::create(ezdxf::ents::Line);
+line->set_start_point({0, 0, 0});
+line->set_end_point({1, 0, 0});
+line->set_aci_color(1);
+line->set_true_color({0.9, 0.1, 0.1});
+
+auto msp = doc.get_modelspace();
+auto pline = msp.add(line); 
+// Get the new assigned handle:
+unit64_t handle = pline->get_handle();  
+// Get reference ptr to the parent layout:
+auto owner = pline->get_owner();  
+assert(owner == msp)
+
+// Create a reusable DXF properties object and get default values 
+// from the DXF document like the default layer or text style:
+auto props ezdxf::DXFProperties{doc};
+props.set_aci_color(1);
+props.set_layer(my_layer);
+pline->set_properties(props);
+
+```
+
+2. A DXF namespace object, like in the Python version:
+
+```C++
+auto line = ezdxf::factory::create(ezdxf::ents::Line);
+line->dxf.start_point.set({0, 0, 0});
+line->dxf.end_point.set({1, 0, 0});
+line->dxf.aci_color.set(1);
+line->dxf.true_color.set({0.9, 0.1, 0.1});
+
+auto msp = doc.get_modelspace();
+auto line_ptr = msp.add(line);
+
+// getters:
+auto handle = line_ptr->dxf.handle.get();  
+auto owner = line_ptr->dxf.owner.get();
+
+// getters could be nicer by overloading the 'operator()()' 
+// of the DXF properties:
+auto handle = line_ptr->dxf.handle();
+auto owner = line_ptr->dxf.owner();
+```
+
+
 ### Containers
 
-By using the DBIndex as internal handle, all resource tables and entity spaces 
-can use a simple `vector<int>` as entity storage.
+All resource tables and entity spaces can use a simple `vector<DXFEntity*>` 
+as entity storage.
 
-It's faster and also reliable to store reference pointers to entities, 
-because the relationship **DXFHandle/DBIndex/entity pointer** is immutable 
+It's reliable to store reference pointers to entities, 
+because the relationship **DXFHandle/entity pointer** is immutable 
 and entities will not be destroyed during the lifetime of the DXF document.
 
 [1]: https://developer.mozilla.org/en-US/docs/Web/CSS/alpha-value
