@@ -169,6 +169,8 @@ namespace ezdxf::utils {
                 return "AC1027";
             case Version::R2018:
                 return "AC1032";
+            default:
+                return "AC1009";
         }
     }
 

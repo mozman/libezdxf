@@ -14,6 +14,7 @@ TEST_CASE("Test DXF version.", "[utils][version]") {
         // Invalid DXF version defaults to DXF R12
         REQUIRE(str_to_dxf_version("XXX") == ezdxf::Version::R12);
     }
+
     SECTION("Test DXF version to string") {
         REQUIRE(dxf_version_to_str(ezdxf::Version::R9) == "AC1004");
         REQUIRE(dxf_version_to_str(ezdxf::Version::R12) == "AC1009");
