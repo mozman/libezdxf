@@ -20,7 +20,7 @@ pip install ezdxf
 
 ```
 
-## Header Section Loader/Writer
+## Header Section Loader/Exporter
 
 - header_section_base_class.py: Header section base class with all 
   members and getter/setter methods
