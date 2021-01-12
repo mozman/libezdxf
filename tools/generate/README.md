@@ -1,15 +1,8 @@
 # Code Generation Tools
 
-This folder contains Python tools to auto-generate C++ code.
-
-The DXF format uses non uniform data types and some times different
-solutions for different DXF versions. Because of the limited dynamic 
-features of C++ and my lack of knowledge of clever template programming 
-techniques, I decided to use my knowledge baked into the Python version 
-of ezdxf to auto-generate C++ source code.
-
-This tools are not integrated into the build process, all generated files
-are included in final state in the repository.
+This folder contains Python tools to auto-generate C++ code. This tools 
+are not integrated into the build process, all generated files are 
+included in final state in the repository.
 
 - config.py: common configuration data
 
@@ -17,7 +10,6 @@ To use this tools you need a working Python setup and the latest version of
 ezdxf from PyPI:
 ```
 pip install ezdxf
-
 ```
 
 ## Header Section Loader/Exporter
