@@ -3,6 +3,7 @@
 //
 #include "ezdxf/utils.hpp"
 #include "ezdxf/tag/tag.hpp"
+#include <exception>
 
 using namespace ezdxf::tag;
 
@@ -189,7 +190,7 @@ namespace ezdxf::utils {
         return Version::R12;  // Default
     }
 
-    const SimpleSet<Version> DXFExportVersions {
+    const SimpleSet<Version> DXFExportVersions{
             Version::R12,
             Version::R2000,
             Version::R2004,
@@ -197,5 +198,64 @@ namespace ezdxf::utils {
             Version::R2010,
             Version::R2013,
             Version::R2018,
+    };
+
+    class EntityLookupTable {
+        // Goal: compact and fast enough DXFEntity lookup by handle.
+        // Relationship between Handle and DXFEntity is fixed and does not
+        // change over the lifetime of a document and entities will also not
+        // destroyed, therefore deleting entries is not required.
+        // Table size is fixed and will not grow over runtime.
+
+    private:
+        using Data = struct {
+            uint64_t handle;
+            void *data;
+        };
+
+        uint64_t hash_mask_ = 0;
+        std::vector<std::vector<Data>> data_{};
+
+        void init_data(int size) {
+            data_.clear();
+            data_.reserve(size);
+            for (int i = 0; i < size; ++i) {
+                data_.emplace_back();
+            }
+        }
+
+        auto get_bucket(uint64_t handle) {
+            return data_[handle & hash_mask_];
+        }
+
+    public:
+        EntityLookupTable() = delete;
+
+        // 2^12 = 4096 buckets by default:
+        explicit EntityLookupTable(int hash_bits = 12) {
+            if (hash_bits < 8 || hash_bits > 24)
+                throw std::invalid_argument("invalid hash bit count");
+            hash_mask_ = (2 << hash_bits) - 1;
+            init_data(2 << hash_bits);
+        }
+
+        // "get()" is the most important function here:
+        void *get(uint64_t handle, void *default_ = nullptr) {
+            // Linear search is fast for small vectors!
+            for (auto[h, data] : get_bucket(handle)) {
+                if (h == handle) return data;
+            }
+            return default_;
+        }
+
+        inline bool has(uint64_t handle) {
+            return get(handle) != nullptr;
+        }
+
+        void add(uint64_t handle, void *data) {
+            if (!has(handle)) {
+                get_bucket(handle).emplace_back(handle, data);
+            } else throw(std::invalid_argument("handle already exist"));
+        }
     };
 }
