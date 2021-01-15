@@ -3,9 +3,10 @@
 //
 
 #include <catch2/catch.hpp>
-#include <ezdxf/utils.hpp>
+#include <ezdxf/type.hpp>
+#include <ezdxf/simple_set.hpp>
 
-using namespace ezdxf::utils;
+using namespace ezdxf;
 
 TEST_CASE("Test SimpleSet.", "[utils][set]") {
     SECTION("Create a string set.") {

@@ -7,6 +7,7 @@
 #include <optional>
 #include <initializer_list>
 #include "ezdxf/type.hpp"
+#include "ezdxf/simple_set.hpp"
 
 
 namespace ezdxf::utils {
@@ -39,28 +40,6 @@ namespace ezdxf::utils {
     String dxf_version_to_str(Version v);
 
     Version str_to_dxf_version(String s);
-
-    template<typename T>
-    class SimpleSet {
-    public:
-        SimpleSet(std::initializer_list<T> l) : data_{} {
-            for (const T &d : l) add(d);
-        }
-
-        bool has(const T &v) const {
-            for (const T &d : data_) if (d == v) return true;
-            return false;
-        }
-
-        void add(const T &v) {
-            if (!has(v)) data_.push_back(v);
-        }
-
-        [[nodiscard]] std::size_t size() const { return data_.size(); }
-
-    private:
-        std::vector<T> data_{};
-    };
 
     extern const SimpleSet<Version> DXFExportVersions;
 }

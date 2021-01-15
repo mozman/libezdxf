@@ -1,9 +1,9 @@
-# Data Types and Units
+# TableEntry Types and Units
 
 ## Handles
 
 Handles are stored as `uint64_t`.
-Handles are **maybe** database keys, see section [Data Model](#data-model).
+Handles are **maybe** database keys, see section [TableEntry Model](#data-model).
 The handle `0` is a special case and not a valid database key.
 
 ## Angles
@@ -72,7 +72,7 @@ to reference resources.
 - ImageDef
 - UnderlayDef
 
-## Data Model
+## TableEntry Model
 
 This section describes how the lib stores and manages DXF entities and objects 
 internally.
@@ -123,30 +123,29 @@ entity.
 The database has to manage reserved handles to entities which will not 
 represented as a real DXF entity: Table Head, SEQEND, ENDBLK, (VERTEX?)  
 
-#### Data Structure
+#### LookupTable Structure
 
-Like in the Python version of ezdxf, the handle as hash key into an unordered 
-map (like Python dict) seems to be the right choice. But Alan Talbot mentioned 
-in the last part of his video[2] at the CppCon 2018, that unordered maps have 
-a node based implementation in the STL and are not very fast or memory 
-efficient and `vector` is in most cases the fastest container.
+Like in the Python version of ezdxf, the handle as hash key into a lookup table 
+seems to be the right choice. 
 
-By expecting less than 100.000 entities per DXF document seems a `vector` based 
-implementation reasonable.
+By expecting less than 100.000 entities per DXF document, a `vector` based 
+implementation of the lookup table seems to be reasonable (array of buckets). 
 
-**CREATE**: Entities will be added to the DB only a the end of the vector 
-and is therefore very fast, beside reallocation -- reserve a fair amount at 
-setup.
+The Lookup table uses a fixed size of a power of 2 for the bucket array, 
+therefore hashing is a fast "and" operation. Each hash references a bucket as 
+vector of acdb::Object entries. 
 
-**READ**: By using the DBIndex as internal handle, linear and random read 
-is very fast. 
+Linear search in this small bucket should be fast enough. I saw some videos 
+about efficient data structures in C++, and my conclusion is, simple and 
+compact data structures are often the best, to keep data in caches.
 
-But the DXF handle to DBIndex mapping requires an additional data 
-structure -- if access by DXF handle is not very often required (DBIndex as 
-internal handle) a linear search is maybe sufficient.
+**CREATE**: Entities will be added to the DB only a the end of a vector 
+and is therefore very fast.
 
-**DELETE**: The DBIndex of entities has to be immutable. 
-The entity will be marked as deleted but not destroyed. 
+**READ**: Hashing is very fast and a linear search in a small bucket is fast 
+enough. 
+
+**DELETE**: DXF objects will be marked as erased but not destroyed. 
 Not destroying entities during the lifetime of the DXF document also prevent 
 invalid entity references (dangling pointers). 
 
@@ -154,11 +153,10 @@ Referencing entries by raw pointers is reliable, as the entities are managed
 by the database and entities can not be destroyed during the lifetime of the 
 DXF document.
 
-**Never** reassign a freed DXF handle to a new DXF entity! 
+DXF handles will never be freed/assigned to a new DXF entity! 
 DXF supports 2^64 handles, recycling of handles should not be necessary.
 
-The relationship **DXFHandle/DBIndex/entity pointer is immutable**, therefore 
-container could also store the entity pointer instead of the DBIndex.
+The relationship **Handle/Object pointer is immutable**.
 
 Using an `unique_ptr` to store entities in the database shows clearly who owns 
 the entity!
@@ -178,15 +176,15 @@ references between various DXF entities will be stored as raw pointers.
 **Entities are not destroyed during the lifetime of a DXF document!**
 
 The entity requires a flag to store this status (and maybe more flags later).
-A call to `DXFEntity.is_alive()` is **always** valid. Therefore storing 
-references to entities as **raw** pointers is reliable, fast and simple.
+A call to `ezdxf::acdb::Object.is_alive()` is **always** valid. Therefore 
+storing references to entities as **raw** pointers is reliable, fast and simple.
 
 At some time the raw pointer to a DXF entity has to be exposed to the lib 
 users. Lib users have to agree to the policy: 
 "You don't own it, don't delete it!" ?
 
-Every DXF entity/object reside in ONE container (owner), but can be 
-referenced by multiple DXF entities/objects.
+Every DXF object reside in ONE container (owner), but can be 
+referenced by multiple DXF objects.
 
 #### Creating DXF entities
 
@@ -194,8 +192,8 @@ referenced by multiple DXF entities/objects.
 
 ```C++
 auto doc = ezdxf::new_doc(ezdxf::Version::R2010);
-// Create a new LINE entity, returns an unique_ptr<ezdxf::entities::DXFEntity>
-auto line = ezdxf::factory::create(ezdxf::ents::Line);
+// Create a new LINE entity, returns an unique_ptr<ezdxf::acdb::Object>
+auto line = ezdxf::factory::create(ezdxf::acdb::Line);
 auto msp = doc.get_modelspace();
 // Adding the entity to a layout moves the entity ownership 
 // into the EntityDB:
@@ -215,7 +213,7 @@ pline->set_properties(props);
 ```C++
 auto doc = ezdxf::new_doc(ezdxf::Version::R2010); // unique_ptr<ezdxf::Document>
 auto msp = doc.get_modelspace();  // ezdxf::Layout*, just a reference
-auto = doc.layers.create("MyLayer");  // ezdxf::entities::Layer*
+auto = doc.layers.create("MyLayer");  // ezdxf::acdb::Layer*
 my_layer->set_aci_color(2);
 my_layer->set_lineweight(50);
 
@@ -304,7 +302,7 @@ auto owner = line_ptr->dxf.owner();
 
 ### Containers
 
-All resource tables and entity spaces can use a simple `vector<DXFEntity*>` 
+All resource tables and entity spaces can use a simple `vector<AcDbObject*>` 
 as entity storage.
 
 It's reliable to store reference pointers to entities, 
@@ -312,4 +310,3 @@ because the relationship **DXFHandle/entity pointer** is immutable
 and entities will not be destroyed during the lifetime of the DXF document.
 
 [1]: https://developer.mozilla.org/en-US/docs/Web/CSS/alpha-value
-[2]: https://www.youtube.com/watch?v=EovBkh9wDnM

@@ -19,14 +19,6 @@ namespace ezdxf {
         kInvalidBinaryTag,
     };
 
-    enum class ResourceType {
-        kLayer,
-        kLinetype,
-        kTextstyle,
-        kDimstyle,
-        kBlock,
-    };
-
     struct ErrorMessage {
         ErrorCode code;
         std::string message;
@@ -39,6 +31,7 @@ namespace ezdxf {
     using String = std::string;
     using ErrorMessages = std::vector<ErrorMessage>;
     using Bytes = std::vector<unsigned char>;
+    using Handle = uint64_t;
 
     class ACI {
     public:
