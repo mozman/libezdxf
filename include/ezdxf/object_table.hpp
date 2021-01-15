@@ -32,12 +32,16 @@ namespace ezdxf {
         constexpr int count = 1 << N;  // fixed count of buckets as power of 2
         constexpr uint64_t hash_mask = count - 1;
         std::vector<Bucket> buckets{count};
+        Handle max_handle_{0}; // biggest stored handle
+        std::size_t size_{0};  // count of DXF objects stored
 
         [[nodiscard]] auto get_bucket(Handle const handle) const {
             return buckets[handle & hash_mask];
         };
 
     public:
+        [[nodiscard]] std::size_t size() const { return size_; }
+
         // "get()" is the most important function here:
         Object *
         get(Handle const handle, Object const *const default_ = nullptr) const {
@@ -72,6 +76,8 @@ namespace ezdxf {
                 throw (std::invalid_argument("object handle 0 is invalid"));
             if (!has(handle)) {
                 get_bucket(handle).push_pack(object);
+                ++size_;
+                if (handle > max_handle_) max_handle_ = handle;
             } else
                 throw (std::invalid_argument(
                         "object with same handle already exist"));
