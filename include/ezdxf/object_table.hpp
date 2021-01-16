@@ -6,6 +6,7 @@
 
 #include <stdexcept>
 #include <vector>
+#include <memory>
 #include "ezdxf/type.hpp"
 #include "ezdxf/acdb/object.hpp"
 
@@ -26,42 +27,44 @@ namespace ezdxf {
         // change over the lifetime of a document and DXF objects will also not
         // destroyed, therefore deleting table entries is not required.
         // Table size is fixed and will not grow over runtime.
-        using Bucket = std::vector<Object *>;
 
     private:
+        struct TableEntry {
+            Handle handle{};
+            std::unique_ptr<Object> object{};
+        };
+        using Bucket = std::vector<TableEntry>;
+
         constexpr int count = 1 << N;  // fixed count of buckets as power of 2
         constexpr uint64_t hash_mask = count - 1;
         std::vector<Bucket> buckets{count};
         Handle max_handle_{0}; // biggest stored handle
         std::size_t size_{0};  // count of DXF objects stored
 
-        [[nodiscard]] auto get_bucket(Handle const handle) const {
+        [[nodiscard]] Bucket get_bucket(Handle const handle) const {
             return buckets[handle & hash_mask];
         };
 
     public:
         [[nodiscard]] std::size_t size() const { return size_; }
 
-        ~ObjectTable() {
-            for (const auto& bucket: buckets){
-                for (auto object_ptr : bucket){
-                    // ObjectTable is the owner!
-                    delete object_ptr;
-                }
-            }
-        }
-
         // "get()" is the most important function here:
         Object *
         get(Handle const handle, Object const *const default_ = nullptr) const {
             // Returns a reference to a DXF object.
             // Does not transfer ownership!
-
-            for (auto object_ptr : get_bucket(handle)) {
+            for (TableEntry const &entry : get_bucket(handle)) {
                 // Linear search is fast for small vectors!
-                if (object_ptr->get_handle() == handle) return object_ptr;
+                if (entry.handle == handle) return entry.object.get();
             }
             return default_;
+        }
+
+        Handle aquire_free_handle() {
+            // Return next unused handle. The object table does not return the
+            // same handle again, but does not prevent adding objects using
+            // that handles.
+            return ++max_handle_;
         }
 
         [[nodiscard]] inline bool has(Handle const handle) const {
@@ -77,14 +80,14 @@ namespace ezdxf {
             return has(object->get_handle());
         }
 
-        void store(Object const *const object) {
+        void store(std::unique_ptr<Object> object) {
             // Transfer ownership of the DXF object to the object table.
             Handle handle = object->get_handle();
             // The "0" handle is an invalid handle per definition
             if (handle == 0)
                 throw (std::invalid_argument("object handle 0 is invalid"));
             if (!has(handle)) { // Transfer ownership:
-                get_bucket(handle).push_pack(object);
+                get_bucket(handle).emplace_pack(handle, object);
                 ++size_;
                 if (handle > max_handle_) max_handle_ = handle;
             } else
