@@ -2,9 +2,10 @@
 // License: MIT License
 //
 #include <catch2/catch.hpp>
-#include <ezdxf/utils.hpp>
-#include <ezdxf/tag/tag.hpp>
 #include <limits>
+#include "ezdxf/utils.hpp"
+#include "ezdxf/tag/tag.hpp"
+
 
 using namespace ezdxf::utils;
 using namespace ezdxf::tag;

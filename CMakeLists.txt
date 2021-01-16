@@ -36,6 +36,6 @@ add_executable(run_tests
         tests/2_utils/203_hexlify.cpp
         tests/2_utils/204_dxf_version.cpp
         tests/2_utils/205_simple_set.cpp
-        )
+        tests/3_dxf_objects/301_acdb_object.cpp tests/3_dxf_objects/302_object_table.cpp)
 
 target_link_libraries(run_tests PRIVATE ezdxf)

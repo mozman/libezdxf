@@ -3,8 +3,8 @@
 //
 
 #include <catch2/catch.hpp>
-#include <ezdxf/type.hpp>
-#include <ezdxf/simple_set.hpp>
+#include "ezdxf/type.hpp"
+#include "ezdxf/simple_set.hpp"
 
 using namespace ezdxf;
 

@@ -2,7 +2,7 @@
 // License: MIT License
 //
 #include <catch2/catch.hpp>
-#include <ezdxf/tag/loader.hpp>
+#include "ezdxf/tag/loader.hpp"
 
 
 TEST_CASE("Test BasicLoader() loading from strings.", "[tag][BasicLoader]") {

@@ -2,8 +2,9 @@
 // License: MIT License
 //
 #include <catch2/catch.hpp>
-#include <ezdxf/math/vec3.hpp>
 #include <vector>
+#include "ezdxf/math/vec3.hpp"
+
 
 using ezdxf::math::Vec3;
 

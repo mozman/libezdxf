@@ -20,7 +20,7 @@ namespace ezdxf::acdb {
 
     public:
         enum class Status {
-            kErased = 1;
+            kErased = 1
         };
 
         Object() = default;
@@ -28,7 +28,7 @@ namespace ezdxf::acdb {
         virtual ~Object() = default;
 
         [[nodiscard]] bool is_erased() const {
-            return status_ & Status::kErased;
+            return status_ & static_cast<unsigned int>(Status::kErased);
         }
 
         [[nodiscard]] bool is_alive() const {
@@ -39,7 +39,7 @@ namespace ezdxf::acdb {
 
         void set_handle(Handle h) {
             if (handle_)  // handle is immutable if != 0
-                throw std::invalid_argument("assigned handle is immutable")
+                throw std::invalid_argument("assigned handle is immutable");
             handle_ = h;
         }
 
@@ -50,7 +50,7 @@ namespace ezdxf::acdb {
         virtual void erase() {
             // Set object status to erased, DXF objects will not be destroyed at
             // the lifetime of a DXF document!
-            status_ |= Status::kErased;
+            status_ |= static_cast<unsigned int>(Status::kErased);
         }
     };
 
