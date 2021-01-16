@@ -1,10 +1,20 @@
+# Namespaces and Naming Conventions
+
+I think it is a good solution to design the library in a similar way as the
+ObjectARX®, the AutoCAD® - Runtime Extension programming environment. 
+The design should mimic this API not replicate. The ObjectARX® API is a CAD 
+application API, which is **not** the goal of ezdxf! 
+
+One difference is to use namespaces instead of prefixes like 
+`ezdxf::acdb::Object` for `AcDbObject`.
+
 # TableEntry Types and Units
 
 ## Handles
 
 Handles are stored as `uint64_t`.
-Handles are **maybe** database keys, see section [TableEntry Model](#data-model).
-The handle `0` is a special case and not a valid database key.
+Handles are `ObjectTable` keys, see section [TableEntry Model](#data-model).
+The handle `0` is a special case and not a valid `ObjectTable` key.
 
 ## Angles
 
@@ -14,6 +24,8 @@ the C++ implementation of `ezdxf` will unify this confusing behavior by always
 using radians (AutoLisp also uses only radians).
 
 ## Colors
+
+seealso: AcCm reference[2]
 
 ### ACI
 
@@ -32,11 +44,12 @@ where `0.0` is fully transparent and `1.0` is fully opaque.
 ## Resources
 
 All resources like layers, text styles, dimension styles, block references and 
-so on will be stored as handles to the table entries like in the DWG format. 
-This requires a resolving process because the DXF format stores many resources 
-by name as case insensitive strings. DXF allows some resources without existing 
-table entries (e.g. layers), which has to be fixed by automatically creating 
-default table entries for such resources.
+so on will be stored as handles of symbol table entries like in the DWG format. 
+This requires a resolving process because the DXF format stores symbol table 
+resources by name as case insensitive strings. 
+DXF allows some resources without existing table entries (e.g. layers), which 
+has to be fixed by automatically creating default table entries for such 
+resources.
 
 ### Resource Tables
 
@@ -113,25 +126,25 @@ The entity count is not impressive for C/C++. I assume not more than 100.000
 entities per DXF document and this is already a huge DXF drawing, which are not 
 very usable in CAD applications.
 
-### EntityDB
+### ObjectTable
 
-The entity database is the main storage of the DXF entities. The DB owns the 
+The `ObjectTable` is the main storage of the DXF objects. The OT owns the 
 entities from the point the entity was added and will never transfer this 
-ownership until the destruction of the entity database which also destroys the 
+ownership until the destruction of the object table which also destroys the 
 entity.
 
-The database has to manage reserved handles to entities which will not 
+The OT has to manage reserved handles to entities which will not 
 represented as a real DXF entity: Table Head, SEQEND, ENDBLK, (VERTEX?)  
 
 #### LookupTable Structure
 
-Like in the Python version of ezdxf, the handle as hash key into a lookup table 
-seems to be the right choice. 
+Like in the Python version of ezdxf, the handle as hash key into the object 
+table seems to be the right choice. 
 
 By expecting less than 100.000 entities per DXF document, a `vector` based 
-implementation of the lookup table seems to be reasonable (array of buckets). 
+implementation of the object table seems to be reasonable (array of buckets). 
 
-The Lookup table uses a fixed size of a power of 2 for the bucket array, 
+The object table uses a fixed size of a power of 2 for the bucket array, 
 therefore hashing is a fast "and" operation. Each hash references a bucket as 
 vector of acdb::Object entries. 
 
@@ -139,7 +152,7 @@ Linear search in this small bucket should be fast enough. I saw some videos
 about efficient data structures in C++, and my conclusion is, simple and 
 compact data structures are often the best, to keep data in caches.
 
-**CREATE**: Entities will be added to the DB only a the end of a vector 
+**CREATE**: Entities will be added to the OT only a the end of a vector 
 and is therefore very fast.
 
 **READ**: Hashing is very fast and a linear search in a small bucket is fast 
@@ -150,7 +163,7 @@ Not destroying entities during the lifetime of the DXF document also prevent
 invalid entity references (dangling pointers). 
 
 Referencing entries by raw pointers is reliable, as the entities are managed 
-by the database and entities can not be destroyed during the lifetime of the 
+by the object table and entities can not be destroyed during the lifetime of the 
 DXF document.
 
 DXF handles will never be freed/assigned to a new DXF entity! 
@@ -160,16 +173,6 @@ The relationship **Handle/Object pointer is immutable**.
 
 Using an `unique_ptr` to store entities in the database shows clearly who owns 
 the entity!
-
-Simple hash-map entity database: 
-Key is the entity handle & `0x3FF`, which creates 1024 different hash values. 
-The DXF entities are stored as unique pointers in an unordered `std::vector`. 
-Top level structure is another `std::vector` which stores an entity sub-list 
-for each hash value. A simple linear search is used to find entities by handle 
-in this sub-lists. 
-This should be fast enough, access by handle will not be the main access method, 
-references between various DXF entities will be stored as raw pointers.
-
 
 ### Entities/Objects
 
@@ -310,3 +313,4 @@ because the relationship **DXFHandle/entity pointer** is immutable
 and entities will not be destroyed during the lifetime of the DXF document.
 
 [1]: https://developer.mozilla.org/en-US/docs/Web/CSS/alpha-value
+[2]: http://help.autodesk.com/view/OARX/2018/ENU/?guid=OREF-AcCm_Classes
