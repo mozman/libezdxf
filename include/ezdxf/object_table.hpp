@@ -42,6 +42,15 @@ namespace ezdxf {
     public:
         [[nodiscard]] std::size_t size() const { return size_; }
 
+        ~ObjectTable() {
+            for (const auto& bucket: buckets){
+                for (auto object_ptr : bucket){
+                    // ObjectTable is the owner!
+                    delete object_ptr;
+                }
+            }
+        }
+
         // "get()" is the most important function here:
         Object *
         get(Handle const handle, Object const *const default_ = nullptr) const {
@@ -74,7 +83,7 @@ namespace ezdxf {
             // The "0" handle is an invalid handle per definition
             if (handle == 0)
                 throw (std::invalid_argument("object handle 0 is invalid"));
-            if (!has(handle)) {
+            if (!has(handle)) { // Transfer ownership:
                 get_bucket(handle).push_pack(object);
                 ++size_;
                 if (handle > max_handle_) max_handle_ = handle;
