@@ -34,9 +34,12 @@ namespace ezdxf::acdb {
         virtual ~Object() = default;
 
         // Returns the DXF type as specified in the DXF file:
-        // "OBJECT" is not a real DXF object, it is the base class for all
+        // Object is not a real DXF object, it is the base class for all
         // DXF entities.
-        virtual String dxf_type() { return "OBJECT"; }
+        virtual DXFType dxf_type() { return DXFType::None; }
+
+        // Returns the corresponding ObjectARX® type:
+        virtual ARXType arx_type() { return ARXType::AcDbObject; }
 
         [[nodiscard]] bool is_erased() const {
             return status_ & static_cast<unsigned int>(Status::kErased);

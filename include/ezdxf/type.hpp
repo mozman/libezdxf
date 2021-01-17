@@ -63,6 +63,35 @@ namespace ezdxf {
         R2018,
     };
 
+    enum class DXFType{
+        None,
+        Arc,
+        AttDef,
+        Attrib,
+        Circle,
+        Ellipse,
+        Line,
+        LwPolyline,
+        Point,
+        Polyline,
+        Spline,
+        Text,
+    };
+
+
+    // The DXF type does not always show the complete entity type.
+    // e.g. the DXF type "POLYLINE" can represent an AcDb2dPolyline,
+    // AcDb3dPolyline, AcDbPolygonMesh or an AcDbPolyFaceMesh.
+    // The ObjectARX® types are defined by the AutoCAD® - Runtime Extension
+    // programming environment. The ezdxf library can not support all ARX types,
+    // in fact it is just a small subset including the most common used and
+    // documented DXF entities.
+    // The ezdxf library is an interface to the DXF file format and
+    // not a CAD application SDK!
+    enum class ARXType{
+        AcDbObject,
+        AcDbEntity,
+    };
 }
 
 #endif //EZDXF_TYPE_HPP

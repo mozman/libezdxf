@@ -13,7 +13,8 @@ TEST_CASE("Testing ezdxf::acdb::Object", "[acdb, object]") {
 
         REQUIRE(o.get_handle() == 0);
         REQUIRE(o.get_owner() == 0);
-        REQUIRE(o.dxf_type() == "OBJECT");
+        REQUIRE(o.dxf_type() == ezdxf::DXFType::None);
+        REQUIRE(o.arx_type() == ezdxf::ARXType::AcDbObject);
         REQUIRE(o.is_erased() == false);
         REQUIRE(o.is_alive() == true);
     }
