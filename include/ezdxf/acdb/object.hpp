@@ -9,6 +9,7 @@
 
 namespace ezdxf::acdb {
     using ezdxf::Handle;
+
     // acdb::Object is the base class for all DXF entities in a DXF Document
     // which have a handle.
     // The handle can only be assigned once!
@@ -25,7 +26,17 @@ namespace ezdxf::acdb {
 
         Object() = default;
 
+        explicit Object(Handle handle, Handle owner = 0) : Object{} {
+            set_handle(handle);
+            if (owner) set_owner(owner);
+        }
+
         virtual ~Object() = default;
+
+        // Returns the DXF type as specified in the DXF file:
+        // "OBJECT" is not a real DXF object, it is the base class for all
+        // DXF entities.
+        virtual String dxf_type() { return "OBJECT"; }
 
         [[nodiscard]] bool is_erased() const {
             return status_ & static_cast<unsigned int>(Status::kErased);
